@@ -3,4 +3,10 @@ project(java_compiler)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(java_compiler main.cpp)
+add_executable(java_compiler
+        			 main.cpp
+        			 lexical_analyzer_generator/lexical_analyzer_generator.cpp
+               lexical_analyzer_generator/nfa_creator.cpp
+               lexical_analyzer_generator/nfa_dfa_converter.cpp
+              finite_automata/finite_automata.cpp
+				)
