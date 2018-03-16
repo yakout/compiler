@@ -9,4 +9,4 @@ class Lexical_Analyzer_Generator
       FILE* get_lexical_analyzer_file(FILE* file);
 };
 
-#endif /// LEXICAL_ANALYZER_GENERATOR_H
+#endif // LEXICAL_ANALYZER_GENERATOR_H

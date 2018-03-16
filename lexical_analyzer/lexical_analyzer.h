@@ -2,7 +2,6 @@
 #define LEXICAL_ANALYZER_H
 
 #include <stdio.h>
-
 #include "token.h"
 
 class Lexcial_Analyzer

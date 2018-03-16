@@ -6,10 +6,10 @@
 struct prod_t // the production {NT -> (T|NT)+}
 {
 	std::string lhs;
-  std::string rhs;
+	std::string rhs;
 };
 
-struct grammer_t // set of rules (productions)
+struct grammar_t // set of rules (productions)
 {
 	std::vector<prod_t> rules;
 };
