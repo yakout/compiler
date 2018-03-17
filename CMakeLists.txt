@@ -9,4 +9,5 @@ add_executable(java_compiler
 		lexical_analyzer_generator/nfa_creator.cpp
 		lexical_analyzer_generator/nfa_dfa_converter.cpp
 		lexical_analyzer_generator/finite_automata/finite_automata.cpp
+		lexical_analyzer_generator/finite_automata/state.cpp
 		)
