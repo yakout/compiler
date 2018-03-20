@@ -4,7 +4,7 @@
 #include <stack>
 
 #include "state.h"
-#include "transition_tabel.h"
+#include "transition_table.h"
 
 class FA
 {
@@ -17,7 +17,7 @@ public:
   FA (State &start_state);
 
   virtual void visit_next_state (std::stack<State> &dfs_stack) = 0;
-	//virtual State* get_next_state (char input) = 0;
+	virtual State* get_next_state (char input) = 0;
 
   Transition_Table get_transition_table ();
   void insert_state (char input, State &state);
@@ -28,7 +28,7 @@ class DFA: public FA
 public:
     DFA(State &start_state);
 		void visit_next_state (std::stack<State> &dfs_stack);
-		//State* get_next_state (char input);
+		State* get_next_state (char input);
 };
 
 class NFA: public FA
@@ -36,7 +36,7 @@ class NFA: public FA
 public:
 	NFA(State &start_state);
 	void visit_next_state (std::stack<State> &dfs_stack);
-	//State* get_next_state (char input);		
+	State* get_next_state (char input);
 };
 
 #endif // FINITE_AUTOMATA_H

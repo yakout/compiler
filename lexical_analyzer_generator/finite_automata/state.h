@@ -1,6 +1,8 @@
 #ifndef STATE_H
 #define STATE_H
 
+#include "../nfa_tools/lexical_rules.h"
+
 #include <map>
 #include <vector>
 
@@ -18,27 +20,28 @@ class State
 private:
   state_id s_id;
   state_type type;
+  regular_definition definition;
 public:
-  State (int id, state_type type);
-  //virtual State* get_next_state (char input) = 0;
+  State (int id, state_type type, regular_definition definition);
+  virtual State* get_next_state (char input) = 0;
 };
 
 class NFA_State : public State
 {
 public:
-  NFA_State (int id, state_type type);
-  //State* get_next_state (char input);
+  NFA_State (int id, state_type type, regular_definition definition);
+  State* get_next_state (char input);
 private:
- 	std::map <char, std::vector<NFA_State>> transitions;
+ 	std::map <std::string, std::vector<NFA_State>> transitions;
 };
 
 class DFA_State : public State
 {
 public:
-  DFA_State (int id, state_type type);
-  //State* get_next_state (char input);
+  DFA_State (int id, state_type type, regular_definition definition);
+  State* get_next_state (char input);
 private:
- 	std::map <char, DFA_State> transitions;
+ 	std::map <std::string, DFA_State> transitions;
 };
 
 #endif // STATE_H

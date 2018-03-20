@@ -27,3 +27,11 @@ void DFA::visit_next_state (std::stack<State> &dfs_stack)
 {
 
 }
+
+State* NFA::get_next_state (char input)
+{
+}
+
+State* DFA::get_next_state (char input)
+{
+}

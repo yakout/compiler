@@ -2,5 +2,4 @@
 
 NFA NFA_Creator::create_NFA (FILE* rules)
 {
-  
 }
