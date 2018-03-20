@@ -18,8 +18,7 @@ public:
   virtual void visit_next_state (std::stack<State> &dfs_stack) = 0;
 	virtual State* get_next_state (char input) = 0;
 
-  	Transition_Table get_transition_table ();
-  	void insert_state (char input, State &state);
+	Transition_Table get_transition_table ();
 };
 
 class DFA: public FA

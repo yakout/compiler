@@ -8,6 +8,11 @@ State::State (int id, state_type type,
     this->definitions = definitions;
 }
 
+void State::insert_state (std::string input, State* state, ...)
+{
+
+}
+
 NFA_State::NFA_State (int id, state_type type,
    std::vector<regular_definition> definitions)
 : State (id, type, definitions)

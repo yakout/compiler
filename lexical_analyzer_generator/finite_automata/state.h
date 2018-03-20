@@ -24,6 +24,7 @@ private:
 public:
   State (int id, state_type type, std::vector<regular_definition> definitions);
   virtual State* get_next_state (char input) = 0;
+  void insert_state (std::string input, State* state, ...);
 };
 
 class NFA_State : public State

@@ -13,11 +13,6 @@ Transition_Table FA::get_transition_table ()
     return Transition_Table();
 }
 
-void FA::insert_state (char input, State &state)
-{
-
-}
-
 void NFA::visit_next_state (std::stack<State> &dfs_stack)
 {
 
