@@ -35,7 +35,7 @@ private:
 class DFA_State : public State
 {
 public:
-  DFA_State (int id, state_type type);
+  DFA_State(int id, state_type type);
   //State* get_next_state (char input);
 private:
  	std::map <char, DFA_State> transitions;

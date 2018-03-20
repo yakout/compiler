@@ -1,8 +1,6 @@
 #include <iostream>
 
-using namespace std;
-
-string CALL_ERROR = "Invalid Number of Arguments";
+std::string CALL_ERROR = "Invalid Number of Arguments";
 
 int main(int argc, char** argv) {
     if (argc == 1)
@@ -15,7 +13,7 @@ int main(int argc, char** argv) {
     }
     else
     {
-      cout << CALL_ERROR << endl;
+        std::cout << CALL_ERROR << std::endl;
     }
     return 0;
 }

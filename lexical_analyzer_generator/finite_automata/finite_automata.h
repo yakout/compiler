@@ -4,38 +4,38 @@
 #include <stack>
 
 #include "state.h"
-#include "transition_tabel.h"
+#include "transition_table.h"
 
 class FA
 {
 private:
 	State* start_state;
  	State* current_state;
-  std::vector <char> inputs;
+  	std::vector<char> inputs;
 
 public:
-  FA (State &start_state);
+	explicit FA(State &start_state);
 
-  virtual void visit_next_state (std::stack<State> &dfs_stack) = 0;
+  	virtual void visit_next_state (std::stack<State> &dfs_stack) = 0;
 	//virtual State* get_next_state (char input) = 0;
 
-  Transition_Table get_transition_table ();
-  void insert_state (char input, State &state);
+  	Transition_Table get_transition_table ();
+  	void insert_state (char input, State &state);
 };
 
 class DFA: public FA
 {
 public:
-    DFA(State &start_state);
-		void visit_next_state (std::stack<State> &dfs_stack);
-		//State* get_next_state (char input);
+	explicit DFA(State &start_state);
+	void visit_next_state (std::stack<State> &dfs_stack) override;
+	//State* get_next_state (char input);
 };
 
 class NFA: public FA
 {
 public:
-	NFA(State &start_state);
-	void visit_next_state (std::stack<State> &dfs_stack);
+	explicit NFA(State &start_state);
+	void visit_next_state (std::stack<State> &dfs_stack) override;
 	//State* get_next_state (char input);		
 };
 
