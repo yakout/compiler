@@ -23,8 +23,15 @@ void NFA::visit_next_state (std::stack<State> &dfs_stack)
 
 }
 
+State *NFA::get_next_state(char input) {
+    return nullptr;
+}
+
 void DFA::visit_next_state (std::stack<State> &dfs_stack)
 {
 
 }
 
+State* DFA::get_next_state (char input)
+{
+}

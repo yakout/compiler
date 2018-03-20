@@ -1,7 +1,9 @@
 # Clion
 cmake-build-debug
 .idea/
-
+CMakeCache
+CMakeFiles/
+cmake_install.cmake
 
 # Prerequisites
 *.d

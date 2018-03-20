@@ -16,8 +16,8 @@ private:
 public:
 	explicit FA(State &start_state);
 
-  	virtual void visit_next_state (std::stack<State> &dfs_stack) = 0;
-	//virtual State* get_next_state (char input) = 0;
+  virtual void visit_next_state (std::stack<State> &dfs_stack) = 0;
+	virtual State* get_next_state (char input) = 0;
 
   	Transition_Table get_transition_table ();
   	void insert_state (char input, State &state);
@@ -28,7 +28,7 @@ class DFA: public FA
 public:
 	explicit DFA(State &start_state);
 	void visit_next_state (std::stack<State> &dfs_stack) override;
-	//State* get_next_state (char input);
+	State* get_next_state (char input) override;
 };
 
 class NFA: public FA
@@ -36,7 +36,7 @@ class NFA: public FA
 public:
 	explicit NFA(State &start_state);
 	void visit_next_state (std::stack<State> &dfs_stack) override;
-	//State* get_next_state (char input);		
+	State* get_next_state (char input) override;
 };
 
 #endif // FINITE_AUTOMATA_H
