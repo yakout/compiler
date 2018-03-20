@@ -20,16 +20,16 @@ class State
 private:
   state_id s_id;
   state_type type;
-  regular_definition definition;
+  std::vector <regular_definition> definitions;
 public:
-  State (int id, state_type type, regular_definition definition);
+  State (int id, state_type type, std::vector<regular_definition> definitions);
   virtual State* get_next_state (char input) = 0;
 };
 
 class NFA_State : public State
 {
 public:
-  NFA_State (int id, state_type type, regular_definition definition);
+  NFA_State (int id, state_type type, std::vector<regular_definition> definitions);
   State* get_next_state (char input) override;
 private:
  	std::map <std::string, std::vector<NFA_State>> transitions;
@@ -38,7 +38,7 @@ private:
 class DFA_State : public State
 {
 public:
-  DFA_State (int id, state_type type, regular_definition definition);
+  DFA_State (int id, state_type type, std::vector<regular_definition> definitions);
   State* get_next_state (char input) override;
 
 private:

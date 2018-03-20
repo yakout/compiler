@@ -26,6 +26,4 @@ struct lexical_rules // set of rules (productions)
 	std::vector <char> punctuations;
 };
 
-
-
 #endif // GRAMMAR_H

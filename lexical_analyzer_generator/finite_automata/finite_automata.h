@@ -11,7 +11,6 @@ class FA
 private:
 	State* start_state;
  	State* current_state;
-  	std::vector<char> inputs;
 
 public:
 	explicit FA(State &start_state);

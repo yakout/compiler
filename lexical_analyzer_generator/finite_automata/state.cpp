@@ -1,21 +1,24 @@
 #include "state.h"
 
-State::State (int id, state_type type, regular_definition definition)
+State::State (int id, state_type type,
+   std::vector<regular_definition> definitions)
 {
     this->s_id = id;
     this->type = type;
-    this->definition = definition;
+    this->definitions = definitions;
 }
 
-NFA_State::NFA_State (int id, state_type type,  regular_definition definition)
-: State (id, type, definition)
+NFA_State::NFA_State (int id, state_type type,
+   std::vector<regular_definition> definitions)
+: State (id, type, definitions)
 {
 
 }
 
 
-DFA_State::DFA_State (int id, state_type type,  regular_definition definition)
-: State (id, type, definition)
+DFA_State::DFA_State (int id, state_type type,
+    std::vector<regular_definition> definitions)
+: State (id, type, definitions)
 {
 
 }
