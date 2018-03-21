@@ -61,8 +61,8 @@ void FA::visualize() {
 
     *visualizer << "}\n";
     visualizer->close();
-    exec("dot -Tpng -O fsm.dot");
-    exec("open fsm.dot.png");
+    execl("dot -Tpng -O fsm.dot");
+    execl("open fsm.dot.png");
 }
 
 void NFA::dfs (std::shared_ptr<State> curr_state, std::vector<bool> visited, std::shared_ptr<std::ofstream> vis)
@@ -95,4 +95,3 @@ void NFA::dfs (std::shared_ptr<State> curr_state, std::vector<bool> visited, std
 void DFA::dfs(std::shared_ptr<State> curr_state, std::vector<bool> visited, std::shared_ptr<std::ofstream> vis) {
 
 }
-

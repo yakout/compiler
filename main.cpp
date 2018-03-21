@@ -1,4 +1,5 @@
 #include <iostream>
+#include "lexical_analyzer_generator/nfa_tools/char_set.h"
 #include "lexical_analyzer_generator/finite_automata/finite_automata.h"
 
 std::string CALL_ERROR = "Invalid Number of Arguments";
