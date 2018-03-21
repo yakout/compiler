@@ -10,6 +10,12 @@ fa::fa(std::shared_ptr<state> start_state, std::vector<std::shared_ptr<state>> a
     fa::total_states = total_states;
 }
 
+fa::fa(const fa& fa_)
+: start_state(fa_.get_start_state()), acceptance_states(fa_.get_acceptance_states())
+{
+
+}
+
 std::string exec(const char* cmd) {
     std::array<char, 128> buffer{};
     std::string result;
@@ -54,15 +60,33 @@ void fa::visualize() {
     #endif
 }
 
-const std::shared_ptr<state> &fa::get_start_state() const {
+const std::shared_ptr<state> &fa::get_start_state() const 
+{
     return start_state;
 }
 
-const std::vector<std::shared_ptr<state>> &fa::getAcceptance_states() const {
+const std::vector<std::shared_ptr<state>> &fa::get_acceptance_states() const 
+{
     return acceptance_states;
 }
 
-int fa::getTotal_states() const {
+int fa::get_total_states() const 
+{
     return total_states;
 }
+
+
+void fa::set_start_state(std::shared_ptr<state> new_state)
+{
+    start_state = new_state;
+}
+
+void fa::set_acceptance_states(std::vector<std::shared_ptr<state>> new_acceptance_states)
+{
+    acceptance_states = new_acceptance_states;
+}
+
+
+
+
 

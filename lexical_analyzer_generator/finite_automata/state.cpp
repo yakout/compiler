@@ -16,4 +16,7 @@ state_type state::get_type() {
     return type;
 }
 
+void state::set_type(state_type new_type) {
+    type = new_type;
+}
 

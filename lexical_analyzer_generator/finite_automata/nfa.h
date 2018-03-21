@@ -7,6 +7,7 @@
 
 
 #include "finite_automata.h"
+#include "nfa_state.h"
 
 class nfa : public fa {
 public:
@@ -14,6 +15,10 @@ public:
         std::vector<std::shared_ptr<state>> acceptance_states, int total_states);
     void dfs (std::shared_ptr<state> state, std::vector<bool> &visited,
               std::shared_ptr<std::ofstream> vis) override;
+    void unify(std::shared_ptr<nfa>);
+    void concat(std::shared_ptr<nfa>);
+    void plus();
+    void star();
 };
 
 

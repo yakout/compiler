@@ -28,6 +28,7 @@ public:
     virtual void insert_state (std::string input, std::shared_ptr<state> const& state) = 0;
     state_id get_id();
     state_type get_type();
+    void set_type(state_type);
 };
 
 #endif // STATE_H
