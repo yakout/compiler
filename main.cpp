@@ -1,6 +1,7 @@
 #include <iostream>
 #include "lexical_analyzer_generator/nfa_tools/char_set.h"
 #include "lexical_analyzer_generator/finite_automata/finite_automata.h"
+#include "lexical_analyzer_generator/lexical_analyzer_generator.h"
 
 std::string CALL_ERROR = "Invalid Number of Arguments";
 
@@ -66,9 +67,10 @@ std::shared_ptr<NFA> build_nfa()
 }
 
 int main(int argc, char** argv) {
-    std::shared_ptr<NFA> nfa = build_nfa();
-    nfa->visualize();
-
+    //std::shared_ptr<NFA> nfa = build_nfa();
+    //nfa->visualize();
+    Lexical_Analyzer_Generator generator = Lexical_Analyzer_Generator();
+    generator.get_lexical_analyzer_file ("rules.txt");
 
     if (argc == 1)
     {
