@@ -6,6 +6,7 @@
 #include <map>
 #include <vector>
 
+#define EPSILON ""
 typedef unsigned int state_id;
 
 enum state_type
@@ -18,33 +19,36 @@ enum state_type
 class State
 {
 protected:
-  state_id s_id;
-  state_type type;
-  std::vector <regular_definition> definitions;
+    state_id id;
+    state_type type;
+    std::vector <regular_definition> definitions;
 public:
-  State (int id, state_type type, std::vector<regular_definition> definitions);
-  virtual std::shared_ptr<State> get_next_state (char input) = 0;
-  virtual void insert_state (std::string input, State* state) = 0;
+    State (int id, state_type type, std::vector<regular_definition> definitions);
+    virtual void insert_state (std::string input, std::shared_ptr<State> const& state) = 0;
+    state_id get_id();
+    state_type get_type();
 };
 
 class NFA_State : public State
 {
+private:
+    std::map <std::string, std::vector<std::shared_ptr<NFA_State>>> transitions;
 public:
     NFA_State (int id, state_type type, std::vector<regular_definition> definitions);
-    std::shared_ptr<State> get_next_state (char input) override;
-    void insert_state (std::string input, State* state) override;
-private:
- 	std::map <std::string, std::vector<NFA_State>> transitions;
+    void insert_state (std::string input, std::shared_ptr<State> const& state) override;
+    std::vector<std::shared_ptr<NFA_State>> get_next_state (char input);
+    std::map <std::string, std::vector<std::shared_ptr<NFA_State>>> get_transitions();
 };
 
 class DFA_State : public State
 {
+private:
+    std::map <std::string, std::shared_ptr<DFA_State>> transitions;
 public:
     DFA_State (int id, state_type type, std::vector<regular_definition> definitions);
-    std::shared_ptr<State> get_next_state (char input) override;
-    void insert_state (std::string input, State* state) override;
-private:
- 	std::map <std::string, DFA_State> transitions;
+    void insert_state (std::string input, std::shared_ptr<State> const& state) override;
+    std::shared_ptr<DFA_State> get_next_state (char input);
+    std::map <std::string, std::shared_ptr<DFA_State>> get_transitions();
 };
 
 #endif // STATE_H
