@@ -4,13 +4,13 @@
 #include <stdio.h>
 #include "token.h"
 
-class Lexical_Analyzer
+class lexical_analyzer
 {
 private:
   FILE* lexical_analyzer_machine;
   FILE* code_file;
 public:
-  Lexical_Analyzer (FILE* lexical_analyzer, FILE* file);
+  lexical_analyzer (FILE* lexical_analyzer, FILE* file);
   token get_next_token ();
 };
 

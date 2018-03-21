@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-class Lexical_Analyzer_Generator
+class lexical_analyzer_generator
 {
     public:
       FILE* get_lexical_analyzer_file(FILE* file);

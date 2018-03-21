@@ -9,7 +9,7 @@
 struct regular_definition
 {
 	std::string name;
-	Char_Set sequence;
+	char_set sequence;
 };
 
 struct regular_expression // the production {NT -> (T|NT)+}

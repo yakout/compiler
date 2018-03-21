@@ -2,21 +2,21 @@
 #include "../finite_automata/state.h"
 
 
-Char_Range::Char_Range(char lower, char upper) {
+char_range::char_range(char lower, char upper) {
     lower_ascii = lower;
     upper_ascii = upper;
 }
 
-bool Char_Range::is_in_range(char c) {
+bool char_range::is_in_range(char c) {
     return c >= lower_ascii && c <= upper_ascii;
 }
 
-std::string Char_Range::get_range_string() {
+std::string char_range::get_range_string() {
     return lower_ascii + "-" + upper_ascii;
 }
 
 
-std::string Char_Set::get_string(char input) {
+std::string char_set::get_string(char input) {
     if (characters.count(input) != 0) {
         return std::string("") + input;
     }
@@ -29,14 +29,14 @@ std::string Char_Set::get_string(char input) {
     return EPSILON; // empty char_set i.e epsilon transition
 }
 
-Char_Set::Char_Set(): ranges(), characters() {
+char_set::char_set(): ranges(), characters() {
 
 }
 
-void Char_Set::add_character(char c) {
+void char_set::add_character(char c) {
     characters[c] = true;
 }
 
-void Char_Set::add_range(char l, char u) {
-    ranges.push_back(std::shared_ptr<Char_Range>(new Char_Range(l, u)));
+void char_set::add_range(char l, char u) {
+    ranges.push_back(std::shared_ptr<char_range>(new char_range(l, u)));
 }
