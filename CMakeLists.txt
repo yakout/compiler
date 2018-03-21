@@ -26,6 +26,7 @@ set(SOURCE_FILES main.cpp
         lexical_analyzer_generator/finite_automata/nfa.cpp
         lexical_analyzer_generator/finite_automata/dfa.cpp
         lexical_analyzer_generator/nfa_tools/char_set.cpp
+        lexical_analyzer_generator/nfa_tools/lexical_rules.cpp
         lexical_analyzer_generator/lexical_analyzer_generator.cpp
         lexical_analyzer_generator/nfa_creator.cpp
         lexical_analyzer_generator/finite_automata/conversion_test.cpp)
