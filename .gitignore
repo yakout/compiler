@@ -11,6 +11,9 @@ CMakeFiles/
 cmake_install.cmake
 Makefile
 
+# Graphvix
+fsm.dot
+
 # Prerequisites
 *.d
 

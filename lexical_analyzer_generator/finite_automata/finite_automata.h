@@ -3,6 +3,7 @@
 
 #include <stack>
 #include <fstream>
+#include <memory>
 
 #include "state.h"
 

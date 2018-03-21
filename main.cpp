@@ -1,5 +1,7 @@
 #include <iostream>
 #include <memory>
+
+#include "lexical_analyzer_generator/nfa_tools/char_set.h"
 #include "lexical_analyzer_generator/finite_automata/finite_automata.h"
 #include "lexical_analyzer_generator/finite_automata/nfa.h"
 #include "lexical_analyzer_generator/finite_automata/nfa_state.h"

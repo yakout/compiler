@@ -5,6 +5,7 @@
 
 #include <map>
 #include <vector>
+#include <memory>
 
 #define EPSILON ""
 typedef unsigned int state_id;

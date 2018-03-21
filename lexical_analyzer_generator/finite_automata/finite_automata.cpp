@@ -41,6 +41,12 @@ void fa::visualize() {
 
     *visualizer << "}\n";
     visualizer->close();
-    exec("dot -Tpng -O fsm.dot");
-}
 
+    #ifdef __linux__
+        exec("dot -Tpng -O fsm.dot");
+    #elif _WIN32
+        execl("\"C:\\\\Program Files (x86)\\\\Graphviz2.38\\\\bin\\\\dot\"", "-Tpng", "-o", "D:\\\\img.png" , "fsm.dot");
+    #else
+        exec("dot -Tpng -O fsm.dot");
+    #endif
+}
