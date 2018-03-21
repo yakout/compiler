@@ -4,10 +4,10 @@
 #include <utility>
 #include "finite_automata.h"
 
-fa::fa (std::shared_ptr<state> start, std::shared_ptr<state> acpt)
-        : start_state(std::move(start)), acceptance_state(std::move(acpt))
-{
-
+fa::fa(std::shared_ptr<state> start_state, std::vector<std::shared_ptr<state>> acceptance_states, int total_states) {
+    fa::start_state = std::move(start_state);
+    fa::acceptance_states = std::move(acceptance_states);
+    fa::total_states = total_states;
 }
 
 std::string exec(const char* cmd) {
@@ -29,11 +29,16 @@ void fa::visualize() {
                 "digraph finite_state_machine {\n"
                         "\trankdir=LR;\n"
                         "\tsize=\"8,5\"\n"
-                        "\tnode [shape = doublecircle]; "
-                << acceptance_state->get_id() << ";\n"
-                        "\tnode [shape = none] \"\";\n"
-                        "\tnode [shape = circle];\n"
-                        "\"\" -> " << start_state->get_id() << "\n";
+                        "\tnode [shape = doublecircle]; ";
+    for (auto s : acceptance_states)
+    {
+        *visualizer << s->get_id() << " ";
+    }
+    *visualizer << ";\n"
+            "\tnode [shape = none] \"\";\n"
+            "\tnode [shape = circle];\n"
+            "\"\" -> " << start_state->get_id() << "\n";
+
 
     std::vector<bool> visited(6);
     dfs(start_state, visited, visualizer);
@@ -48,3 +53,16 @@ void fa::visualize() {
         exec("dot -Tpng -O fsm.dot");
     #endif
 }
+
+const std::shared_ptr<state> &fa::get_start_state() const {
+    return start_state;
+}
+
+const std::vector<std::shared_ptr<state>> &fa::getAcceptance_states() const {
+    return acceptance_states;
+}
+
+int fa::getTotal_states() const {
+    return total_states;
+}
+
