@@ -11,7 +11,7 @@ std::string CALL_ERROR = "Invalid Number of Arguments";
 //           ->[eps] (2)-> [digits] (4) ->[eps]
 
 
-std::shared_ptr<NFA> buld_nfa()
+std::shared_ptr<NFA> build_nfa()
 {
     std::vector<regular_definition> v1;
     std::vector<regular_definition> v2;
@@ -66,7 +66,7 @@ std::shared_ptr<NFA> buld_nfa()
 }
 
 int main(int argc, char** argv) {
-    std::shared_ptr<NFA> nfa = buld_nfa();
+    std::shared_ptr<NFA> nfa = build_nfa();
     nfa->visualize();
 
 
