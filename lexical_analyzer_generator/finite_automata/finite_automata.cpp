@@ -22,7 +22,6 @@ std::string exec(const char* cmd) {
     return result;
 }
 
-
 void fa::visualize() {
     std::shared_ptr<std::ofstream> visualizer(new std::ofstream());
     visualizer->open("fsm.dot");
@@ -38,7 +37,6 @@ void fa::visualize() {
 
     std::vector<bool> visited(6);
     dfs(start_state, visited, visualizer);
-
     *visualizer << "}\n";
     visualizer->close();
 

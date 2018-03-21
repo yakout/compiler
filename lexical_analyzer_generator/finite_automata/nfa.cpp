@@ -15,7 +15,7 @@ nfa::nfa (std::shared_ptr<state> start_state, std::shared_ptr<state> acceptance_
 
 void nfa::dfs (std::shared_ptr<state> curr_state, std::vector<bool> &visited, std::shared_ptr<std::ofstream> vis)
 {
-//    visited[curr_state->get_id()] = true;
+    visited[curr_state->get_id()] = true;
 
     std::map<std::string, std::vector<std::shared_ptr<nfa_state>>> transitions
             = std::static_pointer_cast<nfa_state>(curr_state)->get_transitions();
@@ -37,15 +37,14 @@ void nfa::dfs (std::shared_ptr<state> curr_state, std::vector<bool> &visited, st
         std::vector<std::shared_ptr<nfa_state>> next_states = edge.second;
         for (auto state : next_states)
         {
-            std::cout << state->get_id() << std::endl;
-            if (!visited[state->get_id()]) {
-                // Plot
-                if (vis != nullptr) {
-                    if (label.empty()) {
-                        label = "E";
-                    }
-                    *vis << curr_state->get_id() << " -> " << state->get_id() << " [ label = \"" << label << "\" ];\n";
+            // Visualize
+            if (vis != nullptr) {
+                if (label.empty()) {
+                    label = "E";
                 }
+                *vis << curr_state->get_id() << " -> " << state->get_id() << " [ label = \"" << label << "\" ];\n";
+            }
+            if (!visited[state->get_id()]) {
                 dfs(state, visited, vis);
             }
         }
