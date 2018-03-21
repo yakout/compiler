@@ -1,5 +1,5 @@
 #include "nfa_creator.h"
 
-NFA NFA_Creator::create_NFA (FILE* rules)
+nfa nfa_creator::create_nfa (FILE* rules)
 {
 }

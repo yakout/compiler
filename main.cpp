@@ -1,7 +1,10 @@
 #include <iostream>
+#include <memory>
+
 #include "lexical_analyzer_generator/nfa_tools/char_set.h"
 #include "lexical_analyzer_generator/finite_automata/finite_automata.h"
-#include "lexical_analyzer_generator/lexical_analyzer_generator.h"
+#include "lexical_analyzer_generator/finite_automata/nfa.h"
+#include "lexical_analyzer_generator/finite_automata/nfa_state.h"
 
 std::string CALL_ERROR = "Invalid Number of Arguments";
 
@@ -12,7 +15,7 @@ std::string CALL_ERROR = "Invalid Number of Arguments";
 //           ->[eps] (2)-> [digits] (4) ->[eps]
 
 
-std::shared_ptr<NFA> build_nfa()
+std::shared_ptr<nfa> build_nfa()
 {
     std::vector<regular_definition> v1;
     std::vector<regular_definition> v2;
@@ -22,14 +25,14 @@ std::shared_ptr<NFA> build_nfa()
     regular_definition digits;
     regular_definition eps;
 
-    Char_Set digits_char_set;
+    char_set digits_char_set;
     digits_char_set.add_range('0', '9');
 
-    Char_Set letters_char_set;
+    char_set letters_char_set;
     letters_char_set.add_range('a', 'z');
     letters_char_set.add_range('A', 'Z');
 
-    Char_Set empty_char_set;
+    char_set empty_char_set;
 
     letter.name = "letter";
     letter.sequence = letters_char_set;
@@ -44,14 +47,12 @@ std::shared_ptr<NFA> build_nfa()
     v2.push_back(digits);
     v.push_back(eps);
 
-
-    std::shared_ptr<NFA_State> s0 = std::make_shared<NFA_State>(NFA_State (0, START, v));
-    std::shared_ptr<NFA_State> s1 = std::make_shared<NFA_State>(NFA_State (1, INTERMEDIATE, v1));
-    std::shared_ptr<NFA_State> s2 = std::make_shared<NFA_State>(NFA_State (2, INTERMEDIATE, v2));
-    std::shared_ptr<NFA_State> s3 = std::make_shared<NFA_State>(NFA_State (3, INTERMEDIATE, v));
-    std::shared_ptr<NFA_State> s4 = std::make_shared<NFA_State>(NFA_State (4, INTERMEDIATE, v));
-    std::shared_ptr<NFA_State> s5 = std::make_shared<NFA_State>(NFA_State (5, ACCEPTANCE, v));
-
+    std::shared_ptr<nfa_state> s0 = std::make_shared<nfa_state>(nfa_state (0, START, v));
+    std::shared_ptr<nfa_state> s1 = std::make_shared<nfa_state>(nfa_state (1, INTERMEDIATE, v1));
+    std::shared_ptr<nfa_state> s2 = std::make_shared<nfa_state>(nfa_state (2, INTERMEDIATE, v2));
+    std::shared_ptr<nfa_state> s3 = std::make_shared<nfa_state>(nfa_state (3, INTERMEDIATE, v));
+    std::shared_ptr<nfa_state> s4 = std::make_shared<nfa_state>(nfa_state (4, INTERMEDIATE, v));
+    std::shared_ptr<nfa_state> s5 = std::make_shared<nfa_state>(nfa_state (5, ACCEPTANCE, v));
 
     s0->insert_state (EPSILON, s1);
     s0->insert_state (EPSILON, s2);
@@ -61,16 +62,13 @@ std::shared_ptr<NFA> build_nfa()
     s3->insert_state (EPSILON, s5);
     s4->insert_state (EPSILON, s5);
 
-
-    std::shared_ptr<NFA> nfa(new NFA(s0, s5));
-    return nfa;
+    std::shared_ptr<nfa> built_nfa(new nfa(s0, s5));
+    return built_nfa;
 }
 
 int main(int argc, char** argv) {
-    //std::shared_ptr<NFA> nfa = build_nfa();
-    //nfa->visualize();
-    Lexical_Analyzer_Generator generator = Lexical_Analyzer_Generator();
-    generator.get_lexical_analyzer_file ("rules.txt");
+    std::shared_ptr<nfa> my_nfa = build_nfa();
+    my_nfa->visualize();
 
     if (argc == 1)
     {
@@ -84,7 +82,6 @@ int main(int argc, char** argv) {
     {
         std::cout << CALL_ERROR << std::endl;
     }
-
 
     return 0;
 }

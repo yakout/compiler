@@ -43,7 +43,7 @@ std::vector <std::string> read_file (std::string rules_file)
   return file_lines;
 }
 
-void handle_punctation_line (std::string line, Lexical_Rules &rules)
+void handle_punctation_line (std::string line, lexical_rules &rules)
 {
   for (int i = 0; i < line.length(); i++)
   {
@@ -60,42 +60,42 @@ void handle_punctation_line (std::string line, Lexical_Rules &rules)
       rules.add_punct_char (line[i]);
     }
   }
-  if (line[lines.length() - 1] != PUNCT_CLAUSE_END)
+  if (line[line.length() - 1] != PUNCT_CLAUSE_END)
   {
       //// TODO : ERROR
   }
 }
 
-void handle_keywords_line (std::string line, Lexical_Rules &rules)
+void handle_keywords_line (std::string line, lexical_rules &rules)
 {
   if (line[line.length() - 1] != KEYWORD_CLAUSE_END
-      || line.length() <= 2)
+      || line.length() <= 2);
       //// TODO : Error
-  istringstream iss(line.substr(1,line.length() - 2));
+  std::istringstream iss(line.substr(1,line.length() - 2));
   while (iss) {
-      string word;
+      std::string word;
       iss >> word;
       rules.add_keyword(word);
   }
 }
 
-void handle_reg_def (std::string lhs, std::string rhs, Lexical_Rules &rules)
+void handle_reg_def (std::string lhs, std::string rhs, lexical_rules &rules)
 {
 
 }
 
-void handle_regex (std::string lhs, std::string rhs, Lexical_Rules &rules)
+void handle_regex (std::string lhs, std::string rhs, lexical_rules &rules)
 {
   regular_expression expression = {lhs, rhs};
   rules.add_regex (expression);
 }
 
 
-FILE* Lexical_Analyzer_Generator::get_lexical_analyzer_file (std::string rules_file)
+FILE* lexical_analyzer_generator::get_lexical_analyzer_file (std::string rules_file)
 {
     //SetConsoleOutputCP( CP_UTF8 );
     std::vector<std::string> rules_file_lines = read_file (rules_file);
-    Lexical_Rules rules = Lexical_Rules ();
+    lexical_rules rules = lexical_rules ();
     for (auto line : rules_file_lines)
     {
       if (line[0] == PUNCT_CLAUSE_START)
@@ -113,11 +113,13 @@ FILE* Lexical_Analyzer_Generator::get_lexical_analyzer_file (std::string rules_f
           {
             if (line[i] == DEFINITION_ASSIGN)
             {
-                handle_reg_def (trim(line.substr(0, i)), trim(line.substr(i+1)));
+                handle_reg_def (trim(line.substr(0, i)), trim(line.substr(i+1)),
+                                rules);
             }
             else if (line[i] == EXPRESSION_ASSIGN)
             {
-                handle_regex (trim(line.substr(0, i)), trim(line.substr(i+1)));
+                handle_regex (trim(line.substr(0, i)), trim(line.substr(i+1)),
+                              rules);
             }
           }
           if (invalid_line)

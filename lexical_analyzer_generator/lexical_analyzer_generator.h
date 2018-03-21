@@ -5,9 +5,9 @@
 #include <string>
 #include <iostream>
 #include <fstream>
- 
 
-class Lexical_Analyzer_Generator
+
+class lexical_analyzer_generator
 {
     public:
       FILE* get_lexical_analyzer_file(std::string rules_file);

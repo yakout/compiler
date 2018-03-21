@@ -4,11 +4,12 @@
 #include <stdio.h>
 
 #include "finite_automata/finite_automata.h"
+#include "finite_automata/nfa.h"
 
-class NFA_Creator
+class nfa_creator
 {
 public:
-  NFA create_NFA (FILE* rules);
+  nfa create_nfa (FILE* rules);
 };
 
 #endif // NFA_CREATOR_H
