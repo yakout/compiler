@@ -31,7 +31,9 @@ set(SOURCE_FILES main.cpp
         lexical_analyzer_generator/nfa_tools/regex_processor.cpp
         lexical_analyzer_generator/lexical_analyzer_generator.cpp
         lexical_analyzer_generator/nfa_creator.cpp
-        lexical_analyzer_generator/finite_automata/conversion_test.cpp)
+        lexical_analyzer_generator/finite_automata/conversion_test.cpp
+        lexical_analyzer/lexical_analyzer.cpp
+        )
 
 
 add_executable(compiler ${SOURCE_FILES} ${HEADER_FILES})
