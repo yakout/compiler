@@ -186,8 +186,8 @@ std::shared_ptr<nfa> build_nfa2()
     std::shared_ptr<nfa> nfa2(new nfa(b_char_set, 3, 4));
 
     nfa2->plus();
-    nfa1->concat(nfa2);
-    nfa1->concat(nfa1);
+    nfa1->unify(nfa2);
+    //nfa1->concat(nfa1);
 
     return nfa1;
 }
@@ -196,13 +196,18 @@ std::shared_ptr<nfa> build_nfa3()
 {
   char_set a_char_set = char_set();
   a_char_set.add_character ('a');
+  a_char_set.add_character ('b');
+  a_char_set.add_character ('c');
+  a_char_set.add_character ('d');
+
 
   char_set b_char_set = char_set();
   b_char_set.add_character ('b');
-  std::shared_ptr <nfa> nfa_a_ptr (new nfa(a_char_set, "a"));
-  std::shared_ptr<nfa> nfa_b_ptr(new nfa(b_char_set, "b"));
 
-  nfa_a_ptr->unify (nfa_b_ptr);
+  std::shared_ptr <nfa> nfa_a_ptr (new nfa(a_char_set));
+  std::shared_ptr<nfa> nfa_b_ptr(new nfa(b_char_set));
+
+  nfa_a_ptr->plus();
 
   return nfa_a_ptr;
 }
