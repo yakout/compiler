@@ -164,6 +164,11 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
         {
             std::shared_ptr<dfa_state> new_state(new dfa_state(e_closure(move(curr_state->get_composing_nfa_states(), inp)),
                                     static_cast<state_id>(dfa_ptr->get_total_states())));
+            if (new_state->equals(curr_state))
+            {
+                curr_state->insert_state(inp.name, curr_state);
+                continue;
+            }
             std::cout << "New State = " << new_state->get_id() << std::endl;
             for (auto curr : new_state->get_composing_nfa_states()) {
                 std::cout << curr->get_id() << " ";
@@ -173,6 +178,18 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
             {
                 dfa_ptr->add_state(new_state);
                 dfa_ptr->set_total_states(dfa_ptr->get_total_states() + 1);
+            }
+            else
+            {
+                auto existing_states = dfa_ptr->get_dfa_states();
+                for (auto st : existing_states)
+                {
+                    if (st->equals(new_state))
+                    {
+                        new_state = st;
+                        break;
+                    }
+                }
             }
             curr_state->insert_state(inp.name, new_state);
             if (new_state->get_type() == ACCEPTANCE)
@@ -186,7 +203,7 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
 
 int main(int argc, char** argv) {
     std::shared_ptr<nfa> my_nfa = build_nfa();
-//    my_nfa->visualize();
+    my_nfa->visualize();
     std::shared_ptr<dfa> my_dfa = convert_nfa_dfa(my_nfa);
     std::cout << my_dfa->get_total_states();
     my_dfa->visualize(); // Would this work?

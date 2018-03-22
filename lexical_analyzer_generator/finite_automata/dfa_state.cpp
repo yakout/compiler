@@ -63,3 +63,7 @@ void dfa_state::set_marked(bool marked) {
     dfa_state::marked = marked;
 }
 
+bool dfa_state::equals(std::shared_ptr<dfa_state> s) {
+    return dfa_state::composing_nfa_states == s->get_composing_nfa_states();
+}
+

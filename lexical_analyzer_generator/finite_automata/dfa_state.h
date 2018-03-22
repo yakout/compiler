@@ -25,6 +25,7 @@ public:
     const std::set<std::shared_ptr<nfa_state>> &get_composing_nfa_states() const;
     bool is_marked() const;
     void set_marked(bool marked);
+    bool equals(std::shared_ptr<dfa_state> s);
 };
 
 
