@@ -46,5 +46,5 @@ std::vector<std::shared_ptr<nfa_state>> nfa_state::get_next_state (char input)
 }
 
 std::shared_ptr<state> nfa_state::copy() {
-    return std::make_shared<nfa_state>(*this);;
+    return std::make_shared<nfa_state>(*this);
 }

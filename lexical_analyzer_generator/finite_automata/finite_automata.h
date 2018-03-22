@@ -19,6 +19,7 @@ public:
 				std::vector<std::shared_ptr<state>> acceptance_states, int total_states);
 	fa(const fa&);
 	fa();
+
     virtual void dfs (std::shared_ptr<state> state, std::vector<bool> &visited,
 					  std::shared_ptr<std::ofstream> vis, bool update_acceptance_states) = 0;
 	void visualize();
@@ -37,6 +38,8 @@ public:
 	// setters
 	void set_start_state(std::shared_ptr<state>);
 	void set_acceptance_states(std::vector<std::shared_ptr<state>>);
+	void add_acceptance_state(std::shared_ptr<state>);
+	void set_total_states(int total_states);
 };
 
 

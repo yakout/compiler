@@ -13,6 +13,7 @@ Makefile
 
 # Graphvix
 fsm.dot
+fsm.dot.png
 
 # Prerequisites
 *.d

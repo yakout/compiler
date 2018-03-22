@@ -26,6 +26,7 @@ protected:
 public:
     state (state_id id, state_type type, char_set st_ip);
     state(const state&);
+    state();
 
     virtual void insert_transition (std::string input, std::shared_ptr<state> const& state) = 0;
     /**

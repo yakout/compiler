@@ -7,6 +7,10 @@ state::state (state_id id, state_type type, char_set st_ip)
     this->state_input = st_ip;
 }
 
+state::state() {
+
+}
+
 state::state(const state& s)
         : id(s.get_id()), type(s.get_type())
 {
