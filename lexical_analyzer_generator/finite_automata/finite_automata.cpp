@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <cstdlib>
 #include <array>
 #include <utility>
 #include "finite_automata.h"
@@ -64,24 +65,24 @@ void fa::visualize() {
     #ifdef __linux__
         exec("dot -Tpng -O fsm.dot");
     #elif _WIN32
-        execl("\"C:\\\\Program Files (x86)\\\\Graphviz2.38\\\\bin\\\\dot\"", "-Tpng", "-o", "D:\\\\img.png" , "fsm.dot");
+        system ("\"C:\\\\Program Files (x86)\\\\Graphviz2.38\\\\bin\\\\dot\" -Tpng  -O fsm.dot");
     #elif __APPLE__
         exec("dot -Tpng -O fsm.dot");
         exec("open fsm.dot.png");
     #endif
 }
 
-const std::shared_ptr<state> &fa::get_start_state() const 
+const std::shared_ptr<state> &fa::get_start_state() const
 {
     return start_state;
 }
 
-const std::vector<std::shared_ptr<state>> &fa::get_acceptance_states() const 
+const std::vector<std::shared_ptr<state>> &fa::get_acceptance_states() const
 {
     return acceptance_states;
 }
 
-int fa::get_total_states() const 
+int fa::get_total_states() const
 {
     return total_states;
 }
@@ -102,6 +103,3 @@ void fa::update_acceptance_states()
     std::vector<bool> visted(static_cast<unsigned long>(total_states));
     dfs(start_state, visted, nullptr, true);
 }
-
-
-

@@ -10,31 +10,39 @@ nfa::nfa(std::shared_ptr<state> start_state, std::vector<std::shared_ptr<state>>
     nfa::total_states = total_states;
 }
 
-nfa::nfa(std::vector<regular_definition> defs, int id1, int id2)
+nfa::nfa(char_set st_ip, int id1, int id2)
     : fa()
 {
-    std::vector<regular_definition> eps = build_epsilon_transition();
-
-    std::shared_ptr<nfa_state> s0 = std::make_shared<nfa_state>(nfa_state (id1, START, defs));
+    char_set eps = build_epsilon_transition ();
+    std::shared_ptr<nfa_state> s0 = std::make_shared<nfa_state>(nfa_state (id1, START, st_ip));
     std::shared_ptr<nfa_state> sf = std::make_shared<nfa_state>(nfa_state (id2, ACCEPTANCE, eps));
 
-    for (auto rd : defs)
+    for (auto c : st_ip.get_characters())
     {
-
-        for (auto c : rd.sequence.get_characters())
-        {
 //            std::cout << s0->get_id() << "--" << c.first << "-->" << sf->get_id() << std::endl;
-            s0->insert_state (std::string("") + c.first, sf);
-        }
-
-        for (auto range : rd.sequence.get_ranges())
-        {
-            s0->insert_state (range->get_range_string(), sf);
-        }
+        s0->insert_transition (std::string("") + c.first, sf);
     }
+
+    for (auto range : st_ip.get_ranges())
+    {
+        s0->insert_transition (range->get_range_string(), sf);
+    }
+
 
     start_state = s0;
     acceptance_states.push_back(sf);
+}
+
+nfa::nfa (char_set c_s, std::string name)
+: fa()
+{
+
+    std::shared_ptr<nfa_state> s0 = std::make_shared<nfa_state>(nfa_state (0, START, c_s));
+    std::shared_ptr<nfa_state> s1 =
+    std::make_shared<nfa_state>(nfa_state (1, ACCEPTANCE, build_epsilon_transition()));
+    s0->insert_transition(name, s1);
+    start_state = s0;
+    acceptance_states.push_back(s1);
 }
 
 void nfa::dfs (std::shared_ptr<state> curr_state, std::vector<bool> &visited,
@@ -83,17 +91,10 @@ void nfa::dfs (std::shared_ptr<state> curr_state, std::vector<bool> &visited,
 
 void nfa::unify(std::shared_ptr<nfa> nfa2)
 {
-    std::vector<regular_definition> v;
-    regular_definition eps;
-    char_set empty_char_set;
+    char_set eps;
 
-    eps.name = "eps";
-    eps.sequence = empty_char_set;
-
-    v.push_back(eps);
-
-    std::shared_ptr<nfa_state> s0 = std::make_shared<nfa_state>(nfa_state (0, START, v));
-    std::shared_ptr<nfa_state> sf = std::make_shared<nfa_state>(nfa_state (5, ACCEPTANCE, v));
+    std::shared_ptr<nfa_state> s0 = std::make_shared<nfa_state>(nfa_state (0, START, eps));
+    std::shared_ptr<nfa_state> sf = std::make_shared<nfa_state>(nfa_state (5, ACCEPTANCE, eps));
 
     std::shared_ptr<nfa_state> nfa2_s0 = std::static_pointer_cast<nfa_state>(nfa2->get_start_state());
     std::shared_ptr<nfa_state> nfa1_s0 = std::static_pointer_cast<nfa_state>(start_state);
@@ -101,32 +102,32 @@ void nfa::unify(std::shared_ptr<nfa> nfa2)
     nfa1_s0->set_type(INTERMEDIATE);
     nfa2_s0->set_type(INTERMEDIATE);
 
-    s0->insert_state(EPSILON, nfa1_s0);
-    s0->insert_state(EPSILON, nfa2_s0);
+    s0->insert_transition(EPSILON, nfa1_s0);
+    s0->insert_transition(EPSILON, nfa2_s0);
 
-    
+
     std::shared_ptr<nfa_state> nfa2_sf = std::static_pointer_cast<nfa_state>(nfa2->get_acceptance_states().front());
     std::shared_ptr<nfa_state> nfa1_sf = std::static_pointer_cast<nfa_state>(acceptance_states.front());
 
     nfa2_sf->set_type(INTERMEDIATE);
     nfa1_sf->set_type(INTERMEDIATE);
 
-    nfa1_sf->insert_state(EPSILON, sf);
-    nfa2_sf->insert_state(EPSILON, sf);
+    nfa1_sf->insert_transition(EPSILON, sf);
+    nfa2_sf->insert_transition(EPSILON, sf);
 
     start_state = s0;
-    
+
     acceptance_states.clear();
     acceptance_states.push_back(sf);
 }
 
 void nfa::concat(std::shared_ptr<nfa> nfa2)
 {
-    acceptance_states.front()->insert_state(EPSILON, nfa2->get_start_state());
-      
+    acceptance_states.front()->insert_transition(EPSILON, nfa2->get_start_state());
+
     nfa2->get_start_state()->set_type(INTERMEDIATE);
     get_acceptance_states().front()->set_type(INTERMEDIATE);
-  
+
     acceptance_states.clear();
     acceptance_states.push_back(nfa2->get_acceptance_states().front());
 }
@@ -142,19 +143,14 @@ void nfa::plus()
 
 void nfa::star()
 {
-    start_state->insert_state(EPSILON, acceptance_states.front());
-    acceptance_states.front()->insert_state(EPSILON, start_state);
+    start_state->insert_transition(EPSILON, acceptance_states.front());
+    acceptance_states.front()->insert_transition(EPSILON, start_state);
 }
 
-std::vector<regular_definition> nfa::build_epsilon_transition()
+char_set nfa::build_epsilon_transition()
 {
-    std::vector<regular_definition> v;
-    regular_definition eps;
-    eps.name = "eps";
     char_set empty_char_set;
-    eps.sequence = empty_char_set;
-    v.push_back(eps);
-    return v;
+    return empty_char_set;
 }
 
 

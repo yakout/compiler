@@ -1,13 +1,12 @@
 #include "dfa_state.h"
 
-dfa_state::dfa_state (int id, state_type type,
-                      std::vector<regular_definition> definitions)
-        : state (id, type, definitions)
+dfa_state::dfa_state (int id, state_type type, char_set st_ip)
+        : state (id, type, st_ip)
 {
 
 }
 
-void dfa_state::insert_state (std::string input, std::shared_ptr<state> const& state)
+void dfa_state::insert_transition (std::string input, std::shared_ptr<state> const& state)
 {
     transitions[input] = std::static_pointer_cast<dfa_state>(state);
 }

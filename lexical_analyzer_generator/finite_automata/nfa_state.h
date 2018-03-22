@@ -8,9 +8,9 @@ class nfa_state : public state {
 private:
     std::map <std::string, std::vector<std::shared_ptr<nfa_state>>> transitions;
 public:
-    nfa_state (int id, state_type type, std::vector<regular_definition> definitions);
+    nfa_state (int id, state_type type, char_set st_ip);
     nfa_state (const nfa_state&);
-    void insert_state (std::string input, std::shared_ptr<state> const& state) override;
+    void insert_transition (std::string input, std::shared_ptr<state> const& state) override;
     std::shared_ptr<state> copy() override;
 
     // getters

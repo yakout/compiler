@@ -22,12 +22,12 @@ class state
 protected:
     state_id id;
     state_type type;
-    std::vector <regular_definition> definitions;
+    char_set state_input;
 public:
-    state (state_id id, state_type type, std::vector<regular_definition> definitions);
+    state (state_id id, state_type type, char_set st_ip);
     state(const state&);
 
-    virtual void insert_state (std::string input, std::shared_ptr<state> const& state) = 0;
+    virtual void insert_transition (std::string input, std::shared_ptr<state> const& state) = 0;
     /**
      * makes a copy of the state which used in copying nfa.
      * @return shared_ptr to a copy state.
@@ -37,7 +37,6 @@ public:
     // getters
     const state_id& get_id() const;
     const state_type& get_type() const;
-    const std::vector <regular_definition>& get_definitions() const;
 
     // setters
     void set_type(state_type);
