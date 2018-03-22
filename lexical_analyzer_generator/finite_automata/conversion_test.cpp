@@ -1,7 +1,3 @@
-//
-// Created by awalid on 3/21/18.
-//
-
 #include <memory>
 #include "finite_automata.h"
 #include "state.h"
@@ -85,12 +81,47 @@ std::shared_ptr<dfa> convert_nfa_dfa(std::shared_ptr<nfa> nfa) {
     return nullptr;
 }
 
+
+std::shared_ptr<nfa> build_nfa2()
+{
+    std::vector<regular_definition> v1;
+    std::vector<regular_definition> v2;
+
+    regular_definition char_a;
+    regular_definition char_b;
+
+    char_set a_char_set;
+    a_char_set.add_character('a');
+
+    char_set b_char_set;
+    b_char_set.add_character('b');
+
+    char_a.name = "a";
+    char_a.sequence = a_char_set;
+
+    char_b.name = "b";
+    char_b.sequence = b_char_set;
+
+    v1.push_back(char_a);
+    v2.push_back(char_b);
+
+    std::shared_ptr<nfa> nfa1(new nfa(v1, 0, 1));
+    std::shared_ptr<nfa> nfa2(new nfa(v2, 2, 3));
+
+    nfa1->unify(nfa2);
+
+    return nfa1;
+}
+
 int main(int argc, char** argv) {
-    std::shared_ptr<nfa> my_nfa = build_nfa();
+    // std::shared_ptr<nfa> my_nfa = build_nfa();
+    std::shared_ptr<nfa> my_nfa = build_nfa2();
     my_nfa->visualize();
 //    std::shared_ptr<dfa> my_dfa = convert_nfa_dfa(my_nfa);
 //    my_dfa->visualize(); // Would this work?
 //    draw_trans_table(my_dfa);
+
+
     return 0;
 }
 

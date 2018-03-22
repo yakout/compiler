@@ -1,7 +1,3 @@
-//
-// Created by awalid on 3/21/18.
-//
-
 #include "nfa_state.h"
 
 nfa_state::nfa_state (int id, state_type type,

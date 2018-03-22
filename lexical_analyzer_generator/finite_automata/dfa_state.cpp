@@ -1,7 +1,3 @@
-//
-// Created by awalid on 3/21/18.
-//
-
 #include "dfa_state.h"
 
 dfa_state::dfa_state (int id, state_type type,

@@ -1,9 +1,5 @@
-//
-// Created by awalid on 3/21/18.
-//
-
-#ifndef JAVA_COMPILER_DFA_H
-#define JAVA_COMPILER_DFA_H
+#ifndef DFA_H
+#define DFA_H
 
 
 #include "finite_automata.h"
@@ -17,4 +13,4 @@ public:
 };
 
 
-#endif //JAVA_COMPILER_DFA_H
+#endif // DFA_H

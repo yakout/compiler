@@ -1,9 +1,5 @@
-//
-// Created by awalid on 3/21/18.
-//
-
-#ifndef COMPILER_NFA_STATE_H
-#define COMPILER_NFA_STATE_H
+#ifndef NFA_STATE_H
+#define NFA_STATE_H
 
 
 #include "state.h"
@@ -19,4 +15,4 @@ public:
 };
 
 
-#endif //COMPILER_NFA_STATE_H
+#endif // NFA_STATE_H
