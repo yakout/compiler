@@ -10,6 +10,21 @@ nfa::nfa(std::shared_ptr<state> start_state, std::vector<std::shared_ptr<state>>
     nfa::total_states = total_states;
 }
 
+void add_transitions_from_char_set (char_set st_ip,
+  std::shared_ptr<nfa_state> s0, std::shared_ptr<nfa_state> sf)
+{
+  for (auto c : st_ip.get_characters())
+  {
+//            std::cout << s0->get_id() << "--" << c.first << "-->" << sf->get_id() << std::endl;
+      s0->insert_transition (std::string("") + c.first, sf);
+  }
+
+  for (auto range : st_ip.get_ranges())
+  {
+      s0->insert_transition (range->get_range_string(), sf);
+  }
+}
+
 nfa::nfa(char_set st_ip, int id1, int id2)
     : fa()
 {
@@ -17,30 +32,21 @@ nfa::nfa(char_set st_ip, int id1, int id2)
     std::shared_ptr<nfa_state> s0 = std::make_shared<nfa_state>(nfa_state (id1, START, st_ip));
     std::shared_ptr<nfa_state> sf = std::make_shared<nfa_state>(nfa_state (id2, ACCEPTANCE, eps));
 
-    for (auto c : st_ip.get_characters())
-    {
-//            std::cout << s0->get_id() << "--" << c.first << "-->" << sf->get_id() << std::endl;
-        s0->insert_transition (std::string("") + c.first, sf);
-    }
-
-    for (auto range : st_ip.get_ranges())
-    {
-        s0->insert_transition (range->get_range_string(), sf);
-    }
+    add_transitions_from_char_set (st_ip, s0, sf);
 
 
     start_state = s0;
     acceptance_states.push_back(sf);
 }
 
-nfa::nfa (char_set c_s, std::string name)
+nfa::nfa (char_set c_s)
 : fa()
 {
 
     std::shared_ptr<nfa_state> s0 = std::make_shared<nfa_state>(nfa_state (0, START, c_s));
     std::shared_ptr<nfa_state> s1 =
-    std::make_shared<nfa_state>(nfa_state (1, ACCEPTANCE, build_epsilon_transition()));
-    s0->insert_transition(name, s1);
+      std::make_shared<nfa_state>(nfa_state (1, ACCEPTANCE, build_epsilon_transition()));
+    add_transitions_from_char_set (c_s, s0, s1);
     start_state = s0;
     acceptance_states.push_back(s1);
 }
@@ -158,6 +164,7 @@ void renamify_dfs (std::shared_ptr<state> curr_state, std::map<std::shared_ptr<s
                    std::shared_ptr<std::ofstream> vis, state_id id)
 {
     visited[curr_state] = true;
+    curr_state->set_id(id); // update state_id
 
     std::map<std::string, std::vector<std::shared_ptr<nfa_state>>> transitions
             = std::static_pointer_cast<nfa_state>(curr_state)->get_transitions();
@@ -169,8 +176,7 @@ void renamify_dfs (std::shared_ptr<state> curr_state, std::map<std::shared_ptr<s
         for (auto state : next_states)
         {
             if (!visited[state]) {
-                state->set_id(id);
-                std::cout << state->get_id() << std::endl;
+                //std::cout << state->get_id() << std::endl;
                 renamify_dfs(state, visited, vis, id + 1);
             }
         }
@@ -179,8 +185,8 @@ void renamify_dfs (std::shared_ptr<state> curr_state, std::map<std::shared_ptr<s
 
 void nfa::renamify (state_id starting_id)
 {
-//    std::map<std::shared_ptr<state>, bool> visited;
-//    renamify_dfs (start_state, visited, nullptr, starting_id);
-    start_state->set_id(starting_id);
-    acceptance_states.front()->set_id(starting_id + 1);
+    std::map<std::shared_ptr<state>, bool> visited;
+    renamify_dfs (start_state, visited, nullptr, starting_id);
+    /*start_state->set_id(starting_id);
+    acceptance_states.front()->set_id(starting_id + 1);*/
 }
