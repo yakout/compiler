@@ -1,25 +1,35 @@
 #include <iostream>
 #include <fstream>
+#include <cstdlib>
 #include <array>
 #include <utility>
 #include "finite_automata.h"
+#include "nfa_state.h"
 
-fa::fa(std::shared_ptr<state> start_state, std::vector<std::shared_ptr<state>> acceptance_states, int total_states) {
+fa::fa(std::shared_ptr<state> start_state, std::vector<std::shared_ptr<state>> acceptance_states, int total_states)
+{
     fa::start_state = std::move(start_state);
     fa::acceptance_states = std::move(acceptance_states);
     fa::total_states = total_states;
 }
 
-fa::fa(const fa& fa_)
-: start_state(fa_.get_start_state()), acceptance_states(fa_.get_acceptance_states())
+fa::fa(const fa& fa_to_copy)
+    : start_state(fa_to_copy.get_start_state()->copy()),
+  acceptance_states(),
+  total_states(fa_to_copy.get_total_states())
 {
 
 }
 
-fa::fa()
-    : start_state(), acceptance_states(), total_states(2) // TODO recheck this
-{
+//fa::fa()
+//    : start_state(), acceptance_states(), total_states(2) // TODO recheck this
+//{
+//
+//}
 
+fa::fa()
+{
+    fa::total_states = 0;
 }
 
 std::string exec(const char* cmd) {
@@ -53,30 +63,31 @@ void fa::visualize() {
 
 
     std::vector<bool> visited(6);
-    dfs(start_state, visited, visualizer);
+    dfs(start_state, visited, visualizer, false);
     *visualizer << "}\n";
     visualizer->close();
 
     #ifdef __linux__
         exec("dot -Tpng -O fsm.dot");
     #elif _WIN32
-        execl("\"C:\\\\Program Files (x86)\\\\Graphviz2.38\\\\bin\\\\dot\"", "-Tpng", "-o", "D:\\\\img.png" , "fsm.dot");
-    #else
+        system ("\"C:\\\\Program Files (x86)\\\\Graphviz2.38\\\\bin\\\\dot\" -Tpng  -O fsm.dot");
+    #elif __APPLE__
         exec("dot -Tpng -O fsm.dot");
+        exec("open fsm.dot.png");
     #endif
 }
 
-const std::shared_ptr<state> &fa::get_start_state() const 
+const std::shared_ptr<state> &fa::get_start_state() const
 {
     return start_state;
 }
 
-const std::vector<std::shared_ptr<state>> &fa::get_acceptance_states() const 
+const std::vector<std::shared_ptr<state>> &fa::get_acceptance_states() const
 {
     return acceptance_states;
 }
 
-int fa::get_total_states() const 
+int fa::get_total_states() const
 {
     return total_states;
 }
@@ -92,7 +103,15 @@ void fa::set_acceptance_states(std::vector<std::shared_ptr<state>> new_acceptanc
     acceptance_states = new_acceptance_states;
 }
 
+void fa::set_total_states(int total_states) {
+    fa::total_states = total_states;
+}
 
-
-
-
+void fa::add_acceptance_state(std::shared_ptr<state> s) {
+    fa::acceptance_states.push_back(s);
+}
+void fa::update_acceptance_states()
+{
+    std::vector<bool> visted(static_cast<unsigned long>(total_states));
+    dfs(start_state, visted, nullptr, true);
+}

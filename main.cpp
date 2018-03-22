@@ -54,13 +54,13 @@
 //    std::shared_ptr<nfa_state> s4 = std::make_shared<nfa_state>(nfa_state (4, INTERMEDIATE, v));
 //    std::shared_ptr<nfa_state> s5 = std::make_shared<nfa_state>(nfa_state (5, ACCEPTANCE, v));
 //
-//    s0->insert_state (EPSILON, s1);
-//    s0->insert_state (EPSILON, s2);
-//    s1->insert_state ("a-z", s3);
-//    s1->insert_state ("A-Z", s3);
-//    s2->insert_state ("0-9", s4);
-//    s3->insert_state (EPSILON, s5);
-//    s4->insert_state (EPSILON, s5);
+//    s0->insert_transition (EPSILON, s1);
+//    s0->insert_transition (EPSILON, s2);
+//    s1->insert_transition ("a-z", s3);
+//    s1->insert_transition ("A-Z", s3);
+//    s2->insert_transition ("0-9", s4);
+//    s3->insert_transition (EPSILON, s5);
+//    s4->insert_transition (EPSILON, s5);
 //
 //    std::shared_ptr<nfa> built_nfa(new nfa(s0, s5));
 //    return built_nfa;
