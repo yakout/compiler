@@ -6,6 +6,7 @@
 #include "dfa_state.h"
 
 #include <utility>
+#include <set>
 
 dfa::dfa(std::shared_ptr<state> start_state, std::vector<std::shared_ptr<state>> acceptance_states, int total_states)
         : fa(start_state, acceptance_states, total_states) {
@@ -72,5 +73,17 @@ std::shared_ptr<dfa_state> dfa::get_unmarked_state() {
         }
     }
     return nullptr;
+}
+
+/// DOUBLE CHECK THIS.
+bool dfa::contains(std::shared_ptr<dfa_state> s) {
+    for (auto state : dfa_states)
+    {
+        if (state->get_composing_nfa_states() == s->get_composing_nfa_states())
+        {
+            return true;
+        }
+    }
+    return false;
 }
 

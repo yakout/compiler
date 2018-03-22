@@ -11,7 +11,7 @@ dfa_state::dfa_state (int id, state_type type,
     dfa_state::marked = false;
 }
 
-dfa_state::dfa_state(std::vector<std::shared_ptr<nfa_state>> nfa_states, state_id id) {
+dfa_state::dfa_state(std::set<std::shared_ptr<nfa_state>> nfa_states, state_id id) {
     // nfa states composing dfa state.
     dfa_state::composing_nfa_states = nfa_states;
 
@@ -51,7 +51,7 @@ std::map<std::string, std::shared_ptr<dfa_state>> dfa_state::get_transitions()
     return transitions;
 }
 
-const std::vector<std::shared_ptr<nfa_state>> &dfa_state::get_composing_nfa_states() const {
+const std::set<std::shared_ptr<nfa_state>> &dfa_state::get_composing_nfa_states() const {
     return composing_nfa_states;
 }
 

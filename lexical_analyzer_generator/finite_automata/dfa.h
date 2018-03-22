@@ -19,6 +19,7 @@ public:
     void add_state(std::shared_ptr<dfa_state> s);
     const std::vector<std::shared_ptr<dfa_state>> &get_dfa_states() const;
     std::shared_ptr<dfa_state> get_unmarked_state();
+    bool contains(std::shared_ptr<dfa_state> s);
 private:
     std::vector<std::shared_ptr<dfa_state>> dfa_states;
 };
