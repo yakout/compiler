@@ -15,6 +15,7 @@ private:
   int total_states;
   int total_inputs;
   std::shared_ptr<dfa> dfa;
+  std::vector<std::string> transition_table_input;
   std::shared_ptr<dfa> parse_lexical_analyzer_machine ();
 public:
   lexical_analyzer (ifsteam &, ifstream &);
