@@ -1,7 +1,3 @@
-//
-// Created by awalid on 3/21/18.
-//
-
 #include "dfa.h"
 #include "dfa_state.h"
 

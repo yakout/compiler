@@ -27,8 +27,12 @@ public:
     char_set();
     void add_character(char);
     void add_range(char, char);
-    std::string get_string (char input);
 
+    // getters
+    std::string get_string (char input);
+    
+    const std::map <char, bool> &get_characters() const;
+    const std::vector <std::shared_ptr<char_range>> &get_ranges() const;
 };
 
 #endif // INPUT_H

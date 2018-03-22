@@ -16,6 +16,12 @@ fa::fa(const fa& fa_)
 
 }
 
+fa::fa()
+    : start_state(), acceptance_states(), total_states(2) // TODO recheck this
+{
+
+}
+
 std::string exec(const char* cmd) {
     std::array<char, 128> buffer{};
     std::string result;

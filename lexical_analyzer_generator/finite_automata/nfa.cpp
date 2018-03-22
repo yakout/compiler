@@ -1,7 +1,3 @@
-//
-// Created by awalid on 3/21/18.
-//
-
 #include <iostream>
 #include <utility>
 #include "nfa.h"
@@ -12,6 +8,32 @@ nfa::nfa(std::shared_ptr<state> start_state, std::vector<std::shared_ptr<state>>
     nfa::start_state = start_state;
     nfa::acceptance_states = acceptance_states;
     nfa::total_states = total_states;
+}
+
+nfa::nfa(std::vector<regular_definition> defs, int id1, int id2)
+    : fa()
+{
+    std::vector<regular_definition> reg_defs;
+    std::vector<regular_definition> eps = build_epsilon_transition();
+
+    std::shared_ptr<nfa_state> s0 = std::make_shared<nfa_state>(nfa_state (id1, START, reg_defs));
+    std::shared_ptr<nfa_state> sf = std::make_shared<nfa_state>(nfa_state (id2, ACCEPTANCE, eps));
+
+    for (auto rd : reg_defs)
+    {
+        for (auto c : rd.sequence.get_characters())
+        {
+            s0->insert_state ("" + c.first, sf);
+        }
+
+        for (auto range : rd.sequence.get_ranges())
+        {
+            s0->insert_state (range->get_range_string(), sf);
+        }
+    }
+
+    start_state = s0;
+    acceptance_states.push_back(sf);
 }
 
 void nfa::dfs (std::shared_ptr<state> curr_state, std::vector<bool> &visited, std::shared_ptr<std::ofstream> vis)
@@ -114,6 +136,17 @@ void nfa::star()
 {
     start_state->insert_state(EPSILON, acceptance_states.front());
     acceptance_states.front()->insert_state(EPSILON, start_state);
+}
+
+std::vector<regular_definition> nfa::build_epsilon_transition()
+{
+    std::vector<regular_definition> v;
+    regular_definition eps;
+    eps.name = "eps";
+    char_set empty_char_set;
+    eps.sequence = empty_char_set;
+    v.push_back(eps);
+    return v;
 }
 
 

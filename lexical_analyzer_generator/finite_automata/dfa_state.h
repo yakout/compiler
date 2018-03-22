@@ -1,9 +1,5 @@
-//
-// Created by awalid on 3/21/18.
-//
-
-#ifndef COMPILER_DFA_STATE_H
-#define COMPILER_DFA_STATE_H
+#ifndef DFA_STATE_H
+#define DFA_STATE_H
 
 #include "state.h"
 
@@ -18,4 +14,4 @@ public:
 };
 
 
-#endif //COMPILER_DFA_STATE_H
+#endif // DFA_STATE_H

@@ -40,3 +40,16 @@ void char_set::add_character(char c) {
 void char_set::add_range(char l, char u) {
     ranges.push_back(std::shared_ptr<char_range>(new char_range(l, u)));
 }
+
+const std::map <char, bool> &char_set::get_characters() const
+{
+    return characters;
+}
+
+const std::vector <std::shared_ptr<char_range>> &char_set::get_ranges() const
+{
+    return ranges;
+}
+
+
+
