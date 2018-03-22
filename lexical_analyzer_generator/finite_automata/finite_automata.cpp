@@ -16,6 +16,11 @@ fa::fa(const fa& fa_)
 
 }
 
+fa::fa()
+{
+    fa::total_states = 0;
+}
+
 std::string exec(const char* cmd) {
     std::array<char, 128> buffer{};
     std::string result;
@@ -86,7 +91,10 @@ void fa::set_acceptance_states(std::vector<std::shared_ptr<state>> new_acceptanc
     acceptance_states = new_acceptance_states;
 }
 
+void fa::set_total_states(int total_states) {
+    fa::total_states = total_states;
+}
 
-
-
-
+void fa::add_acceptance_state(std::shared_ptr<state> s) {
+    fa::acceptance_states.push_back(s);
+}

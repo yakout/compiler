@@ -24,7 +24,8 @@ protected:
     state_type type;
     std::vector <regular_definition> definitions;
 public:
-    state (int id, state_type type, std::vector<regular_definition> definitions);
+    state(int id, state_type type, std::vector<regular_definition> definitions);
+    state();
     virtual void insert_state (std::string input, std::shared_ptr<state> const& state) = 0;
     state_id get_id();
     state_type get_type();

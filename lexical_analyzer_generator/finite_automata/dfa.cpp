@@ -14,6 +14,11 @@ dfa::dfa(std::shared_ptr<state> start_state, std::vector<std::shared_ptr<state>>
     dfa::total_states = total_states;
 }
 
+dfa::dfa()
+{
+    dfa::total_states = 0;
+}
+
 /// TODO: Re-check this!
 void dfa::dfs(std::shared_ptr<state> curr_state, std::vector<bool> &visited, std::shared_ptr<std::ofstream> vis) {
     visited[curr_state->get_id()] = true;

@@ -8,6 +8,10 @@ state::state (int id, state_type type,
     this->definitions = definitions;
 }
 
+state::state() {
+
+}
+
 state_id state::get_id() {
     return id;
 }
