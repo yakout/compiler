@@ -55,3 +55,22 @@ void dfa::dfs(std::shared_ptr<state> curr_state, std::vector<bool> &visited, std
     }
 }
 
+void dfa::add_state(std::shared_ptr<dfa_state> s) {
+    dfa::dfa_states.push_back(s);
+}
+
+const std::vector<std::shared_ptr<dfa_state>> &dfa::get_dfa_states() const {
+    return dfa_states;
+}
+
+std::shared_ptr<dfa_state> dfa::get_unmarked_state() {
+    for (auto curr_state : dfa::dfa_states)
+    {
+        if (!curr_state->is_marked())
+        {
+            return curr_state;
+        }
+    }
+    return nullptr;
+}
+

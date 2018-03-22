@@ -148,15 +148,16 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
                                                               static_cast<state_id>(dfa_ptr->get_total_states())));
     dfa_ptr->set_total_states(dfa_ptr->get_total_states() + 1);
     dfa_ptr->set_start_state(init_dfa_state);
-    std::queue<std::shared_ptr<dfa_state>> q;
+
+    /// REMOVE QUEUE AND USE DFA VECTOR OF STATES.
     std::map<state_id, bool> visited;
-    q.push((std::shared_ptr<dfa_state> &&) dfa_ptr->get_start_state()); // SEG FAULT HERE.
-    std::cout << dfa_ptr->get_start_state()->get_id() << "\n";
-    visited[dfa_ptr->get_start_state()->get_id()] = true;
-    while (!q.empty())
+    dfa_ptr->add_state(init_dfa_state);
+    visited[dfa_ptr->get_start_state()->get_id()] = true; // or init_dfa_state(supposedly same thing)
+    std::shared_ptr<dfa_state> curr_state;
+    while ((curr_state = dfa_ptr->get_unmarked_state()) != nullptr) // get_next_state returns next unmarked state or null if no more unmarked states in dfa_ptr.
     {
-        auto curr_state = static_cast<std::shared_ptr<dfa_state> &&>(q.front());
-        q.pop();
+        curr_state->set_marked(true);
+        std::cout << curr_state->get_id() << std::endl;
         for (const auto &inp : inputs)
         {
             std::shared_ptr<dfa_state> new_state(new dfa_state(e_closure(move(curr_state->get_composing_nfa_states(), inp)),
@@ -165,7 +166,7 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
             if (!visited[new_state->get_id()])
             {
                 visited[new_state->get_id()] = true;
-                q.push(new_state);
+                dfa_ptr->add_state(new_state);
             }
             curr_state->insert_state(inp.name, new_state);
             if (new_state->get_type() == ACCEPTANCE)

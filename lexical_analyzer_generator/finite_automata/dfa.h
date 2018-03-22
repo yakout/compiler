@@ -7,6 +7,7 @@
 
 
 #include "finite_automata.h"
+#include "dfa_state.h"
 
 class dfa : public fa {
 public:
@@ -15,6 +16,11 @@ public:
     dfa();
     void dfs (std::shared_ptr<state> state, std::vector<bool> &visited,
               std::shared_ptr<std::ofstream> vis) override;
+    void add_state(std::shared_ptr<dfa_state> s);
+    const std::vector<std::shared_ptr<dfa_state>> &get_dfa_states() const;
+    std::shared_ptr<dfa_state> get_unmarked_state();
+private:
+    std::vector<std::shared_ptr<dfa_state>> dfa_states;
 };
 
 

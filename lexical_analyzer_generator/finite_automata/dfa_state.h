@@ -12,6 +12,11 @@ class dfa_state : public state {
 private:
     std::map <std::string, std::shared_ptr<dfa_state>> transitions;
     std::vector<std::shared_ptr<nfa_state>> composing_nfa_states;
+    bool marked;
+public:
+    bool is_marked() const;
+
+    void set_marked(bool marked);
 
 public:
     dfa_state (int id, state_type type, std::vector<regular_definition> definitions);
