@@ -12,6 +12,7 @@ set(HEADER_FILES
         lexical_analyzer_generator/finite_automata/dfa_state.h
         lexical_analyzer_generator/nfa_tools/char_set.h
         lexical_analyzer_generator/nfa_tools/lexical_rules.h
+        lexical_analyzer_generator/nfa_tools/regex_processor.h
         lexical_analyzer_generator/lexical_analyzer_generator.h
         lexical_analyzer_generator/nfa_creator.h
         lexical_analyzer/lexical_analyzer.h
@@ -27,6 +28,7 @@ set(SOURCE_FILES main.cpp
         lexical_analyzer_generator/finite_automata/dfa.cpp
         lexical_analyzer_generator/nfa_tools/char_set.cpp
         lexical_analyzer_generator/nfa_tools/lexical_rules.cpp
+        lexical_analyzer_generator/nfa_tools/regex_processor.cpp
         lexical_analyzer_generator/lexical_analyzer_generator.cpp
         lexical_analyzer_generator/nfa_creator.cpp
         lexical_analyzer_generator/finite_automata/conversion_test.cpp)

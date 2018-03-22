@@ -90,7 +90,6 @@ void handle_regex (std::string lhs, std::string rhs, lexical_rules &rules)
   rules.add_regex (expression);
 }
 
-
 FILE* lexical_analyzer_generator::get_lexical_analyzer_file (std::string rules_file)
 {
     //SetConsoleOutputCP( CP_UTF8 );
@@ -128,4 +127,5 @@ FILE* lexical_analyzer_generator::get_lexical_analyzer_file (std::string rules_f
           }
       }
     }
+
 }

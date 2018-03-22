@@ -10,6 +10,7 @@
 #include "dfa.h"
 #include "nfa_state.h"
 #include "dfa_state.h"
+#include "../nfa_tools/regex_processor.h"
 
 #define EPSILON ""
 
@@ -196,26 +197,34 @@ std::shared_ptr<nfa> build_nfa3()
 {
   char_set a_char_set = char_set();
   a_char_set.add_character ('a');
-  a_char_set.add_character ('b');
-  a_char_set.add_character ('c');
-  a_char_set.add_character ('d');
 
 
   char_set b_char_set = char_set();
   b_char_set.add_character ('b');
 
-  std::shared_ptr <nfa> nfa_a_ptr (new nfa(a_char_set));
-  std::shared_ptr<nfa> nfa_b_ptr(new nfa(b_char_set));
+  std::shared_ptr <nfa> nfa_a1_ptr (new nfa(a_char_set));
+  std::shared_ptr <nfa> nfa_a2_ptr (new nfa(a_char_set));
+  std::shared_ptr<nfa> nfa_b1_ptr(new nfa(b_char_set));
+  std::shared_ptr<nfa> nfa_b2_ptr(new nfa(b_char_set));
+  std::shared_ptr<nfa> nfa_b3_ptr(new nfa(b_char_set));
+  nfa_a1_ptr->unify(nfa_b1_ptr);
+  nfa_a1_ptr->star();
+  nfa_a1_ptr->concat(nfa_a2_ptr);
+  nfa_a1_ptr->concat(nfa_b2_ptr);
+  nfa_a1_ptr->concat(nfa_b3_ptr);
 
-  nfa_a_ptr->plus();
-
-  return nfa_a_ptr;
+  return nfa_a1_ptr;
 }
 
 int main(int argc, char** argv) {
     //std::shared_ptr<nfa> my_nfa = build_nfa3();
-    std::shared_ptr<nfa> my_nfa = build_nfa3();
-    my_nfa->visualize();
+    /*std::shared_ptr<nfa> my_nfa = build_nfa3();
+    my_nfa->visualize();*/
+    regular_expression regex = {"letter", "a-z"};
+    std::map <std::string,std::shared_ptr<nfa>> sym_table;
+    std::shared_ptr<nfa> my_nfa = evaluate_regex (regex, sym_table);
+    if (my_nfa != nullptr)
+      my_nfa->visualize();
   /*  std::shared_ptr<dfa> my_dfa = convert_nfa_dfa(my_nfa);
     std::cout << my_dfa->get_total_states();
     my_dfa->visualize();*/
