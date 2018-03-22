@@ -1,7 +1,3 @@
-//
-// Created by awalid on 3/21/18.
-//
-
 #include <iostream>
 #include <utility>
 #include "nfa.h"
@@ -14,9 +10,41 @@ nfa::nfa(std::shared_ptr<state> start_state, std::vector<std::shared_ptr<state>>
     nfa::total_states = total_states;
 }
 
-void nfa::dfs (std::shared_ptr<state> curr_state, std::vector<bool> &visited, std::shared_ptr<std::ofstream> vis)
+nfa::nfa(std::vector<regular_definition> defs, int id1, int id2)
+    : fa()
+{
+    std::vector<regular_definition> eps = build_epsilon_transition();
+
+    std::shared_ptr<nfa_state> s0 = std::make_shared<nfa_state>(nfa_state (id1, START, defs));
+    std::shared_ptr<nfa_state> sf = std::make_shared<nfa_state>(nfa_state (id2, ACCEPTANCE, eps));
+
+    for (auto rd : defs)
+    {
+
+        for (auto c : rd.sequence.get_characters())
+        {
+//            std::cout << s0->get_id() << "--" << c.first << "-->" << sf->get_id() << std::endl;
+            s0->insert_state (std::string("") + c.first, sf);
+        }
+
+        for (auto range : rd.sequence.get_ranges())
+        {
+            s0->insert_state (range->get_range_string(), sf);
+        }
+    }
+
+    start_state = s0;
+    acceptance_states.push_back(sf);
+}
+
+void nfa::dfs (std::shared_ptr<state> curr_state, std::vector<bool> &visited,
+               std::shared_ptr<std::ofstream> vis, bool update_acceptance_states)
 {
     visited[curr_state->get_id()] = true;
+    if (update_acceptance_states && curr_state->get_type() == ACCEPTANCE)
+    {
+        acceptance_states.push_back(curr_state);
+    }
 
     std::map<std::string, std::vector<std::shared_ptr<nfa_state>>> transitions
             = std::static_pointer_cast<nfa_state>(curr_state)->get_transitions();
@@ -46,7 +74,7 @@ void nfa::dfs (std::shared_ptr<state> curr_state, std::vector<bool> &visited, st
                 *vis << curr_state->get_id() << " -> " << state->get_id() << " [ label = \"" << label << "\" ];\n";
             }
             if (!visited[state->get_id()]) {
-                dfs(state, visited, vis);
+                dfs(state, visited, vis, update_acceptance_states);
             }
         }
     }
@@ -64,32 +92,32 @@ void nfa::unify(std::shared_ptr<nfa> nfa2)
 
     v.push_back(eps);
 
-    std::shared_ptr<nfa_state> new_start_state = std::make_shared<nfa_state>(nfa_state (0, START, v));
-    std::shared_ptr<nfa_state> new_acceptance_state = std::make_shared<nfa_state>(nfa_state (5, ACCEPTANCE, v));
+    std::shared_ptr<nfa_state> s0 = std::make_shared<nfa_state>(nfa_state (0, START, v));
+    std::shared_ptr<nfa_state> sf = std::make_shared<nfa_state>(nfa_state (5, ACCEPTANCE, v));
 
-    std::shared_ptr<nfa_state> old_start_state2 = std::static_pointer_cast<nfa_state>(nfa2->get_start_state());
-    std::shared_ptr<nfa_state> old_start_state1 = std::static_pointer_cast<nfa_state>(start_state);
+    std::shared_ptr<nfa_state> nfa2_s0 = std::static_pointer_cast<nfa_state>(nfa2->get_start_state());
+    std::shared_ptr<nfa_state> nfa1_s0 = std::static_pointer_cast<nfa_state>(start_state);
 
-    old_start_state1->set_type(INTERMEDIATE);
-    old_start_state2->set_type(INTERMEDIATE);
+    nfa1_s0->set_type(INTERMEDIATE);
+    nfa2_s0->set_type(INTERMEDIATE);
 
-    new_start_state->insert_state(EPSILON, old_start_state1);
-    new_start_state->insert_state(EPSILON, old_start_state2);
+    s0->insert_state(EPSILON, nfa1_s0);
+    s0->insert_state(EPSILON, nfa2_s0);
 
     
-    std::shared_ptr<nfa_state> old_acceptance_state2 = std::static_pointer_cast<nfa_state>(nfa2->get_acceptance_states().front());
-    std::shared_ptr<nfa_state> old_acceptance_state1 = std::static_pointer_cast<nfa_state>(acceptance_states.front());
+    std::shared_ptr<nfa_state> nfa2_sf = std::static_pointer_cast<nfa_state>(nfa2->get_acceptance_states().front());
+    std::shared_ptr<nfa_state> nfa1_sf = std::static_pointer_cast<nfa_state>(acceptance_states.front());
 
-    old_acceptance_state2->set_type(INTERMEDIATE);
-    old_acceptance_state1->set_type(INTERMEDIATE);
+    nfa2_sf->set_type(INTERMEDIATE);
+    nfa1_sf->set_type(INTERMEDIATE);
 
-    old_acceptance_state1->insert_state(EPSILON, new_acceptance_state);
-    old_acceptance_state2->insert_state(EPSILON, new_acceptance_state);
+    nfa1_sf->insert_state(EPSILON, sf);
+    nfa2_sf->insert_state(EPSILON, sf);
 
-    start_state = new_start_state;
+    start_state = s0;
     
     acceptance_states.clear();
-    acceptance_states.push_back(new_acceptance_state);
+    acceptance_states.push_back(sf);
 }
 
 void nfa::concat(std::shared_ptr<nfa> nfa2)
@@ -106,6 +134,8 @@ void nfa::concat(std::shared_ptr<nfa> nfa2)
 void nfa::plus()
 {
     std::shared_ptr<nfa> nfa2(new nfa(*this));
+    nfa2->update_acceptance_states();
+    nfa2->renamify(acceptance_states.front()->get_id() + 1);
     nfa2->star();
     concat(nfa2);
 }
@@ -116,4 +146,45 @@ void nfa::star()
     acceptance_states.front()->insert_state(EPSILON, start_state);
 }
 
+std::vector<regular_definition> nfa::build_epsilon_transition()
+{
+    std::vector<regular_definition> v;
+    regular_definition eps;
+    eps.name = "eps";
+    char_set empty_char_set;
+    eps.sequence = empty_char_set;
+    v.push_back(eps);
+    return v;
+}
 
+
+void renamify_dfs (std::shared_ptr<state> curr_state, std::map<std::shared_ptr<state>, bool> &visited,
+                   std::shared_ptr<std::ofstream> vis, state_id id)
+{
+    visited[curr_state] = true;
+
+    std::map<std::string, std::vector<std::shared_ptr<nfa_state>>> transitions
+            = std::static_pointer_cast<nfa_state>(curr_state)->get_transitions();
+
+    for (auto edge : transitions)
+    {
+        std::string label = edge.first;
+        std::vector<std::shared_ptr<nfa_state>> next_states = edge.second;
+        for (auto state : next_states)
+        {
+            if (!visited[state]) {
+                state->set_id(id);
+                std::cout << state->get_id() << std::endl;
+                renamify_dfs(state, visited, vis, id + 1);
+            }
+        }
+    }
+}
+
+void nfa::renamify (state_id starting_id)
+{
+//    std::map<std::shared_ptr<state>, bool> visited;
+//    renamify_dfs (start_state, visited, nullptr, starting_id);
+    start_state->set_id(starting_id);
+    acceptance_states.front()->set_id(starting_id + 1);
+}

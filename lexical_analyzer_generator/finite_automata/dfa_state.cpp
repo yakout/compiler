@@ -1,7 +1,3 @@
-//
-// Created by awalid on 3/21/18.
-//
-
 #include "dfa_state.h"
 
 dfa_state::dfa_state (int id, state_type type,
@@ -65,5 +61,9 @@ void dfa_state::set_marked(bool marked) {
 
 bool dfa_state::equals(std::shared_ptr<dfa_state> s) {
     return dfa_state::composing_nfa_states == s->get_composing_nfa_states();
+}
+
+std::shared_ptr<state> dfa_state::copy() {
+    return std::make_shared<dfa_state>(*this);
 }
 

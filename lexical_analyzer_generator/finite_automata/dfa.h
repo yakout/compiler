@@ -1,9 +1,5 @@
-//
-// Created by awalid on 3/21/18.
-//
-
-#ifndef JAVA_COMPILER_DFA_H
-#define JAVA_COMPILER_DFA_H
+#ifndef DFA_H
+#define DFA_H
 
 
 #include "finite_automata.h"
@@ -15,14 +11,15 @@ public:
         std::vector<std::shared_ptr<state>> acceptance_states, int total_states);
     dfa();
     void dfs (std::shared_ptr<state> state, std::vector<bool> &visited,
-              std::shared_ptr<std::ofstream> vis) override;
+              std::shared_ptr<std::ofstream> vis, bool) override;
     void add_state(std::shared_ptr<dfa_state> s);
     const std::vector<std::shared_ptr<dfa_state>> &get_dfa_states() const;
     std::shared_ptr<dfa_state> get_unmarked_state();
     bool contains(std::shared_ptr<dfa_state> s);
+
 private:
     std::vector<std::shared_ptr<dfa_state>> dfa_states;
 };
 
 
-#endif //JAVA_COMPILER_DFA_H
+#endif // DFA_H

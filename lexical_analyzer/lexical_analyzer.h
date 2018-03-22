@@ -1,16 +1,23 @@
 #ifndef LEXICAL_ANALYZER_H
 #define LEXICAL_ANALYZER_H
 
-#include <stdio.h>
+#include "../lexical_nalyzer_generator/finite_automata/dfa_state.h"
 #include "token.h"
+#include <vector>
 
 class lexical_analyzer
 {
 private:
-  FILE* lexical_analyzer_machine;
-  FILE* code_file;
+  std::string lexical_analyzer_file;
+  std::string code_file;
+  int initial_state_id;
+  std::vector<int> acceptance_states_ids;
+  int total_states;
+  int total_inputs;
+  std::shared_ptr<dfa> dfa;
+  std::shared_ptr<dfa> parse_lexical_analyzer_machine ();
 public:
-  lexical_analyzer (FILE* lexical_analyzer, FILE* file);
+  lexical_analyzer (ifsteam &, ifstream &);
   token get_next_token ();
 };
 

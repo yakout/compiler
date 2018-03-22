@@ -1,9 +1,5 @@
-//
-// Created by awalid on 3/21/18.
-//
-
-#ifndef COMPILER_DFA_STATE_H
-#define COMPILER_DFA_STATE_H
+#ifndef DFA_STATE_H
+#define DFA_STATE_H
 
 #include <set>
 #include "state.h"
@@ -26,7 +22,8 @@ public:
     bool is_marked() const;
     void set_marked(bool marked);
     bool equals(std::shared_ptr<dfa_state> s);
+    std::shared_ptr<state> copy() override;
 };
 
 
-#endif //COMPILER_DFA_STATE_H
+#endif // DFA_STATE_H

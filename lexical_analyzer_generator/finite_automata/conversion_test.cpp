@@ -1,11 +1,9 @@
-//
-// Created by awalid on 3/21/18.
-//
-
+#include <iostream>
 #include <memory>
 #include <queue>
 #include <iostream>
 #include <set>
+
 #include "finite_automata.h"
 #include "state.h"
 #include "nfa.h"
@@ -90,7 +88,8 @@ std::set<std::shared_ptr<nfa_state>> move(const std::set<std::shared_ptr<nfa_sta
     std::set<std::shared_ptr<nfa_state>> reachable_states;
     for (const auto &state : nfa_states)
     {
-        std::vector<std::shared_ptr<nfa_state>> curr_reached = state->get_transitions()[inp.name];
+        auto trans_map = state->get_transitions();
+        std::vector<std::shared_ptr<nfa_state>> curr_reached = trans_map[inp.name];
         for (const auto &curr : curr_reached)
         {
             reachable_states.insert(curr);
@@ -113,7 +112,8 @@ std::set<std::shared_ptr<nfa_state>> e_closure(const std::set<std::shared_ptr<nf
     {
         auto curr_nfa_state = static_cast<std::shared_ptr<nfa_state> &&>(nfa_states_stack.top());
         nfa_states_stack.pop();
-        std::vector<std::shared_ptr<nfa_state>> vec = curr_nfa_state->get_transitions()[EPSILON];
+        auto trans_map = curr_nfa_state->get_transitions();
+        std::vector<std::shared_ptr<nfa_state>> vec = trans_map[EPSILON];
         for (const auto &curr : vec)
         {
             if (!visited[curr->get_id()])
@@ -201,12 +201,47 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
     return dfa_ptr;
 }
 
+
+std::shared_ptr<nfa> build_nfa2()
+{
+    std::vector<regular_definition> v1;
+    std::vector<regular_definition> v2;
+
+    regular_definition char_a;
+    regular_definition char_b;
+
+    char_set a_char_set;
+    a_char_set.add_character('a');
+
+    char_set b_char_set;
+    b_char_set.add_character('b');
+
+    char_a.name = "a";
+    char_a.sequence = a_char_set;
+
+    char_b.name = "b";
+    char_b.sequence = b_char_set;
+
+    v1.push_back(char_a);
+    v2.push_back(char_b);
+
+    std::shared_ptr<nfa> nfa1(new nfa(v1, 1, 2));
+    std::shared_ptr<nfa> nfa2(new nfa(v2, 3, 4));
+
+//    nfa2->plus();
+//    nfa1->concat(nfa2);
+    nfa1->concat(nfa1);
+
+    return nfa1;
+}
+
 int main(int argc, char** argv) {
     std::shared_ptr<nfa> my_nfa = build_nfa();
-    my_nfa->visualize();
+//    std::shared_ptr<nfa> my_nfa = build_nfa2();
+//    my_nfa->visualize();
     std::shared_ptr<dfa> my_dfa = convert_nfa_dfa(my_nfa);
     std::cout << my_dfa->get_total_states();
-    my_dfa->visualize(); // Would this work?
+    my_dfa->visualize();
 //    draw_trans_table(my_dfa);
     return 0;
 }

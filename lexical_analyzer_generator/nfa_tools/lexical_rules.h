@@ -1,5 +1,5 @@
-#ifndef GRAMMAR_H
-#define GRAMMAR_H
+#ifndef LEXICAL_RULES_H
+#define LEXICAL_RULES_H
 
 #include "char_set.h"
 
@@ -12,13 +12,13 @@ struct regular_definition
 	char_set sequence;
 };
 
-struct regular_expression // the production {NT -> (T|NT)+}
+struct regular_expression
 {
 	std::string name;
 	std::string rhs;
 };
 
-class lexical_rules // set of rules (productions)
+class lexical_rules
 {
 private:
 	std::vector <regular_definition> definitions;
@@ -34,4 +34,4 @@ public:
 
 };
 
-#endif // GRAMMAR_H
+#endif // LEXICAL_RULES_H
