@@ -10,7 +10,7 @@ class lexical_analyzer
 private:
   std::string lexical_analyzer_file;
   std::string code_file;
-  int initial_state_id;
+  int start_state_id;
   std::vector<int> acceptance_states_ids;
   int total_states;
   int total_inputs;
