@@ -1,4 +1,6 @@
+#include <iostream>
 #include <memory>
+
 #include "finite_automata.h"
 #include "state.h"
 #include "nfa.h"
@@ -105,18 +107,21 @@ std::shared_ptr<nfa> build_nfa2()
     v1.push_back(char_a);
     v2.push_back(char_b);
 
-    std::shared_ptr<nfa> nfa1(new nfa(v1, 0, 1));
-    std::shared_ptr<nfa> nfa2(new nfa(v2, 2, 3));
+    std::shared_ptr<nfa> nfa1(new nfa(v1, 1, 2));
+    std::shared_ptr<nfa> nfa2(new nfa(v2, 3, 4));
 
-    nfa1->unify(nfa2);
+//    nfa2->plus();
+//    nfa1->concat(nfa2);
+    nfa1->concat(nfa1);
 
     return nfa1;
 }
 
 int main(int argc, char** argv) {
-    // std::shared_ptr<nfa> my_nfa = build_nfa();
+//    std::shared_ptr<nfa> my_nfa = build_nfa();
     std::shared_ptr<nfa> my_nfa = build_nfa2();
     my_nfa->visualize();
+
 //    std::shared_ptr<dfa> my_dfa = convert_nfa_dfa(my_nfa);
 //    my_dfa->visualize(); // Would this work?
 //    draw_trans_table(my_dfa);

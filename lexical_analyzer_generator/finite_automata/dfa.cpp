@@ -11,8 +11,13 @@ dfa::dfa(std::shared_ptr<state> start_state, std::vector<std::shared_ptr<state>>
 }
 
 /// TODO: Re-check this!
-void dfa::dfs(std::shared_ptr<state> curr_state, std::vector<bool> &visited, std::shared_ptr<std::ofstream> vis) {
+void dfa::dfs(std::shared_ptr<state> curr_state, std::vector<bool> &visited,
+              std::shared_ptr<std::ofstream> vis, bool update_acceptance_states) {
     visited[curr_state->get_id()] = true;
+    if (update_acceptance_states && curr_state->get_type() == ACCEPTANCE)
+    {
+        acceptance_states.push_back(curr_state);
+    }
 
     std::map<std::string, std::shared_ptr<dfa_state>> transitions
             = std::static_pointer_cast<dfa_state>(curr_state)->get_transitions();
@@ -41,7 +46,7 @@ void dfa::dfs(std::shared_ptr<state> curr_state, std::vector<bool> &visited, std
             *vis << curr_state->get_id() << " -> " << next_state->get_id() << " [ label = \"" << label << "\" ];\n";
         }
         if (!visited[next_state->get_id()]) {
-            dfs(next_state, visited, vis);
+            dfs(next_state, visited, vis, update_acceptance_states);
         }
     }
 }
