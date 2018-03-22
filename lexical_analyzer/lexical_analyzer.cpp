@@ -70,6 +70,10 @@ void adjust_dfa_state_transitions (std::vector<std::shared_ptr<dfa_state>> &
                                             , std::vector<std::string> &
                                             , std::vector<std::string> &);
 
+std::vector<std::shared_ptr<state>> get_acceptance_states_from_ids (
+                                    std::vector<std::shared_ptr<dfa_state>> &
+                                    ,std::vector<int> &);
+
 
 lexical_analyzer::lexical_analyzer (std::string &lexical_analyzer_file
                                                 , std::string &code_file) {
@@ -121,6 +125,9 @@ std::shared_ptr<dfa> lexical_analyzer::parse_lexical_analyzer_machine () {
         line_counter++;
         vec.clear ();
     }
+    dfa_ptr = std::make_shared<dfa>(
+             dfa (dfa_states[start_state_id], get_acceptance_states_from_ids (
+                    dfa_states, acceptance_states_ids), total_states));
 }
 
 void split_str_on_space (std::vector<std::string> &vec, std::string &str) {
@@ -165,8 +172,8 @@ std::vector<std::shared_ptr<dfa_state>> generate_dfa_states (int count
         char_set dfa_state_char_set;
         build_char_set (dfa_state_char_set, transition_table_inputs);
         std::shared_ptr<dfa_state> s = std::make_shared<dfa_state> (
-                        dfa_state (i, get_state_type (i, start_state_id
-                                            , acceptance_states_ids), dfa_state_char_set));
+                                     dfa_state (i, get_state_type (i, start_state_id
+                                    , acceptance_states_ids), dfa_state_char_set));
         dfa_states_vec.push_back (s);
     }
     return dfa_states_vec;
@@ -220,4 +227,14 @@ void adjust_dfa_state_transitions (std::vector<std::shared_ptr<dfa_state>>
                         , dfa_states_vec[string_to_integer (vec[i])]);
         }
     }
+}
+
+std::vector<std::shared_ptr<state>> get_acceptance_states_from_ids (
+                        std::vector<std::shared_ptr<dfa_state>> &dfa_states_vec
+                                    ,std::vector<int> &acceptance_states_ids) {
+    std::vector<std::shared_ptr<state>> acceptance_dfa_states;
+    for (unsigned int i = 0 ; i < acceptance_states_ids.size (); i++) {
+        acceptance_dfa_states.push_back (dfa_states_vec[acceptance_states_ids[i]]);
+    }
+    return acceptance_dfa_states;
 }
