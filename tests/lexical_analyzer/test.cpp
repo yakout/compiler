@@ -3,7 +3,7 @@
 
 int main () {
    std::string transition_table_file = "tests/lexical_analyzer/transition_table.txt";
-   std::string code_file = "tests/lexical_analyzer/code.c";
+   std::string code_file = "tests/lexical_analyzer/input";
 
    lexical_analyzer *lex = new lexical_analyzer (transition_table_file, code_file);
 
@@ -22,4 +22,16 @@ int main () {
    std::cout << "--------------------------" << std::endl;
 
    lex->get_dfa ()->visualize ();
+
+   token t;
+   while (true) {
+       t = lex->get_next_token ();
+       std::cout << t.lexeme << " " << t.token_class 
+                            << " " << t.str_pos << std::endl;
+       if (t.lexeme == "") {
+           break;
+       }
+       std::cout << t.lexeme << " " << t.token_class 
+                            << " " << t.str_pos << std::endl;
+   }
 }

@@ -17,7 +17,6 @@ set(HEADER_FILES
         lexical_analyzer_generator/lexical_analyzer_generator.h
         lexical_analyzer_generator/nfa_creator.h
         lexical_analyzer/lexical_analyzer.h
-        lexical_analyzer/token.h
         )
 
 set(SOURCE_FILES main.cpp
