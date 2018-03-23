@@ -51,6 +51,12 @@ std::vector<std::shared_ptr<nfa_state>> nfa_state::get_next_state(char input)
     return transitions[key];
 }
 
+std::vector<std::shared_ptr<nfa_state>> nfa_state::get_next_state(std::string input) {
+    return transitions[input];
+}
+
 std::shared_ptr<state> nfa_state::copy() {
     return std::make_shared<nfa_state>(*this);
 }
+
+

@@ -196,7 +196,21 @@ std::shared_ptr<nfa> build_nfa()
     return my_nfa;
 }
 
-std::set<std::shared_ptr<nfa_state>> move(const std::set<std::shared_ptr<nfa_state>> &nfa_states, char inp)
+std::set<std::shared_ptr<nfa_state>> move(const std::set<std::shared_ptr<nfa_state>> &nfa_states, const char inp)
+{
+    std::set<std::shared_ptr<nfa_state>> reachable_states;
+    for (const auto &state : nfa_states)
+    {
+        std::vector<std::shared_ptr<nfa_state>> curr_reached = state->get_next_state(inp);
+        for (const auto &curr : curr_reached)
+        {
+            reachable_states.insert(curr);
+        }
+    }
+    return reachable_states;
+}
+
+std::set<std::shared_ptr<nfa_state>> move(const std::set<std::shared_ptr<nfa_state>> &nfa_states, const std::string &inp)
 {
     std::set<std::shared_ptr<nfa_state>> reachable_states;
     for (const auto &state : nfa_states)
@@ -253,17 +267,17 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
     dfa_ptr->add_state(init_dfa_state);
 
     std::shared_ptr<dfa_state> curr_state;
-    while ((curr_state = dfa_ptr->get_unmarked_state()) != nullptr) // get_next_state returns next unmarked state or null if no more unmarked states in dfa_ptr.
+    while ((curr_state = dfa_ptr->get_unmarked_state()) != nullptr)
     {
         curr_state->set_marked(true);
-        // Iterating over characters from alphabet.
-        for (const auto &inp : alphabet->get_characters())
+        for (const auto &curr_char : alphabet->get_characters())
         {
-            std::shared_ptr<dfa_state> new_state(new dfa_state(e_closure(move(curr_state->get_composing_nfa_states(), inp.first)),
+            std::shared_ptr<dfa_state> new_state(new dfa_state(e_closure(move(curr_state->get_composing_nfa_states(),
+                                                                              curr_char.first)),
                                     static_cast<state_id>(dfa_ptr->get_total_states())));
             if (new_state->equals(curr_state))
             {
-                curr_state->insert_transition(alphabet->get_string(inp.first), curr_state);
+                curr_state->insert_transition(alphabet->get_string(curr_char.first), curr_state);
                 continue;
             }
             if (!dfa_ptr->contains(new_state))
@@ -283,7 +297,40 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
                     }
                 }
             }
-            curr_state->insert_transition(alphabet->get_string(inp.first), new_state);
+            curr_state->insert_transition(alphabet->get_string(curr_char.first), new_state);
+            if (new_state->get_type() == ACCEPTANCE)
+            {
+                dfa_ptr->add_acceptance_state(new_state);
+            }
+        }
+        for (const auto &curr_range : alphabet->get_ranges())
+        {
+            std::shared_ptr<dfa_state> new_state(new dfa_state(e_closure(move(curr_state->get_composing_nfa_states(),
+                                                                              curr_range->get_range_string())),
+                                                               static_cast<state_id>(dfa_ptr->get_total_states())));
+            if (new_state->equals(curr_state))
+            {
+                curr_state->insert_transition(curr_range->get_range_string(), curr_state);
+                continue;
+            }
+            if (!dfa_ptr->contains(new_state))
+            {
+                dfa_ptr->add_state(new_state);
+                dfa_ptr->set_total_states(dfa_ptr->get_total_states() + 1);
+            }
+            else
+            {
+                auto existing_states = dfa_ptr->get_dfa_states();
+                for (auto st : existing_states)
+                {
+                    if (st->equals(new_state))
+                    {
+                        new_state = st;
+                        break;
+                    }
+                }
+            }
+            curr_state->insert_transition(curr_range->get_range_string(), new_state);
             if (new_state->get_type() == ACCEPTANCE)
             {
                 dfa_ptr->add_acceptance_state(new_state);
@@ -335,18 +382,26 @@ std::shared_ptr<nfa> build_nfa3()
   return nfa_a1_ptr;
 }
 
+void minimize(std::shared_ptr<dfa> dfa_ptr)
+{
+    
+}
+
 int main(int argc, char** argv) {
 //    regular_expression regex = {"letter", "a-z"};
 //    std::map <std::string,std::shared_ptr<nfa>> sym_table;
 //    std::shared_ptr<nfa> my_nfa = evaluate_regex (regex, sym_table);
 //    if (my_nfa != nullptr)
 //      my_nfa->visualize();
-//    std::shared_ptr<nfa> nfa_ptr = build_nfa();
-    std::shared_ptr<nfa> nfa_ptr = build_complex_nfa();
-    nfa_ptr->visualize();
-//    std::shared_ptr<dfa> dfa_ptr = convert_nfa_dfa(nfa_ptr);
-//    std::cout << "# of produced dfa states = " << dfa_ptr->get_total_states() << "\n";
-//    dfa_ptr->visualize();
+    std::shared_ptr<nfa> nfa_ptr = build_nfa();
+//    std::shared_ptr<nfa> nfa_ptr = build_complex_nfa();
+//    nfa_ptr->visualize();
+    std::shared_ptr<dfa> dfa_ptr = convert_nfa_dfa(nfa_ptr);
+    std::cout << "# of produced dfa states = " << dfa_ptr->get_total_states() << "\n";
+    for (auto curr : dfa_ptr->get_acceptance_states())
+        std::cout << curr->get_id() << " ";
+    dfa_ptr->visualize();
+    minimize(dfa_ptr);
 //    draw_trans_table(my_dfa);
     return 0;
 }

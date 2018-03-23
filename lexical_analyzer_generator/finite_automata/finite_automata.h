@@ -26,7 +26,7 @@ public:
 	void visualize();
 
     /**
-     * this function traverse the graph using dfs(,,,update_states = true)
+     * This function traverse the graph using dfs(,,,update_states = true)
      * and updates the acceptance states vector.
      */
 	void update_acceptance_states();

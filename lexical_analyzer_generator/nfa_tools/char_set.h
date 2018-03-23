@@ -11,7 +11,7 @@ class char_set
 {
 private:
   std::map <char, bool> characters;
-  std::vector <std::shared_ptr<char_range>> ranges;
+  std::vector<std::shared_ptr<char_range>> ranges;
 public:
     char_set();
     char_set(const char_set&);
