@@ -334,18 +334,18 @@ std::shared_ptr<nfa> build_nfa2()
 
 std::shared_ptr<nfa> build_nfa3()
 {
-  std::shared_ptr<char_set> a_char_set(new char_set());
+  std::shared_ptr<char_set> a_char_set (new char_set());
   a_char_set->add_character ('a');
 
 
-  std::shared_ptr<char_set> b_char_set(new char_set());
+  std::shared_ptr<char_set> b_char_set (new char_set());
   b_char_set->add_character ('b');
 
   std::shared_ptr <nfa> nfa_a1_ptr (new nfa(a_char_set));
   std::shared_ptr <nfa> nfa_a2_ptr (new nfa(a_char_set));
-  std::shared_ptr<nfa> nfa_b1_ptr(new nfa(b_char_set));
-  std::shared_ptr<nfa> nfa_b2_ptr(new nfa(b_char_set));
-  std::shared_ptr<nfa> nfa_b3_ptr(new nfa(b_char_set));
+  std::shared_ptr<nfa> nfa_b1_ptr (new nfa(b_char_set));
+  std::shared_ptr<nfa> nfa_b2_ptr (new nfa(b_char_set));
+  std::shared_ptr<nfa> nfa_b3_ptr (new nfa(b_char_set));
   nfa_a1_ptr->unify(nfa_b1_ptr);
   nfa_a1_ptr->star();
   nfa_a1_ptr->concat(nfa_a2_ptr);
@@ -356,17 +356,30 @@ std::shared_ptr<nfa> build_nfa3()
 }
 
 int main(int argc, char** argv) {
-//    regular_expression regex = {"letter", "a-z"};
-//    std::map <std::string,std::shared_ptr<nfa>> sym_table;
-//    std::shared_ptr<nfa> my_nfa = evaluate_regex (regex, sym_table);
-//    if (my_nfa != nullptr)
-//      my_nfa->visualize();
-    std::shared_ptr<nfa> nfa_ptr = build_nfa();
-//    std::shared_ptr<nfa> nfa_ptr = build_complex_nfa();
+   regular_expression regex = {"letter", "a-z"};
+   std::map <std::string,std::shared_ptr<nfa>> sym_table;
+   std::shared_ptr<nfa> my_nfa = evaluate_regex (regex, sym_table);
+    char_set cs(*my_nfa->get_start_state()->get_char_set());
+
+   if (my_nfa != nullptr)
+   {
+       my_nfa->visualize();
+       std::shared_ptr<char_set> c_s = my_nfa->get_alphabet();
+       for (auto const& c : c_s->get_characters())
+       {
+           std::cout << c.first << std::endl;
+       }
+       for (auto const& range : c_s->get_ranges())
+       {
+           std::cout << range->get_range_string() << std::endl;
+       }
+   }
+//    std::shared_ptr<nfa> nfa_ptr = build_nfa();
+    // std::shared_ptr<nfa> nfa_ptr = build_nfa1();
 //    nfa_ptr->visualize();
-    std::shared_ptr<dfa> dfa_ptr = convert_nfa_dfa(nfa_ptr);
-    std::cout << "# of produced dfa states = " << dfa_ptr->get_total_states() << "\n";
-    dfa_ptr->visualize();
+    // std::shared_ptr<dfa> dfa_ptr = convert_nfa_dfa(nfa_ptr);
+    // std::cout << "# of produced dfa states = " << dfa_ptr->get_total_states() << "\n";
+    // dfa_ptr->visualize();
 //    draw_trans_table(my_dfa);
     return 0;
 }

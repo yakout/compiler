@@ -46,7 +46,7 @@ void fa::visualize()
     *visualizer <<
                 "digraph finite_state_machine {\n"
                         "\trankdir=LR;\n"
-                        "\tsize=\"8,5\"\n"
+                        "\tsize=\"12,5\"\n"
                         "\tnode [shape = doublecircle]; ";
     for (auto s : acceptance_states)
     {
@@ -58,7 +58,7 @@ void fa::visualize()
             "\"\" -> " << start_state->get_id() << "\n";
 
 
-    std::vector<bool> visited(10);
+    std::vector<bool> visited(100);
     dfs(start_state, visited, visualizer, false, nullptr);
     *visualizer << "}\n";
     visualizer->close();

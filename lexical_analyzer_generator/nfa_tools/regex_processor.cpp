@@ -24,10 +24,11 @@ STACK_OPERATOR convert_to_stack_operator(char c)
 }
 
 /**
- * checks if c1 (new operator) is higher precdance than c2 (top of stack)
+ * checks if o1 (new operator) is higher precdance than o2 (top of stack)
  */
 bool is_lower_or_equal (STACK_OPERATOR o1, STACK_OPERATOR o2)
 {
+    if (o2 == LEFT_PAREN) return false;
     if ((o1 == STAR || o1 == PLUS) && (o2 == STAR || o2 == PLUS))
         return true; // equal
     else if ((o1 == STAR || o1 == PLUS))
@@ -95,6 +96,14 @@ std::shared_ptr<nfa> build_nfa(char c)
     return nfa_c;
 }
 
+
+enum STACK_TYPE
+{
+    VALUE,
+    OPERATOR,
+    NONE
+};
+
 std::shared_ptr <nfa> evaluate_regex (regular_expression regex,
                                       std::map <std::string,
                                               std::shared_ptr<nfa>> &sym_table)
@@ -104,6 +113,7 @@ std::shared_ptr <nfa> evaluate_regex (regular_expression regex,
     std::string regex_name = regex.name;
     std::string regex_line = regex.rhs;
     std::string temp;
+    STACK_TYPE last_push_type = NONE;
     for (int i = 0; i < regex_line.length(); i++)
     {
         if (is_regex_operator(regex_line[i]) || regex_line[i] == LEFT_PAREN_SYMBOL)
@@ -115,7 +125,9 @@ std::shared_ptr <nfa> evaluate_regex (regular_expression regex,
                     return nullptr;
                 if (operators.empty()) break;
             }
+            if (last_push_type == VALUE && !values.empty()) operators.push(CONCAT);
             operators.push(convert_to_stack_operator(regex_line[i]));
+            last_push_type = OPERATOR;
         }
         else if (regex_line[i] == RIGHT_PAREN_SYMBOL)
         {
@@ -154,7 +166,9 @@ std::shared_ptr <nfa> evaluate_regex (regular_expression regex,
                 }
             }
             if (lower > upper) return nullptr; // TODO : Throw Exception
+            if (last_push_type == VALUE && !values.empty()) operators.push(CONCAT);
             values.push (build_nfa(lower, upper));
+            last_push_type = VALUE;
         }
         else if (regex_line[i] == SPACE || (regex_line[i] == ESC))
         {
@@ -173,7 +187,8 @@ std::shared_ptr <nfa> evaluate_regex (regular_expression regex,
         {
             // char
             while (!is_regex_operator(regex_line[i]) && regex_line[i] != LEFT_PAREN_SYMBOL
-                   && regex_line[i] != RIGHT_PAREN_SYMBOL && regex_line[i] != RANGE_SEP)
+                   && regex_line[i] != RIGHT_PAREN_SYMBOL && regex_line[i] != RANGE_SEP
+                   && regex_line[i] != SPACE)
             {
                 temp += regex_line[i++];
                 if (i == regex_line.length())

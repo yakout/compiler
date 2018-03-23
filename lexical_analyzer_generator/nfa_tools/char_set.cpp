@@ -19,9 +19,12 @@ char_set::char_set(): ranges(), characters() {
 }
 
 char_set::char_set(const char_set & c_s)
-        : ranges(c_s.get_ranges()), characters(c_s.get_characters())
+        : ranges(), characters(c_s.get_characters())
 {
-
+    for (auto const& r : c_s.get_ranges())
+    {
+        ranges.push_back(std::shared_ptr<char_range>(new char_range(*r)));
+    }
 }
 
 void char_set::add_character(char c) {
