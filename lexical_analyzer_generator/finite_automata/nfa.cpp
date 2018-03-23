@@ -13,6 +13,11 @@ nfa::nfa(std::shared_ptr<state> start_state, std::vector<std::shared_ptr<state>>
     nfa::total_states = total_states;
 }
 
+nfa::nfa() : fa()
+{
+
+}
+
 void add_transitions_from_char_set (std::shared_ptr<char_set> st_ip,
   std::shared_ptr<nfa_state> s0, std::shared_ptr<nfa_state> sf)
 {
@@ -232,6 +237,10 @@ std::shared_ptr<nfa> nfa::copy()
           new_states[from_id]->insert_transition (edge.first ,new_states[edge.second]);
         }
     }
+    std::shared_ptr<nfa> copied_nfa(new nfa());
+    copied_nfa->set_start_state(new_states[start_state->get_id()]);
+    copied_nfa->update_acceptance_states();
+    return  copied_nfa;
 }
 
 /**
@@ -277,3 +286,4 @@ void nfa::renamify (state_id starting_id)
     renamify_dfs (start_state, visited);
     max_id = renamifiy_start_index - 1;
 }
+
