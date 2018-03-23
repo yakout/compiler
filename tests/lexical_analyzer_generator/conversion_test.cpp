@@ -357,23 +357,23 @@ std::shared_ptr<nfa> build_nfa3()
 
 int main(int argc, char** argv) {
     std::map <std::string,std::shared_ptr<nfa>> sym_table;
-//    regular_expression regex1 = {"letter", "a-z | A-Z"};
-//    std::shared_ptr<nfa> letter_nfa = evaluate_regex (regex1, sym_table);
-//    sym_table["letter"] = letter_nfa;
-    // regular_expression regex2 = {"digit", "0-9"};
-    // std::shared_ptr<nfa> digit_nfa = evaluate_regex (regex2, sym_table);
-    // sym_table["digit"] = digit_nfa ;
-//    regular_expression regex3 = {"id", "letter (letter|digit)*"};
-//    std::shared_ptr<nfa> id_nfa = evaluate_regex (regex3, sym_table);
-//    sym_table["id"] = id_nfa;
-    // regular_expression regex4 = {"digits", "digit+"};
-    // std::shared_ptr<nfa> digits_nfa = evaluate_regex (regex4, sym_table);
-    // sym_table["digits"] = digits_nfa;
-    std::shared_ptr<nfa> num_nfa =build_nfa3()->copy();
-    // regular_expression regex5 = {"num", "digit+ | digit+ . digits ( \\L | E digits)"};
-    // std::shared_ptr<nfa> num_nfa = evaluate_regex (regex5, sym_table);
-    // sym_table["num"] = digits_nfa;
+    regular_expression regex1 = {"letter", "a-z | A-Z"};
+    std::shared_ptr<nfa> letter_nfa = evaluate_regex (regex1, sym_table);
+    sym_table["letter"] = letter_nfa;
+    regular_expression regex2 = {"digit", "0-9"};
+    std::shared_ptr<nfa> digit_nfa = evaluate_regex (regex2, sym_table);
+    sym_table["digit"] = digit_nfa ;
+    regular_expression regex3 = {"id", "letter (letter|digit)*"};
+    std::shared_ptr<nfa> id_nfa = evaluate_regex (regex3, sym_table);
+    sym_table["id"] = id_nfa;
+    regular_expression regex4 = {"digits", "digit+"};
+    std::shared_ptr<nfa> digits_nfa = evaluate_regex (regex4, sym_table);
+    sym_table["digits"] = digits_nfa;
+     regular_expression regex5 = {"num", "digit+ | digit+ . digits ( \\L | E digits)"};
+     std::shared_ptr<nfa> num_nfa = evaluate_regex (regex5, sym_table);
+     sym_table["num"] = digits_nfa;
 
+    //    std::shared_ptr<nfa> num_nfa = digit_nfa->copy();
 
 //    letter_nfa->unify(digit_nfa);
 //    letter_nfa->unify(id_nfa);
