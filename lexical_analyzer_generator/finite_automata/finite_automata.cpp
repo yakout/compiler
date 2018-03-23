@@ -123,3 +123,7 @@ std::shared_ptr<char_set> fa::get_alphabet()
     return alphabet;
 }
 
+int fa::get_max_id() {
+    return max_id;
+}
+

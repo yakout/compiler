@@ -108,8 +108,11 @@ void nfa::unify(std::shared_ptr<nfa> nfa2)
     std::shared_ptr<char_set> eps = build_epsilon_transition();
 
     std::shared_ptr<nfa_state> s0 = std::make_shared<nfa_state>(nfa_state (0, START, eps));
+//    visualize();
     renamify(1);
-    nfa2->renamify(acceptance_states.front()->get_id() + 1);
+//    visualize();
+    nfa2->renamify(max_id + 1);
+//    nfa2->visualize();
     std::shared_ptr<nfa_state> sf = std::make_shared<nfa_state>(
       nfa_state (nfa2->acceptance_states.front()->get_id() + 1, ACCEPTANCE, eps));
 
@@ -172,6 +175,8 @@ std::shared_ptr<char_set> nfa::build_epsilon_transition()
 }
 
 
+int renamifiy_start_index = 0;
+
 /**
  * @brief util function for renamify.
  * @details dfs that iterates the nfa and remame it's states ids starting from the given id.
@@ -179,10 +184,10 @@ std::shared_ptr<char_set> nfa::build_epsilon_transition()
  * @param visited 
  * @param id the nfa's start_state will start naming from this id and increment it to rename next states.
  */
-void renamify_dfs (std::shared_ptr<state> curr_state, std::map<std::shared_ptr<state>, bool> &visited, state_id id)
+void renamify_dfs (std::shared_ptr<state> curr_state, std::map<std::shared_ptr<state>, bool> &visited)
 {
     visited[curr_state] = true;
-    curr_state->set_id(id); // update state_id
+    curr_state->set_id(renamifiy_start_index++); // update state_id
 
     std::map<std::string, std::vector<std::shared_ptr<nfa_state>>> transitions
             = std::static_pointer_cast<nfa_state>(curr_state)->get_transitions();
@@ -191,11 +196,11 @@ void renamify_dfs (std::shared_ptr<state> curr_state, std::map<std::shared_ptr<s
     {
         std::string label = edge.first;
         std::vector<std::shared_ptr<nfa_state>> next_states = edge.second;
+        int i = 1;
         for (auto state : next_states)
         {
             if (!visited[state]) {
-                //std::cout << state->get_id() << std::endl;
-                renamify_dfs(state, visited, id + 1);
+                renamify_dfs(state, visited);
             }
         }
     }
@@ -210,9 +215,9 @@ void renamify_dfs (std::shared_ptr<state> curr_state, std::map<std::shared_ptr<s
  */
 void nfa::renamify (state_id starting_id)
 {
+    renamifiy_start_index = starting_id;
     std::map<std::shared_ptr<state>, bool> visited;
-    renamify_dfs (start_state, visited, starting_id);
-    /*start_state->set_id(starting_id);
-    acceptance_states.front()->set_id(starting_id + 1);*/
+    renamify_dfs (start_state, visited);
+    max_id = renamifiy_start_index - 1;
 }
 

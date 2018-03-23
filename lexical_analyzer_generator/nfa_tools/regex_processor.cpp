@@ -26,17 +26,17 @@ STACK_OPERATOR convert_to_stack_operator(char c)
 /**
  * checks if c1 (new operator) is higher precdance than c2 (top of stack)
  */
-bool is_lower_or_equal (char c1, char c2)
+bool is_lower_or_equal (STACK_OPERATOR o1, STACK_OPERATOR o2)
 {
-    if ((c1 == STAR || c1 == PLUS) && (c2 == STAR || c2 == PLUS))
+    if ((o1 == STAR || o1 == PLUS) && (o2 == STAR || o2 == PLUS))
         return true; // equal
-    else if ((c1 == STAR || c1 == PLUS))
+    else if ((o1 == STAR || o1 == PLUS))
         return false;
-    else if (c1 == CONCAT && (c2 == STAR || c2 == PLUS || c2 == CONCAT))
+    else if (o1 == CONCAT && (o2 == STAR || o2 == PLUS || o2 == CONCAT))
         return true;
-    else if (c1 == CONCAT)
+    else if (o1 == CONCAT)
         return false;
-    /// UNION Case always true
+    // UNION Case always true
     return true;
 }
 
@@ -109,7 +109,7 @@ std::shared_ptr <nfa> evaluate_regex (regular_expression regex,
         if (is_regex_operator(regex_line[i]) || regex_line[i] == LEFT_PAREN_SYMBOL)
         {
             while (regex_line[i] != LEFT_PAREN_SYMBOL && !operators.empty()
-                   && is_lower_or_equal (regex_line[i], operators.top()))
+                   && is_lower_or_equal (convert_to_stack_operator(regex_line[i]), operators.top()))
             {
                 if (!perform_operation_on_stack (operators, values))
                     return nullptr;
