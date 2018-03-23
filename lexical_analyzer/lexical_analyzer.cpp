@@ -35,23 +35,17 @@ int string_to_integer (std::string &);
  *  Generates a vector of a given size of DFA states adjusting their
  *  character sets according to all possible inputs of transition table.
  */
-std::vector<std::shared_ptr<dfa_state>> generate_dfa_states (int count
-                                , int start_state_id
-                                , std::vector<std::string> &transition_table_inputs
-                                , std::vector<int> &acceptance_states_ids
-                                , std::queue<std::string> &token_classes);
-
-/**
- *  Checks whether the DFA state represented by the given ID is a start
- *  state or not.
- */
-bool is_start_dfa_state (int, int);
+std::vector<std::shared_ptr<dfa_state>> generate_dfa_states (int
+                        , int start_state_id
+                        , std::vector<std::string> &
+                        , std::vector<acceptance_state> &);
 
 /**
  *  Checks whether the DFA state represented by the given ID is an
- *  acceptance state or not.
+ *  acceptance state or not if yes it returns the index of this acceptance
+ *  state info in the acceptance states info vector else it returns -1.
  */
-bool is_acceptance_dfa_state (int, std::vector<int> &);
+int is_acceptance_dfa_state (int, std::vector<acceptance_state> &);
 
 /**
  *  Builds a character set using all transition table possible inputs.
@@ -74,7 +68,7 @@ void adjust_dfa_state_transitions (std::vector<std::shared_ptr<dfa_state>> &
  */
 std::vector<std::shared_ptr<state>> get_acceptance_states_from_ids (
                                     std::vector<std::shared_ptr<dfa_state>> &
-                                    ,std::vector<int> &);
+                                    ,std::vector<acceptance_state> &);
 
 /**
  *  Adds state objects to DFA object.
@@ -104,7 +98,6 @@ std::shared_ptr<dfa> lexical_analyzer::parse_lexical_analyzer_machine () {
     std::string line;
     std::vector<std::string> vec;
     std::vector<std::shared_ptr<dfa_state>> dfa_states;
-    std::queue<std::string> token_classes;
     int line_counter = 0;
     while (std::getline (lex_in_file, line)) {
         split_str_on_space (vec, line);
@@ -118,8 +111,10 @@ std::shared_ptr<dfa> lexical_analyzer::parse_lexical_analyzer_machine () {
             while (acceptance_states_count--
                             && std::getline (lex_in_file, line)) {
                 split_str_on_space (vec, line);
-                acceptance_states_ids.push_back (string_to_integer (vec[0]));
-                token_classes.push (vec[1]);
+                acceptance_state accept_state;
+                accept_state.state_id = string_to_integer (vec[0]);
+                accept_state.token_class = vec[1];
+                acceptance_states_info.push_back (accept_state);
                 vec.clear ();
             }
         } else if (line_counter == TRANSITION_TABLE_INPUT_LINE) {
@@ -127,7 +122,7 @@ std::shared_ptr<dfa> lexical_analyzer::parse_lexical_analyzer_machine () {
             transition_table_inputs = vec;
             dfa_states = generate_dfa_states (total_states
                                 , start_state_id, transition_table_inputs
-                                , acceptance_states_ids, token_classes);
+                                , acceptance_states_info);
         } else {
             adjust_dfa_state_transitions (dfa_states, vec
                                                     , transition_table_inputs);
@@ -137,7 +132,7 @@ std::shared_ptr<dfa> lexical_analyzer::parse_lexical_analyzer_machine () {
     }
 
     std::vector<std::shared_ptr<state>> acceptance_states = get_acceptance_states_from_ids (
-                    dfa_states, acceptance_states_ids);
+                    dfa_states, acceptance_states_info);
     std::shared_ptr<dfa> new_dfa (new dfa (dfa_states[start_state_id],
                                                     acceptance_states, total_states));
     add_states_to_dfa (new_dfa, dfa_states);
@@ -178,18 +173,17 @@ int string_to_integer (std::string &str) {
 std::vector<std::shared_ptr<dfa_state>> generate_dfa_states (int count
                             , int start_state_id
                             , std::vector<std::string> &transition_table_inputs
-                            , std::vector<int> &acceptance_states_ids
-                            , std::queue<std::string> &token_classes) {
+                            , std::vector<acceptance_state> &acceptance_states_info) {
     std::vector<std::shared_ptr<dfa_state>> dfa_states_vec;
     for (unsigned int i = 0 ; i < count ; i++) {
         std::shared_ptr<char_set> dfa_state_char_set;
         build_char_set (dfa_state_char_set, transition_table_inputs);
         std::shared_ptr<dfa_state> s;
-        if (is_acceptance_dfa_state (i, acceptance_states_ids)) {
+        int acceptance_state_index = is_acceptance_dfa_state (i, acceptance_states_info);
+        if (acceptance_state_index != -1) {
             s = std::make_shared<dfa_state>(dfa_state (i, state_type::ACCEPTANCE
-                                , dfa_state_char_set, token_classes.front ()));
-            token_classes.pop ();
-        } else if (is_start_dfa_state (i, start_state_id)) {
+                , dfa_state_char_set, acceptance_states_info[acceptance_state_index].token_class));
+        } else if (i == start_state_id) {
             s = std::make_shared<dfa_state>(dfa_state (i, state_type::START
                                                 , dfa_state_char_set));
         } else {
@@ -201,17 +195,13 @@ std::vector<std::shared_ptr<dfa_state>> generate_dfa_states (int count
     return dfa_states_vec;
 }
 
-bool is_start_dfa_state (int state_id, int start_state_id) {
-    return state_id == start_state_id;
-}
-
-bool is_acceptance_dfa_state (int state_id
-                                , std::vector<int> &acceptance_states_ids) {
-    for (auto i : acceptance_states_ids) {
-        if (i == state_id)
-            return true;
+int is_acceptance_dfa_state (int state_id
+                    , std::vector<acceptance_state> &acceptance_states_info) {
+    for (int i = 0 ; i < acceptance_states_info.size () ; i++) {
+        if (acceptance_states_info[i].state_id == state_id)
+            return i;
     }
-    return false;
+    return -1;
 }
 
 void build_char_set (std::shared_ptr<char_set> ch_set
@@ -242,10 +232,10 @@ void adjust_dfa_state_transitions (std::vector<std::shared_ptr<dfa_state>>
 
 std::vector<std::shared_ptr<state>> get_acceptance_states_from_ids (
                         std::vector<std::shared_ptr<dfa_state>> &dfa_states_vec
-                                    ,std::vector<int> &acceptance_states_ids) {
+                                    ,std::vector<acceptance_state> &acceptance_states_info) {
     std::vector<std::shared_ptr<state>> acceptance_dfa_states;
-    for (auto i : acceptance_states_ids) {
-        acceptance_dfa_states.push_back (dfa_states_vec[i]);
+    for (auto s : acceptance_states_info) {
+        acceptance_dfa_states.push_back (dfa_states_vec[s.state_id]);
     }
     return acceptance_dfa_states;
 }
