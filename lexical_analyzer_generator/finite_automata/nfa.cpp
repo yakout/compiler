@@ -92,6 +92,8 @@ void nfa::dfs (std::shared_ptr<state> curr_state, std::vector<bool> &visited,
                 {
                     label = "ϵ";
                 }
+                if (label == "\\")
+                    label += '\\';
                 *vis << curr_state->get_id() << " -> " << state->get_id() << " [ label = \"" << label << "\" ];\n";
             }
             if (!visited[state->get_id()]) 
