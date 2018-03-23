@@ -1,17 +1,18 @@
 #include "lexical_analyzer.h"
+#include <iostream>
 #include <fstream>
 #include <sstream>
+#include <queue>
 #include <algorithm>
 
 /**
  *  Definitions of some constants representing the lines ordering within
  *  the lexical analyzer's transition table file.
  */
-#define START_STATE_LINE 0
-#define ACCEPTANCE_STATES_LINE 1
-#define TOTAL_INPUTS_LINE 2
-#define TOTAL_STATES_LINE 3
-#define TRANSITION_TABLE_INPUT_LINE 4
+#define TOTAL_STATES_LINE 0
+#define START_STATE_LINE 1
+#define ACCEPTANCE_STATES_LINE 2
+#define TRANSITION_TABLE_INPUT_LINE 3
 
 /**
  *  Splits a string on whitespace as a delimiter and returns tokens in a vector.
@@ -34,9 +35,11 @@ int string_to_integer (std::string &);
  *  Generates a vector of a given size of DFA states adjusting their
  *  character sets according to all possible inputs of transition table.
  */
-std::vector<std::shared_ptr<dfa_state>> generate_dfa_states (int, int
-                , std::vector<std::string> &
-                , std::vector<int> &);
+std::vector<std::shared_ptr<dfa_state>> generate_dfa_states (int count
+                                , int start_state_id
+                                , std::vector<std::string> &transition_table_inputs
+                                , std::vector<int> &acceptance_states_ids
+                                , std::queue<std::string> &token_classes);
 
 /**
  *  Checks whether the DFA state represented by the given ID is a start
@@ -51,14 +54,9 @@ bool is_start_dfa_state (int, int);
 bool is_acceptance_dfa_state (int, std::vector<int> &);
 
 /**
- *  Gets the state type of the DFA state represented by the gived ID.
- */
-state_type get_state_type (int, int, std::vector<int> &);
-
-/**
  *  Builds a character set using all transition table possible inputs.
  */
-void build_char_set (char_set &, std::vector<std::string> &);
+void build_char_set (std::shared_ptr<char_set> , std::vector<std::string> &);
 
 /**
  *  Adjusts DFA state outgoing transitions according to a row parsed
@@ -70,57 +68,80 @@ void adjust_dfa_state_transitions (std::vector<std::shared_ptr<dfa_state>> &
                                             , std::vector<std::string> &
                                             , std::vector<std::string> &);
 
+/**
+ *  Returns a vector of acceptance states containing the state objects
+ *  corresponding to the given acceptance states IDs.
+ */
+std::vector<std::shared_ptr<state>> get_acceptance_states_from_ids (
+                                    std::vector<std::shared_ptr<dfa_state>> &
+                                    ,std::vector<int> &);
+
+/**
+ *  Adds state objects to DFA object.
+ */
+void add_states_to_dfa (std::shared_ptr<dfa> &
+                                , std::vector<std::shared_ptr<dfa_state>> &);
+
 
 lexical_analyzer::lexical_analyzer (std::string &lexical_analyzer_file
                                                 , std::string &code_file) {
     this->lexical_analyzer_file = lexical_analyzer_file;
     this->code_file = code_file;
+    dfa_ptr = lexical_analyzer::parse_lexical_analyzer_machine ();
 }
 
 token lexical_analyzer::get_next_token () {
 
 }
 
+const std::shared_ptr<dfa> &lexical_analyzer::get_dfa() const {
+    return dfa_ptr;
+}
+
 std::shared_ptr<dfa> lexical_analyzer::parse_lexical_analyzer_machine () {
-    // Opens an input file stream on the lexical analyzer machine file.
     std::ifstream lex_in_file;
     lex_in_file.open (lexical_analyzer_file.c_str ());
     std::string line;
     std::vector<std::string> vec;
     std::vector<std::shared_ptr<dfa_state>> dfa_states;
+    std::queue<std::string> token_classes;
     int line_counter = 0;
-    while (getline (lex_in_file, line)) {
+    while (std::getline (lex_in_file, line)) {
         split_str_on_space (vec, line);
-        switch (line_counter) {
-            case START_STATE_LINE:
-                start_state_id = string_to_integer (vec[2]);
-                break;
-            case ACCEPTANCE_STATES_LINE:
-                for (unsigned int i = 2 ; i < vec.size () ; i++) {
-                    acceptance_states_ids.push_back (string_to_integer (vec[i]));
-                }
-                break;
-            case TOTAL_INPUTS_LINE:
-                total_inputs = string_to_integer (vec[2]);
-                break;
-            case TOTAL_STATES_LINE:
-                total_states = string_to_integer (vec[2]);
-                dfa_states = generate_dfa_states (total_states
-                                                    , start_state_id
-                                                    , transition_table_inputs
-                                                    , acceptance_states_ids);
-                break;
-            case TRANSITION_TABLE_INPUT_LINE:
-                vec.erase (vec.begin ());
-                transition_table_inputs = vec;
-                break;
-            default:
-                adjust_dfa_state_transitions (dfa_states, vec
+        if (line_counter == TOTAL_STATES_LINE) {
+            total_states = string_to_integer (vec[2]);
+        } else if (line_counter == START_STATE_LINE) {
+            start_state_id = string_to_integer (vec[2]);
+        } else if (line_counter == ACCEPTANCE_STATES_LINE) {
+            int acceptance_states_count = string_to_integer (vec[2]);
+            vec.clear ();
+            while (acceptance_states_count--
+                            && std::getline (lex_in_file, line)) {
+                split_str_on_space (vec, line);
+                acceptance_states_ids.push_back (string_to_integer (vec[0]));
+                token_classes.push (vec[1]);
+                vec.clear ();
+            }
+        } else if (line_counter == TRANSITION_TABLE_INPUT_LINE) {
+            vec.erase (vec.begin ());
+            transition_table_inputs = vec;
+            dfa_states = generate_dfa_states (total_states
+                                , start_state_id, transition_table_inputs
+                                , acceptance_states_ids, token_classes);
+        } else {
+            adjust_dfa_state_transitions (dfa_states, vec
                                                     , transition_table_inputs);
         }
         line_counter++;
         vec.clear ();
     }
+
+    std::vector<std::shared_ptr<state>> acceptance_states = get_acceptance_states_from_ids (
+                    dfa_states, acceptance_states_ids);
+    std::shared_ptr<dfa> new_dfa (new dfa (dfa_states[start_state_id],
+                                                    acceptance_states, total_states));
+    add_states_to_dfa (new_dfa, dfa_states);
+    return new_dfa;
 }
 
 void split_str_on_space (std::vector<std::string> &vec, std::string &str) {
@@ -133,9 +154,7 @@ void split_str_on_space (std::vector<std::string> &vec, std::string &str) {
 }
 
 void split_set_on_comma (std::vector<std::string> &vec, std::string &str) {
-    // Check whether it is a set or not.
     if (str.length () > 2) {
-        // Remove brackets.
         str.erase (remove (str.begin (), str.end (), '{'), str.end ());
         str.erase (remove (str.begin (), str.end (), '}'), str.end ());
     }
@@ -159,14 +178,24 @@ int string_to_integer (std::string &str) {
 std::vector<std::shared_ptr<dfa_state>> generate_dfa_states (int count
                             , int start_state_id
                             , std::vector<std::string> &transition_table_inputs
-                            , std::vector<int> &acceptance_states_ids) {
+                            , std::vector<int> &acceptance_states_ids
+                            , std::queue<std::string> &token_classes) {
     std::vector<std::shared_ptr<dfa_state>> dfa_states_vec;
     for (unsigned int i = 0 ; i < count ; i++) {
-        std::shared_ptr<char_set> dfa_state_char_set(new char_set());
-        build_char_set (*dfa_state_char_set, transition_table_inputs);
-        std::shared_ptr<dfa_state> s = std::make_shared<dfa_state> (
-                        dfa_state (i, get_state_type (i, start_state_id
-                                            , acceptance_states_ids), dfa_state_char_set));
+        std::shared_ptr<char_set> dfa_state_char_set;
+        build_char_set (dfa_state_char_set, transition_table_inputs);
+        std::shared_ptr<dfa_state> s;
+        if (is_acceptance_dfa_state (i, acceptance_states_ids)) {
+            s = std::make_shared<dfa_state>(dfa_state (i, state_type::ACCEPTANCE
+                                , dfa_state_char_set, token_classes.front ()));
+            token_classes.pop ();
+        } else if (is_start_dfa_state (i, start_state_id)) {
+            s = std::make_shared<dfa_state>(dfa_state (i, state_type::START
+                                                , dfa_state_char_set));
+        } else {
+            s = std::make_shared<dfa_state>(dfa_state (i, state_type::INTERMEDIATE
+                                                , dfa_state_char_set));
+        }
         dfa_states_vec.push_back (s);
     }
     return dfa_states_vec;
@@ -178,32 +207,21 @@ bool is_start_dfa_state (int state_id, int start_state_id) {
 
 bool is_acceptance_dfa_state (int state_id
                                 , std::vector<int> &acceptance_states_ids) {
-    for (unsigned int i = 0 ; i < acceptance_states_ids.size () ; i++) {
-        if (acceptance_states_ids[i] == state_id)
+    for (auto i : acceptance_states_ids) {
+        if (i == state_id)
             return true;
     }
     return false;
 }
 
-state_type get_state_type (int state_id, int start_state_id
-                                , std::vector<int> &acceptance_states_ids) {
-    if (is_start_dfa_state (state_id, start_state_id)) {
-        return state_type::START;
-    } else if (is_acceptance_dfa_state (state_id, acceptance_states_ids)) {
-        return state_type::ACCEPTANCE;
-    } else {
-        return state_type::INTERMEDIATE;
-    }
-}
-
-void build_char_set (char_set &ch_set
+void build_char_set (std::shared_ptr<char_set> ch_set
                         , std::vector<std::string> &transition_table_inputs) {
-    for (unsigned int i = 0 ; i < transition_table_inputs.size () ; i++) {
-        if (transition_table_inputs[i].length () == 3) {
-            ch_set.add_range (transition_table_inputs[i][0]
-                                        , transition_table_inputs[i][2]);
+
+    for (auto s : transition_table_inputs) {
+        if (s.length () == 3) {
+            ch_set->add_range (s[0], s[2]);
         } else {
-            ch_set.add_character (transition_table_inputs[i][0]);
+            ch_set->add_character (s[0]);
         }
     }
     return;
@@ -219,5 +237,23 @@ void adjust_dfa_state_transitions (std::vector<std::shared_ptr<dfa_state>>
                         transition_table_inputs[i - 1]
                         , dfa_states_vec[string_to_integer (vec[i])]);
         }
+    }
+}
+
+std::vector<std::shared_ptr<state>> get_acceptance_states_from_ids (
+                        std::vector<std::shared_ptr<dfa_state>> &dfa_states_vec
+                                    ,std::vector<int> &acceptance_states_ids) {
+    std::vector<std::shared_ptr<state>> acceptance_dfa_states;
+    for (auto i : acceptance_states_ids) {
+        acceptance_dfa_states.push_back (dfa_states_vec[i]);
+    }
+    return acceptance_dfa_states;
+}
+
+
+void add_states_to_dfa (std::shared_ptr<dfa> &dfa_ptr
+                        , std::vector<std::shared_ptr<dfa_state>> &dfa_states) {
+    for (auto s : dfa_states) {
+        dfa_ptr->add_state (s);
     }
 }

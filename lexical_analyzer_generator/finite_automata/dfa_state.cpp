@@ -1,9 +1,10 @@
 #include "dfa_state.h"
 
-dfa_state::dfa_state (int id, state_type type, std::shared_ptr<char_set> st_ip)
+dfa_state::dfa_state (int id, state_type type, std::shared_ptr<char_set> st_ip, std::string token_class)
         : state (id, type, st_ip)
 {
     dfa_state::marked = false;
+    dfa_state::token_class = token_class;
 }
 
 dfa_state::dfa_state(std::set<std::shared_ptr<nfa_state>> nfa_states, state_id id) {
@@ -48,6 +49,10 @@ std::map<std::string, std::shared_ptr<dfa_state>> dfa_state::get_transitions()
 
 const std::set<std::shared_ptr<nfa_state>> &dfa_state::get_composing_nfa_states() const {
     return composing_nfa_states;
+}
+
+const std::string dfa_state::get_token_class () const {
+    return token_class;
 }
 
 bool dfa_state::is_marked() const {
