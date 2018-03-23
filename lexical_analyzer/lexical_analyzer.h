@@ -7,21 +7,20 @@
 #include <string>
 #include <vector>
 
-class lexical_analyzer
-{
+class lexical_analyzer {
 private:
   std::string lexical_analyzer_file;
   std::string code_file;
   int start_state_id;
   std::vector<int> acceptance_states_ids;
   int total_states;
-  int total_inputs;
   std::shared_ptr<dfa> dfa_ptr;
   std::vector<std::string> transition_table_inputs;
   std::shared_ptr<dfa> parse_lexical_analyzer_machine ();
 public:
   lexical_analyzer (std::string &, std::string &);
   token get_next_token ();
+  const std::shared_ptr<dfa> &get_dfa() const;
 };
 
 #endif // LEXICAL_ANALYZER_H

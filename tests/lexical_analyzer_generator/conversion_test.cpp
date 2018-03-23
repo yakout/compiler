@@ -4,13 +4,13 @@
 #include <iostream>
 #include <set>
 
-#include "finite_automata.h"
-#include "state.h"
-#include "nfa.h"
-#include "dfa.h"
-#include "nfa_state.h"
-#include "dfa_state.h"
-#include "../nfa_tools/regex_processor.h"
+#include "../../lexical_analyzer_generator/finite_automata/finite_automata.h"
+#include "../../lexical_analyzer_generator/finite_automata/state.h"
+#include "../../lexical_analyzer_generator/finite_automata/nfa.h"
+#include "../../lexical_analyzer_generator/finite_automata/dfa.h"
+#include "../../lexical_analyzer_generator/finite_automata/nfa_state.h"
+#include "../../lexical_analyzer_generator/finite_automata/dfa_state.h"
+#include "../../lexical_analyzer_generator/nfa_tools/regex_processor.h"
 
 #define EPSILON ""
 
