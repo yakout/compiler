@@ -221,7 +221,7 @@ int main(int argc, char** argv)
     //std::shared_ptr<nfa> my_nfa = build_nfa3();
     // std::shared_ptr<nfa> my_nfa = build_nfa3();
     // my_nfa->visualize();
-    regular_expression regex = {"letter", "(a-z)*|A-Z"};
+    regular_expression regex = {"letter", "A-Z|0-9"};
     std::map <std::string,std::shared_ptr<nfa>> sym_table;
     std::shared_ptr<nfa> my_nfa = evaluate_regex (regex, sym_table);
       my_nfa->visualize();
