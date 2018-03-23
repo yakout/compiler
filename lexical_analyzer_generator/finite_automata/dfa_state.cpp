@@ -1,6 +1,6 @@
 #include "dfa_state.h"
 
-dfa_state::dfa_state (int id, state_type type, char_set st_ip)
+dfa_state::dfa_state (int id, state_type type, std::shared_ptr<char_set> st_ip)
         : state (id, type, st_ip)
 {
     dfa_state::marked = false;

@@ -21,13 +21,13 @@ void draw_trans_table(std::shared_ptr<dfa> dfa)
 
 std::shared_ptr<nfa> build_nfa()
 {
-    char_set a_char_set;
-    a_char_set.add_character('a');
+    std::shared_ptr<char_set> a_char_set(new char_set());
+    a_char_set->add_character('a');
 
-    char_set b_char_set;
-    b_char_set.add_character('b');
+    std::shared_ptr<char_set> b_char_set(new char_set());
+    b_char_set->add_character('b');
 
-    char_set eps;
+    std::shared_ptr<char_set> eps(new char_set());
 
 
     std::shared_ptr<nfa_state> s0 = std::make_shared<nfa_state>(nfa_state (0, START, eps));
@@ -177,11 +177,11 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
 
 std::shared_ptr<nfa> build_nfa2()
 {
-    char_set a_char_set;
-    a_char_set.add_character('a');
+    std::shared_ptr<char_set> a_char_set(new char_set());
+    a_char_set->add_character('a');
 
-    char_set b_char_set;
-    b_char_set.add_character('b');
+    std::shared_ptr<char_set> b_char_set(new char_set());
+    b_char_set->add_character('b');
 
     std::shared_ptr<nfa> nfa1(new nfa(a_char_set, 1, 2));
     std::shared_ptr<nfa> nfa2(new nfa(b_char_set, 3, 4));
@@ -195,12 +195,12 @@ std::shared_ptr<nfa> build_nfa2()
 
 std::shared_ptr<nfa> build_nfa3()
 {
-  char_set a_char_set = char_set();
-  a_char_set.add_character ('a');
+  std::shared_ptr<char_set> a_char_set(new char_set());
+  a_char_set->add_character ('a');
 
 
-  char_set b_char_set = char_set();
-  b_char_set.add_character ('b');
+  std::shared_ptr<char_set> b_char_set(new char_set());
+  b_char_set->add_character ('b');
 
   std::shared_ptr <nfa> nfa_a1_ptr (new nfa(a_char_set));
   std::shared_ptr <nfa> nfa_a2_ptr (new nfa(a_char_set));
@@ -218,12 +218,11 @@ std::shared_ptr<nfa> build_nfa3()
 
 int main(int argc, char** argv) {
     //std::shared_ptr<nfa> my_nfa = build_nfa3();
-    /*std::shared_ptr<nfa> my_nfa = build_nfa3();
-    my_nfa->visualize();*/
-    regular_expression regex = {"letter", "a-z"};
+    // std::shared_ptr<nfa> my_nfa = build_nfa3();
+    // my_nfa->visualize();
+    regular_expression regex = {"letter", "a"};
     std::map <std::string,std::shared_ptr<nfa>> sym_table;
     std::shared_ptr<nfa> my_nfa = evaluate_regex (regex, sym_table);
-    if (my_nfa != nullptr)
       my_nfa->visualize();
   /*  std::shared_ptr<dfa> my_dfa = convert_nfa_dfa(my_nfa);
     std::cout << my_dfa->get_total_states();

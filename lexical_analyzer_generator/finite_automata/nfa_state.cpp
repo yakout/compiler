@@ -1,6 +1,6 @@
 #include "nfa_state.h"
 
-nfa_state::nfa_state (int id, state_type type, char_set st_ip)
+nfa_state::nfa_state (int id, state_type type, std::shared_ptr<char_set> st_ip)
         : state (id, type, st_ip)
 {
 
@@ -42,7 +42,7 @@ nfa_state::get_transitions() const
 
 std::vector<std::shared_ptr<nfa_state>> nfa_state::get_next_state (char input)
 {
-    return transitions[state_input.get_string(input)];
+    return transitions[state_input->get_string(input)];
 }
 
 std::shared_ptr<state> nfa_state::copy() {

@@ -9,8 +9,8 @@ class nfa : public fa {
 public:
     explicit nfa(std::shared_ptr<state> start_state,
         std::vector<std::shared_ptr<state>> acceptance_states, int total_states);
-    explicit nfa(char_set st_ip, int id1, int id2);
-    explicit nfa(char_set c_s);
+    explicit nfa(std::shared_ptr<char_set> st_ip, int id1, int id2);
+    explicit nfa(std::shared_ptr<char_set> c_s);
     void dfs (std::shared_ptr<state> state, std::vector<bool> &visited,
               std::shared_ptr<std::ofstream> vis, bool update_acceptance_states) override;
     void unify(std::shared_ptr<nfa>);
@@ -20,7 +20,7 @@ public:
 
     void renamify(state_id starting_id);
 
-    static char_set build_epsilon_transition();
+    static std::shared_ptr<char_set> build_epsilon_transition();
 };
 
 

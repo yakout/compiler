@@ -15,12 +15,12 @@
 
 /**
  *  Splits a string on whitespace as a delimiter and returns tokens in a vector.
- */ 
+ */
 void split_str_on_space (std::vector<std::string> &, std::string &);
 
 /**
  *  Splits a set of elements represented by a string on comma as a delimiter
- *  , removes brackets and returns tokens in a vector, example for the 
+ *  , removes brackets and returns tokens in a vector, example for the
  *  input string: {1,2,3}.
  */
 void split_set_on_comma (std::vector<std::string> &, std::string &);
@@ -62,8 +62,8 @@ void build_char_set (char_set &, std::vector<std::string> &);
 
 /**
  *  Adjusts DFA state outgoing transitions according to a row parsed
- *  from the transition table, example: "0   1   2   3" which means that 
- *  that state(0) will go to state(1) upon getting any input that matches 
+ *  from the transition table, example: "0   1   2   3" which means that
+ *  that state(0) will go to state(1) upon getting any input that matches
  *  input specified by the first column of the transition table.
  */
 void adjust_dfa_state_transitions (std::vector<std::shared_ptr<dfa_state>> &
@@ -78,7 +78,7 @@ lexical_analyzer::lexical_analyzer (std::string &lexical_analyzer_file
 }
 
 token lexical_analyzer::get_next_token () {
-    
+
 }
 
 std::shared_ptr<dfa> lexical_analyzer::parse_lexical_analyzer_machine () {
@@ -162,8 +162,8 @@ std::vector<std::shared_ptr<dfa_state>> generate_dfa_states (int count
                             , std::vector<int> &acceptance_states_ids) {
     std::vector<std::shared_ptr<dfa_state>> dfa_states_vec;
     for (unsigned int i = 0 ; i < count ; i++) {
-        char_set dfa_state_char_set;
-        build_char_set (dfa_state_char_set, transition_table_inputs);
+        std::shared_ptr<char_set> dfa_state_char_set(new char_set());
+        build_char_set (*dfa_state_char_set, transition_table_inputs);
         std::shared_ptr<dfa_state> s = std::make_shared<dfa_state> (
                         dfa_state (i, get_state_type (i, start_state_id
                                             , acceptance_states_ids), dfa_state_char_set));
@@ -183,7 +183,7 @@ bool is_acceptance_dfa_state (int state_id
             return true;
     }
     return false;
-} 
+}
 
 state_type get_state_type (int state_id, int start_state_id
                                 , std::vector<int> &acceptance_states_ids) {
@@ -209,7 +209,7 @@ void build_char_set (char_set &ch_set
     return;
 }
 
-void adjust_dfa_state_transitions (std::vector<std::shared_ptr<dfa_state>> 
+void adjust_dfa_state_transitions (std::vector<std::shared_ptr<dfa_state>>
                         &dfa_states_vec, std::vector<std::string> &vec
                         , std::vector<std::string> &transition_table_inputs) {
     int curr_dfa_state = string_to_integer (vec[0]);

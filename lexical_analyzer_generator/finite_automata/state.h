@@ -22,9 +22,9 @@ class state
 protected:
     state_id id;
     state_type type;
-    char_set state_input;
+    std::shared_ptr<char_set> state_input;
 public:
-    state (state_id id, state_type type, char_set st_ip);
+    state (state_id id, state_type type, std::shared_ptr<char_set> st_ip);
     state(const state&);
     state();
 
@@ -38,7 +38,7 @@ public:
     // getters
     const state_id& get_id() const;
     const state_type& get_type() const;
-    const char_set& get_char_set() const;
+    const std::shared_ptr<char_set> get_char_set() const;
 
     // setters
     void set_type(state_type);

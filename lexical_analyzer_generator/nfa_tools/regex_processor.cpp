@@ -1,8 +1,10 @@
 #include "regex_processor.h"
 
+#include <iostream>
+
 bool is_operator (char c)
 {
-  return c == UNION || c == STAR || c == CONCAT || c == PLUS;
+  return c == UNION || c == STAR || c == PLUS;
 }
 
 
@@ -63,8 +65,8 @@ bool perform_operation_on_stack (std::stack<char> &operators,
 
 std::shared_ptr<nfa> build_nfa(char lower, char upper)
 {
-  char_set c_s;
-  c_s.add_range(lower, upper);
+  std::shared_ptr<char_set> c_s(new char_set());
+  c_s->add_range(lower, upper);
   std::shared_ptr<nfa> nfa_c(new nfa(c_s));
   return nfa_c;
 }
@@ -72,9 +74,9 @@ std::shared_ptr<nfa> build_nfa(char lower, char upper)
 
 std::shared_ptr<nfa> build_nfa(char c)
 {
-  char_set c_s;
+  std::shared_ptr<char_set> c_s(new char_set());
   if (c != EPS)
-    c_s.add_character(c);
+    c_s->add_character(c);
   std::shared_ptr<nfa> nfa_c(new nfa(c_s));
   return nfa_c;
 }
@@ -106,7 +108,7 @@ std::shared_ptr <nfa> evaluate_regex (regular_expression regex,
           {
             if (!perform_operation_on_stack (operators, values))
               return nullptr;
-            if (operators.empty()) return nullptr;  
+            if (operators.empty()) return nullptr;
           }
           operators.pop();
         }
@@ -114,7 +116,7 @@ std::shared_ptr <nfa> evaluate_regex (regular_expression regex,
         {
           if (values.empty()) return nullptr;
           char lower;
-          std::map <char, bool> mp = (values.top())->get_start_state()->get_char_set().get_characters();
+          std::map <char, bool> mp = (values.top())->get_start_state()->get_char_set()->get_characters();
           if (mp.size() != 1) return nullptr;
           for (auto const& c : mp)
           {
@@ -130,6 +132,10 @@ std::shared_ptr <nfa> evaluate_regex (regular_expression regex,
             {
               if (regex_line[i + 1] == LAMBDA) return nullptr;
               upper = regex_line[++i];
+            }
+            else
+            {
+              upper = regex_line[i];
             }
           }
           if (lower > upper) return nullptr; // TODO : Throw Exception
@@ -151,8 +157,8 @@ std::shared_ptr <nfa> evaluate_regex (regular_expression regex,
         else
         {
           // char
-          while (!is_operator(regex_line[i]) || regex_line[i] != LEFT_PAREN
-                 || regex_line[i] != RIGHT_PAREN || regex_line[i] != RIGHT_PAREN)
+          while (!is_operator(regex_line[i]) && regex_line[i] != LEFT_PAREN
+                 && regex_line[i] != RIGHT_PAREN && regex_line[i] != RANGE_SEP)
           {
             temp += regex_line[i++];
             if (i == regex_line.length())
@@ -162,6 +168,9 @@ std::shared_ptr <nfa> evaluate_regex (regular_expression regex,
           {
             i--;
             std::shared_ptr<nfa> nfa1 = build_nfa(temp[0]); // nfa(1)
+
+            std::shared_ptr<char_set> cs = nfa1->get_start_state()->get_char_set();
+            std::cout << (cs == nullptr) << std::endl;
             temp = temp.substr(1, temp.length() - 1); // abcd* only concats abc
             for (auto const& c : temp)
             {
@@ -183,4 +192,5 @@ std::shared_ptr <nfa> evaluate_regex (regular_expression regex,
           if (!perform_operation_on_stack (operators, values))
             return nullptr;
     }
+    return values.top();
 }

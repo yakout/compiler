@@ -12,7 +12,7 @@ private:
     bool marked;
 
 public:
-    dfa_state (int id, state_type type, char_set st_ip);
+    dfa_state (int id, state_type type, std::shared_ptr<char_set> st_ip);
     explicit dfa_state(std::set<std::shared_ptr<nfa_state>> nfa_states, state_id id);
     void insert_transition (std::string input, std::shared_ptr<state> const& state) override;
     std::shared_ptr<dfa_state> get_next_state (char input);

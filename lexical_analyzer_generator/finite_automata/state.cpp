@@ -1,6 +1,6 @@
 #include "state.h"
 
-state::state (state_id id, state_type type, char_set st_ip)
+state::state (state_id id, state_type type, std::shared_ptr<char_set> st_ip)
 {
     this->id = id;
     this->type = type;
@@ -27,7 +27,7 @@ const state_type& state::get_type() const
     return type;
 }
 
-const char_set& state::get_char_set() const
+const std::shared_ptr<char_set> state::get_char_set() const
 {
   return state_input;
 }

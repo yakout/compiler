@@ -50,6 +50,3 @@ const std::vector <std::shared_ptr<char_range>> &char_set::get_ranges() const
 {
     return ranges;
 }
-
-
-

@@ -25,28 +25,28 @@ void add_transitions_from_char_set (char_set st_ip,
   }
 }
 
-nfa::nfa(char_set st_ip, int id1, int id2)
+nfa::nfa(std::shared_ptr<char_set> st_ip, int id1, int id2)
     : fa()
 {
-    char_set eps = build_epsilon_transition ();
+    std::shared_ptr<char_set> eps = build_epsilon_transition ();
     std::shared_ptr<nfa_state> s0 = std::make_shared<nfa_state>(nfa_state (id1, START, st_ip));
     std::shared_ptr<nfa_state> sf = std::make_shared<nfa_state>(nfa_state (id2, ACCEPTANCE, eps));
 
-    add_transitions_from_char_set (st_ip, s0, sf);
+    add_transitions_from_char_set (*st_ip, s0, sf);
 
 
     start_state = s0;
     acceptance_states.push_back(sf);
 }
 
-nfa::nfa (char_set c_s)
+nfa::nfa (std::shared_ptr<char_set> c_s)
 : fa()
 {
-
+    std::shared_ptr<char_set> eps = build_epsilon_transition();
     std::shared_ptr<nfa_state> s0 = std::make_shared<nfa_state>(nfa_state (0, START, c_s));
     std::shared_ptr<nfa_state> s1 =
-      std::make_shared<nfa_state>(nfa_state (1, ACCEPTANCE, build_epsilon_transition()));
-    add_transitions_from_char_set (c_s, s0, s1);
+      std::make_shared<nfa_state>(nfa_state (1, ACCEPTANCE, eps));
+    add_transitions_from_char_set (*c_s, s0, s1);
     start_state = s0;
     acceptance_states.push_back(s1);
 }
@@ -97,7 +97,7 @@ void nfa::dfs (std::shared_ptr<state> curr_state, std::vector<bool> &visited,
 
 void nfa::unify(std::shared_ptr<nfa> nfa2)
 {
-    char_set eps;
+    std::shared_ptr<char_set> eps = build_epsilon_transition();
 
     std::shared_ptr<nfa_state> s0 = std::make_shared<nfa_state>(nfa_state (0, START, eps));
     renamify(1);
@@ -157,9 +157,9 @@ void nfa::star()
     acceptance_states.front()->insert_transition(EPSILON, start_state);
 }
 
-char_set nfa::build_epsilon_transition()
+std::shared_ptr<char_set> nfa::build_epsilon_transition()
 {
-    char_set empty_char_set;
+    std::shared_ptr<char_set> empty_char_set(new char_set());
     return empty_char_set;
 }
 
