@@ -18,7 +18,9 @@ dfa::dfa()
 
 /// TODO: Re-check this!
 void dfa::dfs(std::shared_ptr<state> curr_state, std::vector<bool> &visited,
-              std::shared_ptr<std::ofstream> vis, bool update_acceptance_states) {
+              std::shared_ptr<std::ofstream> vis, bool update_acceptance_states,
+              std::shared_ptr<char_set> alphabet) 
+{
     visited[curr_state->get_id()] = true;
     if (update_acceptance_states && curr_state->get_type() == ACCEPTANCE)
     {
@@ -27,17 +29,6 @@ void dfa::dfs(std::shared_ptr<state> curr_state, std::vector<bool> &visited,
 
     std::map<std::string, std::shared_ptr<dfa_state>> transitions
             = std::static_pointer_cast<dfa_state>(curr_state)->get_transitions();
-
-//    std::cout << "Current state = " << curr_state->get_id() << "\n";
-//    for (auto trans : transitions) {
-//        std::cout << "Key = " << trans.first << ", Destinations: ";
-//        for (auto curr : trans.second)
-//        {
-//            std::cout << curr->get_id() << " ";
-//        }
-//        std::cout << "\n";
-//    }
-//    std::cout << "\n";
 
     for (auto edge : transitions)
     {
@@ -52,7 +43,7 @@ void dfa::dfs(std::shared_ptr<state> curr_state, std::vector<bool> &visited,
             *vis << curr_state->get_id() << " -> " << next_state->get_id() << " [ label = \"" << label << "\" ];\n";
         }
         if (!visited[next_state->get_id()]) {
-            dfs(next_state, visited, vis, update_acceptance_states);
+            dfs(next_state, visited, vis, update_acceptance_states, alphabet);
         }
     }
 }

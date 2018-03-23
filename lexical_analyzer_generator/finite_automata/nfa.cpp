@@ -4,7 +4,8 @@
 #include "nfa_state.h"
 
 nfa::nfa(std::shared_ptr<state> start_state, std::vector<std::shared_ptr<state>> acceptance_states, int total_states)
-        : fa(start_state, acceptance_states, total_states) {
+        : fa(start_state, acceptance_states, total_states) 
+{
     nfa::start_state = start_state;
     nfa::acceptance_states = acceptance_states;
     nfa::total_states = total_states;
@@ -51,8 +52,12 @@ nfa::nfa (std::shared_ptr<char_set> c_s)
     acceptance_states.push_back(s1);
 }
 
+
+
+
 void nfa::dfs (std::shared_ptr<state> curr_state, std::vector<bool> &visited,
-               std::shared_ptr<std::ofstream> vis, bool update_acceptance_states)
+               std::shared_ptr<std::ofstream> vis, bool update_acceptance_states,
+                std::shared_ptr<char_set> alphabet)
 {
     visited[curr_state->get_id()] = true;
     if (update_acceptance_states && curr_state->get_type() == ACCEPTANCE)
@@ -63,17 +68,6 @@ void nfa::dfs (std::shared_ptr<state> curr_state, std::vector<bool> &visited,
     std::map<std::string, std::vector<std::shared_ptr<nfa_state>>> transitions
             = std::static_pointer_cast<nfa_state>(curr_state)->get_transitions();
 
-//    std::cout << "Current state = " << curr_state->get_id() << "\n";
-//    for (auto trans : transitions) {
-//        std::cout << "Key = " << trans.first << ", Destinations: ";
-//        for (auto curr : trans.second)
-//        {
-//            std::cout << curr->get_id() << " ";
-//        }
-//        std::cout << "\n";
-//    }
-//    std::cout << "\n";
-
     for (auto edge : transitions)
     {
         std::string label = edge.first;
@@ -81,14 +75,17 @@ void nfa::dfs (std::shared_ptr<state> curr_state, std::vector<bool> &visited,
         for (auto state : next_states)
         {
             // Visualize
-            if (vis != nullptr) {
-                if (label.empty()) {
+            if (vis != nullptr) 
+            {
+                if (label.empty()) 
+                {
                     label = "ϵ";
                 }
                 *vis << curr_state->get_id() << " -> " << state->get_id() << " [ label = \"" << label << "\" ];\n";
             }
-            if (!visited[state->get_id()]) {
-                dfs(state, visited, vis, update_acceptance_states);
+            if (!visited[state->get_id()]) 
+            {
+                dfs(state, visited, vis, update_acceptance_states, alphabet);
             }
         }
     }
@@ -164,8 +161,14 @@ std::shared_ptr<char_set> nfa::build_epsilon_transition()
 }
 
 
-void renamify_dfs (std::shared_ptr<state> curr_state, std::map<std::shared_ptr<state>, bool> &visited,
-                   std::shared_ptr<std::ofstream> vis, state_id id)
+/**
+ * @brief util function for renamify.
+ * @details dfs that iterates the nfa and remame it's states ids starting from the given id.
+ * 
+ * @param visited 
+ * @param id the nfa's start_state will start naming from this id and increment it to rename next states.
+ */
+void renamify_dfs (std::shared_ptr<state> curr_state, std::map<std::shared_ptr<state>, bool> &visited, state_id id)
 {
     visited[curr_state] = true;
     curr_state->set_id(id); // update state_id
@@ -181,16 +184,24 @@ void renamify_dfs (std::shared_ptr<state> curr_state, std::map<std::shared_ptr<s
         {
             if (!visited[state]) {
                 //std::cout << state->get_id() << std::endl;
-                renamify_dfs(state, visited, vis, id + 1);
+                renamify_dfs(state, visited, id + 1);
             }
         }
     }
 }
 
+/**
+ * @brief rename nfa's states ids.
+ * @details the nfa's start_state will start naming from given starting_id 
+ * and increment it to rename next states.
+ * 
+ * @param starting_id 
+ */
 void nfa::renamify (state_id starting_id)
 {
     std::map<std::shared_ptr<state>, bool> visited;
-    renamify_dfs (start_state, visited, nullptr, starting_id);
+    renamify_dfs (start_state, visited, starting_id);
     /*start_state->set_id(starting_id);
     acceptance_states.front()->set_id(starting_id + 1);*/
 }
+
