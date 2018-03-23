@@ -216,3 +216,10 @@ void nfa::renamify (state_id starting_id)
     acceptance_states.front()->set_id(starting_id + 1);*/
 }
 
+std::shared_ptr<char_set> nfa::get_alphabet()
+{
+    std::shared_ptr<char_set> alphabet(new char_set());
+    std::vector<bool> visited(100); // TODO
+    dfs(start_state, visited, nullptr, true, alphabet);
+    return alphabet;
+}

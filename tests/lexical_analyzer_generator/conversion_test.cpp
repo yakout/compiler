@@ -253,11 +253,8 @@ std::set<std::shared_ptr<nfa_state>> e_closure(const std::set<std::shared_ptr<nf
 }
 
 std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
-
-    // Constructing all possible alphabet(could be sth like nfa->get_alphabet()).
-    std::shared_ptr<char_set> alphabet = nfa_ptr->get_alphabet();
-
     std::shared_ptr<dfa> dfa_ptr(new dfa());
+    dfa_ptr->set_alphabet(nfa_ptr->get_alphabet());
     std::set<std::shared_ptr<nfa_state>> vec;
     vec.insert((std::shared_ptr<nfa_state> &&) nfa_ptr->get_start_state());
     std::shared_ptr<dfa_state> init_dfa_state(new dfa_state(e_closure(vec),
@@ -270,14 +267,14 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
     while ((curr_state = dfa_ptr->get_unmarked_state()) != nullptr)
     {
         curr_state->set_marked(true);
-        for (const auto &curr_char : alphabet->get_characters())
+        for (const auto &curr_char : dfa_ptr->get_alphabet()->get_characters())
         {
             std::shared_ptr<dfa_state> new_state(new dfa_state(e_closure(move(curr_state->get_composing_nfa_states(),
                                                                               curr_char.first)),
                                     static_cast<state_id>(dfa_ptr->get_total_states())));
             if (new_state->equals(curr_state))
             {
-                curr_state->insert_transition(alphabet->get_string(curr_char.first), curr_state);
+                curr_state->insert_transition(dfa_ptr->get_alphabet()->get_string(curr_char.first), curr_state);
                 continue;
             }
             if (!dfa_ptr->contains(new_state))
@@ -297,13 +294,13 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
                     }
                 }
             }
-            curr_state->insert_transition(alphabet->get_string(curr_char.first), new_state);
+            curr_state->insert_transition(dfa_ptr->get_alphabet()->get_string(curr_char.first), new_state);
             if (new_state->get_type() == ACCEPTANCE)
             {
                 dfa_ptr->add_acceptance_state(new_state);
             }
         }
-        for (const auto &curr_range : alphabet->get_ranges())
+        for (const auto &curr_range : dfa_ptr->get_alphabet()->get_ranges())
         {
             std::shared_ptr<dfa_state> new_state(new dfa_state(e_closure(move(curr_state->get_composing_nfa_states(),
                                                                               curr_range->get_range_string())),
@@ -384,7 +381,7 @@ std::shared_ptr<nfa> build_nfa3()
 
 void minimize(std::shared_ptr<dfa> dfa_ptr)
 {
-    
+
 }
 
 int main(int argc, char** argv) {

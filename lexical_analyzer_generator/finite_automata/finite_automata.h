@@ -40,8 +40,6 @@ public:
 	 * @details returns set of all intpu characters to states in nfa.
 	 * @return char_set of all characters and ranges.
 	 */
-	 std::shared_ptr<char_set> get_alphabet();
-
 	// setters
 	void set_start_state(std::shared_ptr<state>);
 	void set_acceptance_states(std::vector<std::shared_ptr<state>>);
