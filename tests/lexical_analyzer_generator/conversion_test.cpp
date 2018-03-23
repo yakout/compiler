@@ -196,15 +196,12 @@ std::shared_ptr<nfa> build_nfa()
 
 std::set<std::shared_ptr<nfa_state>> move(const std::set<std::shared_ptr<nfa_state>> &nfa_states, char inp)
 {
-    std::cout << "Character to transition with = " << inp << "\n";
     std::set<std::shared_ptr<nfa_state>> reachable_states;
     for (const auto &state : nfa_states)
     {
         std::vector<std::shared_ptr<nfa_state>> curr_reached = state->get_next_state(inp);
-        std::cout << "Base state = " << state->get_id() << "\n";
         for (const auto &curr : curr_reached)
         {
-            std::cout << "Reached state = " << curr->get_id() << "\n";
             reachable_states.insert(curr);
         }
     }
@@ -232,8 +229,6 @@ std::set<std::shared_ptr<nfa_state>> e_closure(const std::set<std::shared_ptr<nf
             {
                 visited[curr->get_id()] = true;
                 reachable_states.insert(curr);
-                for (auto x :curr->get_char_set()->get_characters())
-                    std::cout << x.first << " ";
                 nfa_states_stack.push(curr);
             }
         }
@@ -244,9 +239,7 @@ std::set<std::shared_ptr<nfa_state>> e_closure(const std::set<std::shared_ptr<nf
 std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
 
     // Constructing all possible alphabet(could be sth like nfa->get_alphabet()).
-    char_set alphabet;
-    alphabet.add_character('a');
-    alphabet.add_character('b');
+    std::shared_ptr<char_set> alphabet = nfa_ptr->get_alphabet();
 
     std::shared_ptr<dfa> dfa_ptr(new dfa());
     std::set<std::shared_ptr<nfa_state>> vec;
@@ -261,31 +254,16 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
     while ((curr_state = dfa_ptr->get_unmarked_state()) != nullptr) // get_next_state returns next unmarked state or null if no more unmarked states in dfa_ptr.
     {
         curr_state->set_marked(true);
-        std::cout << "Current State = " << curr_state->get_id() << std::endl;
-        std::cout << "Composing states = \n";
-        for (auto curr : curr_state->get_composing_nfa_states()) {
-            std::cout << curr->get_id();
-            std::cout << ", transitions on: ";
-            for (auto x : curr->get_char_set()->get_characters())
-                std::cout << x.first << " ";
-            std::cout << "\n";
-        }
-        std::cout << std::endl;
         // Iterating over characters from alphabet.
-        for (const auto &inp : alphabet.get_characters())
+        for (const auto &inp : alphabet->get_characters())
         {
             std::shared_ptr<dfa_state> new_state(new dfa_state(e_closure(move(curr_state->get_composing_nfa_states(), inp.first)),
                                     static_cast<state_id>(dfa_ptr->get_total_states())));
             if (new_state->equals(curr_state))
             {
-                curr_state->insert_transition(alphabet.get_string(inp.first), curr_state);
+                curr_state->insert_transition(alphabet->get_string(inp.first), curr_state);
                 continue;
             }
-            std::cout << "New State = " << new_state->get_id() << std::endl;
-            for (auto curr : new_state->get_composing_nfa_states()) {
-                std::cout << curr->get_id() << " ";
-            }
-            std::cout << std::endl;
             if (!dfa_ptr->contains(new_state))
             {
                 dfa_ptr->add_state(new_state);
@@ -303,7 +281,7 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
                     }
                 }
             }
-            curr_state->insert_transition(alphabet.get_string(inp.first), new_state);
+            curr_state->insert_transition(alphabet->get_string(inp.first), new_state);
             if (new_state->get_type() == ACCEPTANCE)
             {
                 dfa_ptr->add_acceptance_state(new_state);
