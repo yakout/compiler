@@ -17,6 +17,47 @@
 void draw_trans_table(std::shared_ptr<dfa> dfa)
 {
 
+
+}
+
+std::shared_ptr<nfa> build_nfa1() {
+    char_set char_set_0;
+    char_set_0.add_character('0');
+
+    char_set char_set_1;
+    char_set_1.add_character('1');
+
+    char_set eps;
+
+    std::shared_ptr<nfa_state> s0 = std::make_shared<nfa_state>(nfa_state (0, START, eps));
+    std::shared_ptr<nfa_state> s1 = std::make_shared<nfa_state>(nfa_state (1, INTERMEDIATE, eps));
+    std::shared_ptr<nfa_state> s2 = std::make_shared<nfa_state>(nfa_state (2, INTERMEDIATE, char_set_0));
+    std::shared_ptr<nfa_state> s3 = std::make_shared<nfa_state>(nfa_state (3, INTERMEDIATE, eps));
+    std::shared_ptr<nfa_state> s4 = std::make_shared<nfa_state>(nfa_state (4, INTERMEDIATE, char_set_1));
+    std::shared_ptr<nfa_state> s5 = std::make_shared<nfa_state>(nfa_state (5, INTERMEDIATE, eps));
+    std::shared_ptr<nfa_state> s6 = std::make_shared<nfa_state>(nfa_state (6, ACCEPTANCE, eps));
+
+    s0->insert_transition (EPSILON, s1);
+    s0->insert_transition (EPSILON, s2);
+    s0->insert_transition (EPSILON, s4);
+    s1->insert_transition (EPSILON, s2);
+    s1->insert_transition ("0", s3);
+    s1->insert_transition ("1", s3);
+    s2->insert_transition (EPSILON, s4);
+    s2->insert_transition ("0", s3);
+    s3->insert_transition ("1", s5);
+    s3->insert_transition (EPSILON, s6);
+    s3->insert_transition ("0", s4);
+    s4->insert_transition ("0", s4);
+    s4->insert_transition (EPSILON, s1);
+    s5->insert_transition (EPSILON, s6);
+    s5->insert_transition ("1", s4);
+
+
+    std::vector<std::shared_ptr<state>> acceptance_states;
+    acceptance_states.push_back(s6);
+    std::shared_ptr<nfa> my_nfa(new nfa(s0, acceptance_states, 7));
+    return my_nfa;
 }
 
 std::shared_ptr<nfa> build_nfa()
@@ -110,8 +151,8 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
 
     // Constructing all possible alphabet(could be sth like nfa->get_alphabet()).
     std::vector<std::string> alphabet;
-    alphabet.emplace_back("a");
-    alphabet.emplace_back("b");
+    alphabet.emplace_back("0");
+    alphabet.emplace_back("1");
 
     std::shared_ptr<dfa> dfa_ptr(new dfa());
     std::set<std::shared_ptr<nfa_state>> vec;
@@ -220,11 +261,13 @@ int main(int argc, char** argv) {
 //    std::shared_ptr<nfa> my_nfa = evaluate_regex (regex, sym_table);
 //    if (my_nfa != nullptr)
 //      my_nfa->visualize();
-    std::shared_ptr<nfa> nfa_ptr = build_nfa();
-    nfa_ptr->visualize();
+//    std::shared_ptr<nfa> nfa_ptr = build_nfa();
+    std::shared_ptr<nfa> nfa_ptr = build_nfa1();
+//    nfa_ptr->visualize();
     std::shared_ptr<dfa> dfa_ptr = convert_nfa_dfa(nfa_ptr);
-    std::cout << "Produced dfa states = " << dfa_ptr->get_total_states() << "\n";
+    std::cout << "# of produced dfa states = " << dfa_ptr->get_total_states() << "\n";
     dfa_ptr->visualize();
 //    draw_trans_table(my_dfa);
     return 0;
 }
+
