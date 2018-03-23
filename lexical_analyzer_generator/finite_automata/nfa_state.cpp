@@ -12,15 +12,6 @@ nfa_state::nfa_state (int id, state_type type, std::shared_ptr<char_set> st_ip)
 nfa_state::nfa_state(const nfa_state & s)
         : state::state(s), transitions()
 {
-    for (auto const& edge : s.get_transitions())
-    {
-        std::vector<std::shared_ptr<nfa_state>> v;
-        for (auto const& next_state : edge.second)
-        {
-            v.push_back(std::static_pointer_cast<nfa_state>(next_state->copy()));
-        }
-        transitions[edge.first] = v;
-    }
 }
 
 void nfa_state::insert_transition (std::string input, std::shared_ptr<state> const& state)

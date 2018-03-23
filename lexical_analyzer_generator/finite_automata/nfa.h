@@ -19,6 +19,7 @@ public:
     void plus();
     void star();
 
+    std::shared_ptr<nfa> copy();
     void renamify(state_id starting_id);
     static std::shared_ptr<char_set> build_epsilon_transition();
 };
