@@ -41,3 +41,7 @@ void state::set_type(state_type new_type) {
 void state::set_id(state_id new_id) {
     id = new_id;
 }
+
+void state::set_char_set (std::shared_ptr<char_set> ch_set) {
+    state_input = ch_set;
+}

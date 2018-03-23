@@ -48,9 +48,10 @@ std::vector<std::shared_ptr<dfa_state>> generate_dfa_states (int
 int is_acceptance_dfa_state (int, std::vector<acceptance_state> &);
 
 /**
- *  Builds a character set using all transition table possible inputs.
+ *  Modifies a character set by adding the given the string to its content,
+ *  whether it respresents a character range or just a single character.
  */
-void build_char_set (std::shared_ptr<char_set> , std::vector<std::string> &);
+void modify_char_set (std::shared_ptr<char_set> &ch_set, std::string &str);
 
 /**
  *  Adjusts DFA state outgoing transitions according to a row parsed
@@ -79,9 +80,15 @@ void add_states_to_dfa (std::shared_ptr<dfa> &
 
 lexical_analyzer::lexical_analyzer (std::string &lexical_analyzer_file
                                                 , std::string &code_file) {
-    this->lexical_analyzer_file = lexical_analyzer_file;
-    this->code_file = code_file;
+    lexical_analyzer::lexical_analyzer_file = lexical_analyzer_file;
+    lexical_analyzer::code_file = code_file;
     dfa_ptr = lexical_analyzer::parse_lexical_analyzer_machine ();
+}
+
+lexical_analyzer::lexical_analyzer (std::shared_ptr<dfa> &dfa_ptr
+                            , std::string &code_file) {
+    lexical_analyzer::dfa_ptr = dfa_ptr;
+    lexical_analyzer::code_file = code_file;
 }
 
 token lexical_analyzer::get_next_token () {
@@ -176,8 +183,7 @@ std::vector<std::shared_ptr<dfa_state>> generate_dfa_states (int count
                             , std::vector<acceptance_state> &acceptance_states_info) {
     std::vector<std::shared_ptr<dfa_state>> dfa_states_vec;
     for (unsigned int i = 0 ; i < count ; i++) {
-        std::shared_ptr<char_set> dfa_state_char_set;
-        build_char_set (dfa_state_char_set, transition_table_inputs);
+        std::shared_ptr<char_set> dfa_state_char_set = std::make_shared<char_set>(char_set ());
         std::shared_ptr<dfa_state> s;
         int acceptance_state_index = is_acceptance_dfa_state (i, acceptance_states_info);
         if (acceptance_state_index != -1) {
@@ -204,15 +210,12 @@ int is_acceptance_dfa_state (int state_id
     return -1;
 }
 
-void build_char_set (std::shared_ptr<char_set> ch_set
-                        , std::vector<std::string> &transition_table_inputs) {
-
-    for (auto s : transition_table_inputs) {
-        if (s.length () == 3) {
-            ch_set->add_range (s[0], s[2]);
-        } else {
-            ch_set->add_character (s[0]);
-        }
+void modify_char_set (std::shared_ptr<char_set> &ch_set
+                        , std::string &str) {
+    if (str.length () == 3) {
+        ch_set->add_range (str[0], str[2]);
+    } else {
+        ch_set->add_character (str[0]);
     }
     return;
 }
@@ -221,13 +224,18 @@ void adjust_dfa_state_transitions (std::vector<std::shared_ptr<dfa_state>>
                         &dfa_states_vec, std::vector<std::string> &vec
                         , std::vector<std::string> &transition_table_inputs) {
     int curr_dfa_state = string_to_integer (vec[0]);
+    std::shared_ptr<char_set> ch_set = std::make_shared<char_set>(
+                char_set (*(dfa_states_vec[curr_dfa_state]->get_char_set ())));
     for (unsigned int i = 1 ; i < vec.size () ; i++) {
         if (vec[i].compare("-")) {
+            modify_char_set (ch_set, transition_table_inputs[i - 1]);
             dfa_states_vec[curr_dfa_state]->insert_transition (
                         transition_table_inputs[i - 1]
                         , dfa_states_vec[string_to_integer (vec[i])]);
         }
     }
+    dfa_states_vec[curr_dfa_state]->set_char_set (ch_set);
+    return;
 }
 
 std::vector<std::shared_ptr<state>> get_acceptance_states_from_ids (

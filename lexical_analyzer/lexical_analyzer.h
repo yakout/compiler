@@ -25,6 +25,7 @@ private:
   std::shared_ptr<dfa> parse_lexical_analyzer_machine ();
 public:
   lexical_analyzer (std::string &, std::string &);
+  lexical_analyzer (std::shared_ptr<dfa> &, std::string &);
   token get_next_token ();
   const std::shared_ptr<dfa> &get_dfa() const;
 };
