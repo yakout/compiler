@@ -176,6 +176,7 @@ std::shared_ptr <nfa> evaluate_regex (regular_expression regex,
             {
                 if (last_push_type == VALUE && !values.empty()) operators.push(CONCAT);
                 values.push(build_nfa(EPS));
+                i++;
                 last_push_type = VALUE;
             }
             else if (regex_line[i] == ESC && (i < regex_line.length() - 1))
@@ -228,7 +229,7 @@ std::shared_ptr <nfa> evaluate_regex (regular_expression regex,
             else
             {
                 if (last_push_type == VALUE && !values.empty()) operators.push(CONCAT);
-                std::shared_ptr<nfa> copy_nfa(new nfa(*sym_table[temp]));
+                std::shared_ptr<nfa> copy_nfa = sym_table[temp]->copy();
                 copy_nfa->update_acceptance_states();
                 values.push(copy_nfa);
                 last_push_type = VALUE;
