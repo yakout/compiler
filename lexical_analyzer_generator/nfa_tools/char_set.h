@@ -1,22 +1,11 @@
-#ifndef INPUT_H
-#define INPUT_H
+#ifndef CHAR_SET_H
+#define CHAR_SET_H
 
 #include <string>
 #include <vector>
 #include <map>
 #include <memory>
-
-class char_range
-{
-private:
-  char lower_ascii;
-  char upper_ascii;
-
-public:
-    explicit char_range(char, char);
-    bool is_in_range (char c);
-    std::string get_range_string ();
-};
+#include "char_range.h"
 
 class char_set
 {
@@ -36,4 +25,4 @@ public:
     const std::vector <std::shared_ptr<char_range>> &get_ranges() const;
 };
 
-#endif // INPUT_H
+#endif // CHAR_SET_H
