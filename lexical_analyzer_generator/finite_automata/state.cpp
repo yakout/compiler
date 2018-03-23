@@ -27,6 +27,10 @@ const state_type& state::get_type() const
     return type;
 }
 
+const char_set& state::get_char_set() const
+{
+  return state_input;
+}
 
 
 void state::set_type(state_type new_type) {

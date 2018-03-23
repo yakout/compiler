@@ -10,6 +10,7 @@
 // #include "dfa.h"
 // #include "nfa_state.h"
 // #include "dfa_state.h"
+// #include "../nfa_tools/regex_processor.h"
 
 // #define EPSILON ""
 
@@ -27,7 +28,6 @@
 //     b_char_set.add_character('b');
 
 //     char_set eps;
-
 
 //     std::shared_ptr<nfa_state> s0 = std::make_shared<nfa_state>(nfa_state (0, START, eps));
 //     std::shared_ptr<nfa_state> s1 = std::make_shared<nfa_state>(nfa_state (1, INTERMEDIATE, eps));
@@ -62,13 +62,13 @@
 // }
 
 // std::set<std::shared_ptr<nfa_state>> move(const std::set<std::shared_ptr<nfa_state>> &nfa_states,
-//                                               regular_definition inp)
+//                                               std::string inp)
 // {
 //     std::set<std::shared_ptr<nfa_state>> reachable_states;
 //     for (const auto &state : nfa_states)
 //     {
 //         auto trans_map = state->get_transitions();
-//         std::vector<std::shared_ptr<nfa_state>> curr_reached = trans_map[inp.name];
+//         std::vector<std::shared_ptr<nfa_state>> curr_reached = trans_map[inp];
 //         for (const auto &curr : curr_reached)
 //         {
 //             reachable_states.insert(curr);
@@ -107,12 +107,11 @@
 // }
 
 // std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
-//     // Constructing all possible alphabet.
 
-//     char_set aa, bb;
-//     aa.add_character('a');
-//     bb.add_character('b');
-
+//     // Constructing all possible alphabet(could be sth like nfa->get_alphabet()).
+//     std::vector<std::string> alphabet;
+//     alphabet.emplace_back("a");
+//     alphabet.emplace_back("b");
 
 //     std::shared_ptr<dfa> dfa_ptr(new dfa());
 //     std::set<std::shared_ptr<nfa_state>> vec;
@@ -121,10 +120,10 @@
 //                                                               static_cast<state_id>(dfa_ptr->get_total_states())));
 //     dfa_ptr->set_total_states(dfa_ptr->get_total_states() + 1);
 //     dfa_ptr->set_start_state(init_dfa_state);
-
 //     dfa_ptr->add_state(init_dfa_state);
+
 //     std::shared_ptr<dfa_state> curr_state;
-//     /*while ((curr_state = dfa_ptr->get_unmarked_state()) != nullptr) // get_next_state returns next unmarked state or null if no more unmarked states in dfa_ptr.
+//     while ((curr_state = dfa_ptr->get_unmarked_state()) != nullptr) // get_next_state returns next unmarked state or null if no more unmarked states in dfa_ptr.
 //     {
 //         curr_state->set_marked(true);
 //         std::cout << "Current State = " << curr_state->get_id() << std::endl;
@@ -132,13 +131,13 @@
 //             std::cout << curr->get_id() << " ";
 //         }
 //         std::cout << std::endl;
-//         for (const auto &inp : inputs)
+//         for (const auto &inp : alphabet)
 //         {
 //             std::shared_ptr<dfa_state> new_state(new dfa_state(e_closure(move(curr_state->get_composing_nfa_states(), inp)),
 //                                     static_cast<state_id>(dfa_ptr->get_total_states())));
 //             if (new_state->equals(curr_state))
 //             {
-//                 curr_state->insert_state(inp.name, curr_state);
+//                 curr_state->insert_transition(inp, curr_state);
 //                 continue;
 //             }
 //             std::cout << "New State = " << new_state->get_id() << std::endl;
@@ -163,13 +162,13 @@
 //                     }
 //                 }
 //             }
-//             curr_state->insert_state(inp.name, new_state);
+//             curr_state->insert_transition(inp, new_state);
 //             if (new_state->get_type() == ACCEPTANCE)
 //             {
 //                 dfa_ptr->add_acceptance_state(new_state);
 //             }
 //         }
-//     }*/
+//     }
 //     return dfa_ptr;
 // }
 
@@ -196,29 +195,36 @@
 // {
 //   char_set a_char_set = char_set();
 //   a_char_set.add_character ('a');
-//   a_char_set.add_character ('b');
-//   a_char_set.add_character ('c');
-//   a_char_set.add_character ('d');
 
 
 //   char_set b_char_set = char_set();
 //   b_char_set.add_character ('b');
 
-//   std::shared_ptr <nfa> nfa_a_ptr (new nfa(a_char_set));
-//   std::shared_ptr<nfa> nfa_b_ptr(new nfa(b_char_set));
+//   std::shared_ptr <nfa> nfa_a1_ptr (new nfa(a_char_set));
+//   std::shared_ptr <nfa> nfa_a2_ptr (new nfa(a_char_set));
+//   std::shared_ptr<nfa> nfa_b1_ptr(new nfa(b_char_set));
+//   std::shared_ptr<nfa> nfa_b2_ptr(new nfa(b_char_set));
+//   std::shared_ptr<nfa> nfa_b3_ptr(new nfa(b_char_set));
+//   nfa_a1_ptr->unify(nfa_b1_ptr);
+//   nfa_a1_ptr->star();
+//   nfa_a1_ptr->concat(nfa_a2_ptr);
+//   nfa_a1_ptr->concat(nfa_b2_ptr);
+//   nfa_a1_ptr->concat(nfa_b3_ptr);
 
-//   nfa_a_ptr->plus();
-
-//   return nfa_a_ptr;
+//   return nfa_a1_ptr;
 // }
 
 // int main(int argc, char** argv) {
-//     //std::shared_ptr<nfa> my_nfa = build_nfa3();
-//     std::shared_ptr<nfa> my_nfa = build_nfa3();
-//     my_nfa->visualize();
-//   /*  std::shared_ptr<dfa> my_dfa = convert_nfa_dfa(my_nfa);
-//     std::cout << my_dfa->get_total_states();
-//     my_dfa->visualize();*/
+// //    regular_expression regex = {"letter", "a-z"};
+// //    std::map <std::string,std::shared_ptr<nfa>> sym_table;
+// //    std::shared_ptr<nfa> my_nfa = evaluate_regex (regex, sym_table);
+// //    if (my_nfa != nullptr)
+// //      my_nfa->visualize();
+//     std::shared_ptr<nfa> nfa_ptr = build_nfa();
+//     nfa_ptr->visualize();
+//     std::shared_ptr<dfa> dfa_ptr = convert_nfa_dfa(nfa_ptr);
+//     std::cout << "Produced dfa states = " << dfa_ptr->get_total_states() << "\n";
+//     dfa_ptr->visualize();
 // //    draw_trans_table(my_dfa);
 //     return 0;
 // }

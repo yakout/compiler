@@ -38,6 +38,7 @@ public:
     // getters
     const state_id& get_id() const;
     const state_type& get_type() const;
+    const char_set& get_char_set() const;
 
     // setters
     void set_type(state_type);

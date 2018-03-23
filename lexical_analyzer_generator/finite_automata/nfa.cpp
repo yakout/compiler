@@ -100,7 +100,10 @@ void nfa::unify(std::shared_ptr<nfa> nfa2)
     char_set eps;
 
     std::shared_ptr<nfa_state> s0 = std::make_shared<nfa_state>(nfa_state (0, START, eps));
-    std::shared_ptr<nfa_state> sf = std::make_shared<nfa_state>(nfa_state (5, ACCEPTANCE, eps));
+    renamify(1);
+    nfa2->renamify(acceptance_states.front()->get_id() + 1);
+    std::shared_ptr<nfa_state> sf = std::make_shared<nfa_state>(
+      nfa_state (nfa2->acceptance_states.front()->get_id() + 1, ACCEPTANCE, eps));
 
     std::shared_ptr<nfa_state> nfa2_s0 = std::static_pointer_cast<nfa_state>(nfa2->get_start_state());
     std::shared_ptr<nfa_state> nfa1_s0 = std::static_pointer_cast<nfa_state>(start_state);
@@ -129,6 +132,7 @@ void nfa::unify(std::shared_ptr<nfa> nfa2)
 
 void nfa::concat(std::shared_ptr<nfa> nfa2)
 {
+    nfa2->renamify(acceptance_states.front()->get_id() + 1);
     acceptance_states.front()->insert_transition(EPSILON, nfa2->get_start_state());
 
     nfa2->get_start_state()->set_type(INTERMEDIATE);
