@@ -1,6 +1,6 @@
 #include "dfa_state.h"
 
-dfa_state::dfa_state (int id, state_type type, char_set st_ip, std::string token_class)
+dfa_state::dfa_state (int id, state_type type, std::shared_ptr<char_set> st_ip, std::string token_class)
         : state (id, type, st_ip)
 {
     dfa_state::marked = false;
@@ -39,7 +39,7 @@ void dfa_state::insert_transition (std::string input, std::shared_ptr<state> con
 
 std::shared_ptr<dfa_state> dfa_state::get_next_state (char input)
 {
-    std::string key = state_input.get_string(input);
+    std::string key = state_input->get_string(input);
     if (key.empty() && input != '\0')
         return std::shared_ptr<dfa_state>();
     return transitions[key];

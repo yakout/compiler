@@ -13,7 +13,7 @@ private:
     std::string token_class;
 
 public:
-    dfa_state (int, state_type, char_set, std::string = "");
+    dfa_state (int, state_type, std::shared_ptr<char_set>, std::string = "");
     explicit dfa_state(std::set<std::shared_ptr<nfa_state>> nfa_states, state_id id);
 
     void insert_transition (std::string input, std::shared_ptr<state> const& state) override;

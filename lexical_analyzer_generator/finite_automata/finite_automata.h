@@ -21,7 +21,8 @@ public:
 	fa();
 
     virtual void dfs (std::shared_ptr<state> state, std::vector<bool> &visited,
-					  std::shared_ptr<std::ofstream> vis, bool update_acceptance_states) = 0;
+    	std::shared_ptr<std::ofstream> vis, bool update_acceptance_states,
+    	 std::shared_ptr<char_set> alphabet) = 0;
 	void visualize();
 
     /**
@@ -34,6 +35,12 @@ public:
 	int get_total_states() const;
 	const std::vector<std::shared_ptr<state>> &get_acceptance_states() const;
 	const std::shared_ptr<state> &get_start_state() const;
+	/**
+	 * @brief returns the alphabet of the nfa.
+	 * @details returns set of all intpu characters to states in nfa.
+	 * @return char_set of all characters and ranges.
+	 */
+	 std::shared_ptr<char_set> get_alphabet();
 
 	// setters
 	void set_start_state(std::shared_ptr<state>);

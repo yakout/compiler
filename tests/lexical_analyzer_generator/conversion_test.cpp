@@ -22,23 +22,23 @@ void draw_trans_table(std::shared_ptr<dfa> dfa)
 
 std::shared_ptr<nfa> build_complex_nfa()
 {
-    char_set eps, c_i, c_f, c_t, c_h, c_e, c_n, c_l, c_s, c_less,
+    std::shared_ptr<char_set> eps, c_i, c_f, c_t, c_h, c_e, c_n, c_l, c_s, c_less,
             c_bigger, c_equals, c_eq_bigger, c_let, c_dig, c_let_dig;
-    c_i.add_character('i');
-    c_f.add_character('f');
-    c_t.add_character('t');
-    c_h.add_character('h');
-    c_e.add_character('e');
-    c_n.add_character('n');
-    c_l.add_character('l');
-    c_s.add_character('s');
-    c_less.add_character('<');
-    c_bigger.add_character('>');
-    c_equals.add_character('=');
-    c_eq_bigger.add_character('=');
-    c_eq_bigger.add_character('>');
-    c_let.add_range('a', 'z');
-    c_dig.add_range('0', '9');
+    c_i->add_character('i');
+    c_f->add_character('f');
+    c_t->add_character('t');
+    c_h->add_character('h');
+    c_e->add_character('e');
+    c_n->add_character('n');
+    c_l->add_character('l');
+    c_s->add_character('s');
+    c_less->add_character('<');
+    c_bigger->add_character('>');
+    c_equals->add_character('=');
+    c_eq_bigger->add_character('=');
+    c_eq_bigger->add_character('>');
+    c_let->add_range('a', 'z');
+    c_dig->add_range('0', '9');
 
     // States
     std::shared_ptr<nfa_state> s0 = std::make_shared<nfa_state>(nfa_state (0, START, eps));
@@ -113,13 +113,13 @@ std::shared_ptr<nfa> build_complex_nfa()
 }
 
 std::shared_ptr<nfa> build_nfa1() {
-    char_set char_set_0;
-    char_set_0.add_character('0');
+    std::shared_ptr<char_set> char_set_0;
+    char_set_0->add_character('0');
 
-    char_set char_set_1;
-    char_set_1.add_character('1');
+    std::shared_ptr<char_set> char_set_1;
+    char_set_1->add_character('1');
 
-    char_set eps;
+    std::shared_ptr<char_set> eps;
 
     std::shared_ptr<nfa_state> s0 = std::make_shared<nfa_state>(nfa_state (0, START, eps));
     std::shared_ptr<nfa_state> s1 = std::make_shared<nfa_state>(nfa_state (1, INTERMEDIATE, eps));
@@ -154,13 +154,13 @@ std::shared_ptr<nfa> build_nfa1() {
 
 std::shared_ptr<nfa> build_nfa()
 {
-    char_set a_char_set;
-    a_char_set.add_character('a');
+    std::shared_ptr<char_set> a_char_set(new char_set());
+    a_char_set->add_character('a');
 
-    char_set b_char_set;
-    b_char_set.add_character('b');
+    std::shared_ptr<char_set> b_char_set(new char_set());
+    b_char_set->add_character('b');
 
-    char_set eps;
+    std::shared_ptr<char_set> eps(new char_set());
 
     std::shared_ptr<nfa_state> s0 = std::make_shared<nfa_state>(nfa_state (0, START, eps));
     std::shared_ptr<nfa_state> s1 = std::make_shared<nfa_state>(nfa_state (1, INTERMEDIATE, eps));
@@ -232,7 +232,7 @@ std::set<std::shared_ptr<nfa_state>> e_closure(const std::set<std::shared_ptr<nf
             {
                 visited[curr->get_id()] = true;
                 reachable_states.insert(curr);
-                for (auto x :curr->get_char_set().get_characters())
+                for (auto x :curr->get_char_set()->get_characters())
                     std::cout << x.first << " ";
                 nfa_states_stack.push(curr);
             }
@@ -266,7 +266,7 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
         for (auto curr : curr_state->get_composing_nfa_states()) {
             std::cout << curr->get_id();
             std::cout << ", transitions on: ";
-            for (auto x : curr->get_char_set().get_characters())
+            for (auto x : curr->get_char_set()->get_characters())
                 std::cout << x.first << " ";
             std::cout << "\n";
         }
@@ -316,11 +316,11 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
 
 std::shared_ptr<nfa> build_nfa2()
 {
-    char_set a_char_set;
-    a_char_set.add_character('a');
+    std::shared_ptr<char_set> a_char_set(new char_set());
+    a_char_set->add_character('a');
 
-    char_set b_char_set;
-    b_char_set.add_character('b');
+    std::shared_ptr<char_set> b_char_set(new char_set());
+    b_char_set->add_character('b');
 
     std::shared_ptr<nfa> nfa1(new nfa(a_char_set, 1, 2));
     std::shared_ptr<nfa> nfa2(new nfa(b_char_set, 3, 4));
@@ -334,12 +334,12 @@ std::shared_ptr<nfa> build_nfa2()
 
 std::shared_ptr<nfa> build_nfa3()
 {
-  char_set a_char_set = char_set();
-  a_char_set.add_character ('a');
+  std::shared_ptr<char_set> a_char_set(new char_set());
+  a_char_set->add_character ('a');
 
 
-  char_set b_char_set = char_set();
-  b_char_set.add_character ('b');
+  std::shared_ptr<char_set> b_char_set(new char_set());
+  b_char_set->add_character ('b');
 
   std::shared_ptr <nfa> nfa_a1_ptr (new nfa(a_char_set));
   std::shared_ptr <nfa> nfa_a2_ptr (new nfa(a_char_set));
@@ -370,4 +370,3 @@ int main(int argc, char** argv) {
 //    draw_trans_table(my_dfa);
     return 0;
 }
-

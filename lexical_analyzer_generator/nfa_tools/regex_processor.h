@@ -8,13 +8,22 @@
 #include "../finite_automata/nfa.h"
 #include "lexical_rules.h"
 
+
+enum STACK_OPERATOR {
+    CONCAT,
+    UNION,
+    STAR,
+    PLUS,
+    LEFT_PAREN,
+};
+
 /// Operators
-#define CONCAT '\0'
-#define UNION '|'
-#define STAR '*'
-#define PLUS '+'
-#define LEFT_PAREN '('
-#define RIGHT_PAREN ')'
+#define UNION_SYMBOL '|'
+#define STAR_SYMBOL '*'
+#define PLUS_SYMBOL '+'
+#define LEFT_PAREN_SYMBOL '('
+#define RIGHT_PAREN_SYMBOL ')'
+
 /// Range separator
 #define RANGE_SEP '-'
 /// Parsing characters
