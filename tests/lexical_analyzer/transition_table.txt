@@ -2,8 +2,8 @@ Total States: 6
 Start State(s): {1}
 Acceptance State(s): 3
 {2}     relop
-{3}     id
-{5}     =
+{5}     id
+{3}     =
 State       a-z         0-9
 {0}         {1}         {2}
 {1}         {-}         {3} 
