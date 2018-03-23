@@ -5,7 +5,8 @@
 #include <set>
 
 dfa::dfa(std::shared_ptr<state> start_state, std::vector<std::shared_ptr<state>> acceptance_states, int total_states)
-        : fa(start_state, acceptance_states, total_states) {
+        : fa(start_state, acceptance_states, total_states) 
+{
     dfa::start_state = start_state;
     dfa::acceptance_states = acceptance_states;
     dfa::total_states = total_states;

@@ -1,14 +1,22 @@
 #include "char_range.h"
 
-char_range::char_range(char lower, char upper) {
-    lower_ascii = lower;
-    upper_ascii = upper;
+char_range::char_range(char l, char u) {
+    lower = l;
+    upper = u;
 }
 
 bool char_range::is_in_range(char c) {
-    return c >= lower_ascii && c <= upper_ascii;
+    return c >= lower && c <= upper;
 }
 
 std::string char_range::get_range_string() {
-    return std::string() + lower_ascii + "-" + upper_ascii;
+    return std::string() + lower + "-" + upper;
+}
+
+char char_range::get_upper() {
+    return upper;
+}
+
+char char_range::get_lower() {
+    return lower;
 }

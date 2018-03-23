@@ -58,7 +58,7 @@ void fa::visualize()
             "\"\" -> " << start_state->get_id() << "\n";
 
 
-    std::vector<bool> visited(total_states);
+    std::vector<bool> visited(10);
     dfs(start_state, visited, visualizer, false, nullptr);
     *visualizer << "}\n";
     visualizer->close();
@@ -117,10 +117,9 @@ void fa::update_acceptance_states()
 
 std::shared_ptr<char_set> fa::get_alphabet()
 {
-
     std::shared_ptr<char_set> alphabet(new char_set());
-    std::vector<bool> visted(static_cast<unsigned long>(total_states));
-    dfs(start_state, visted, nullptr, true, alphabet);
+    std::vector<bool> visited(10); // TODO
+    dfs(start_state, visited, nullptr, true, alphabet);
     return alphabet;
 }
 

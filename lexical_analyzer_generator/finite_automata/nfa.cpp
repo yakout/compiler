@@ -64,6 +64,17 @@ void nfa::dfs (std::shared_ptr<state> curr_state, std::vector<bool> &visited,
     {
         acceptance_states.push_back(curr_state);
     }
+    if (alphabet != nullptr)
+    {
+        for (auto const& c : curr_state->get_char_set()->get_characters())
+        {
+            alphabet->add_character(c.first);
+        }
+        for (auto const& range : curr_state->get_char_set()->get_ranges())
+        {
+            alphabet->add_range(range->get_lower(), range->get_upper());
+        }
+    }
 
     std::map<std::string, std::vector<std::shared_ptr<nfa_state>>> transitions
             = std::static_pointer_cast<nfa_state>(curr_state)->get_transitions();
