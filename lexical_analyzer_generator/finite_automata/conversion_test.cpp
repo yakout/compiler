@@ -216,11 +216,12 @@ std::shared_ptr<nfa> build_nfa3()
   return nfa_a1_ptr;
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv) 
+{
     //std::shared_ptr<nfa> my_nfa = build_nfa3();
     // std::shared_ptr<nfa> my_nfa = build_nfa3();
     // my_nfa->visualize();
-    regular_expression regex = {"letter", "a"};
+    regular_expression regex = {"letter", "(a-z)*|A-Z"};
     std::map <std::string,std::shared_ptr<nfa>> sym_table;
     std::shared_ptr<nfa> my_nfa = evaluate_regex (regex, sym_table);
       my_nfa->visualize();

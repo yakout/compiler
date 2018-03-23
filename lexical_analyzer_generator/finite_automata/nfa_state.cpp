@@ -1,7 +1,9 @@
 #include "nfa_state.h"
 
+#include <utility>
+
 nfa_state::nfa_state (int id, state_type type, std::shared_ptr<char_set> st_ip)
-        : state (id, type, st_ip)
+        : state (id, type, std::move(st_ip))
 {
 
 }

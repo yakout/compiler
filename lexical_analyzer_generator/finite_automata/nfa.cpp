@@ -10,16 +10,16 @@ nfa::nfa(std::shared_ptr<state> start_state, std::vector<std::shared_ptr<state>>
     nfa::total_states = total_states;
 }
 
-void add_transitions_from_char_set (char_set st_ip,
+void add_transitions_from_char_set (std::shared_ptr<char_set> st_ip,
   std::shared_ptr<nfa_state> s0, std::shared_ptr<nfa_state> sf)
 {
-  for (auto c : st_ip.get_characters())
+  for (auto c : st_ip->get_characters())
   {
 //            std::cout << s0->get_id() << "--" << c.first << "-->" << sf->get_id() << std::endl;
       s0->insert_transition (std::string("") + c.first, sf);
   }
 
-  for (auto range : st_ip.get_ranges())
+  for (auto range : st_ip->get_ranges())
   {
       s0->insert_transition (range->get_range_string(), sf);
   }
@@ -32,7 +32,7 @@ nfa::nfa(std::shared_ptr<char_set> st_ip, int id1, int id2)
     std::shared_ptr<nfa_state> s0 = std::make_shared<nfa_state>(nfa_state (id1, START, st_ip));
     std::shared_ptr<nfa_state> sf = std::make_shared<nfa_state>(nfa_state (id2, ACCEPTANCE, eps));
 
-    add_transitions_from_char_set (*st_ip, s0, sf);
+    add_transitions_from_char_set (st_ip, s0, sf);
 
 
     start_state = s0;
@@ -45,8 +45,8 @@ nfa::nfa (std::shared_ptr<char_set> c_s)
     std::shared_ptr<char_set> eps = build_epsilon_transition();
     std::shared_ptr<nfa_state> s0 = std::make_shared<nfa_state>(nfa_state (0, START, c_s));
     std::shared_ptr<nfa_state> s1 =
-      std::make_shared<nfa_state>(nfa_state (1, ACCEPTANCE, eps));
-    add_transitions_from_char_set (*c_s, s0, s1);
+            std::make_shared<nfa_state>(nfa_state (1, ACCEPTANCE, eps));
+    add_transitions_from_char_set (c_s, s0, s1);
     start_state = s0;
     acceptance_states.push_back(s1);
 }

@@ -12,7 +12,7 @@ bool char_range::is_in_range(char c) {
 }
 
 std::string char_range::get_range_string() {
-    return lower_ascii + "-" + upper_ascii;
+    return std::string() + lower_ascii + "-" + upper_ascii;
 }
 
 
@@ -33,6 +33,12 @@ char_set::char_set(): ranges(), characters() {
 
 }
 
+char_set::char_set(const char_set & c_s)
+        : ranges(c_s.get_ranges()), characters(c_s.get_characters())
+{
+
+}
+
 void char_set::add_character(char c) {
     characters[c] = true;
 }
@@ -50,3 +56,4 @@ const std::vector <std::shared_ptr<char_range>> &char_set::get_ranges() const
 {
     return ranges;
 }
+

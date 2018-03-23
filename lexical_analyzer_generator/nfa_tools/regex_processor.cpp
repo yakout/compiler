@@ -94,7 +94,8 @@ std::shared_ptr <nfa> evaluate_regex (regular_expression regex,
     {
         if (is_operator(regex_line[i]) || regex_line[i] == LEFT_PAREN)
         {
-          while (regex_line[i] != LEFT_PAREN && is_lower_or_equal (regex_line[i], operators.top()))
+          while (regex_line[i] != LEFT_PAREN && !operators.empty()
+                 && is_lower_or_equal (regex_line[i], operators.top()))
           {
             if (!perform_operation_on_stack (operators, values))
               return nullptr;
