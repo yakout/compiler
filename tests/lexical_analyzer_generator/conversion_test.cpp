@@ -22,8 +22,10 @@ void draw_trans_table(std::shared_ptr<dfa> dfa)
 
 std::shared_ptr<nfa> build_complex_nfa()
 {
-    std::shared_ptr<char_set> eps, c_i, c_f, c_t, c_h, c_e, c_n, c_l, c_s, c_less,
-            c_bigger, c_equals, c_eq_bigger, c_let, c_dig, c_let_dig;
+    std::shared_ptr<char_set> eps(new char_set()), c_i(new char_set()), c_f(new char_set()), c_t(new char_set()),
+            c_h(new char_set()), c_e(new char_set()), c_n(new char_set()), c_l(new char_set()), c_s(new char_set()),
+            c_less(new char_set()), c_bigger(new char_set()), c_equals(new char_set()), c_eq_bigger(new char_set()),
+            c_let(new char_set()), c_dig(new char_set()), c_let_dig(new char_set());
     c_i->add_character('i');
     c_f->add_character('f');
     c_t->add_character('t');
@@ -339,12 +341,12 @@ int main(int argc, char** argv) {
 //    std::shared_ptr<nfa> my_nfa = evaluate_regex (regex, sym_table);
 //    if (my_nfa != nullptr)
 //      my_nfa->visualize();
-    std::shared_ptr<nfa> nfa_ptr = build_nfa();
-//    std::shared_ptr<nfa> nfa_ptr = build_complex_nfa();
-//    nfa_ptr->visualize();
-    std::shared_ptr<dfa> dfa_ptr = convert_nfa_dfa(nfa_ptr);
-    std::cout << "# of produced dfa states = " << dfa_ptr->get_total_states() << "\n";
-    dfa_ptr->visualize();
+//    std::shared_ptr<nfa> nfa_ptr = build_nfa();
+    std::shared_ptr<nfa> nfa_ptr = build_complex_nfa();
+    nfa_ptr->visualize();
+//    std::shared_ptr<dfa> dfa_ptr = convert_nfa_dfa(nfa_ptr);
+//    std::cout << "# of produced dfa states = " << dfa_ptr->get_total_states() << "\n";
+//    dfa_ptr->visualize();
 //    draw_trans_table(my_dfa);
     return 0;
 }
