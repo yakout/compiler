@@ -11,6 +11,7 @@ public:
         std::vector<std::shared_ptr<state>> acceptance_states, int total_states);
     explicit nfa(std::shared_ptr<char_set> st_ip, int id1, int id2);
     explicit nfa(std::shared_ptr<char_set> c_s);
+    nfa();
     void dfs (std::shared_ptr<state> state, std::vector<bool> &visited,
               std::shared_ptr<std::ofstream> vis, bool update_acceptance_states,
               std::shared_ptr<char_set> alphabet) override;

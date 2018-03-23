@@ -12,6 +12,7 @@ nfa_state::nfa_state (int id, state_type type, std::shared_ptr<char_set> st_ip)
 nfa_state::nfa_state(const nfa_state & s)
         : state::state(s), transitions()
 {
+
 }
 
 void nfa_state::insert_transition (std::string input, std::shared_ptr<state> const& state)
