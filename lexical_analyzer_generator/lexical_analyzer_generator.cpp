@@ -9,8 +9,8 @@
 #define PUNCT_CLAUSE_END ']'
 #define KEYWORD_CLAUSE_START '{'
 #define KEYWORD_CLAUSE_END '}'
-#define EXPRESSION_ASSIGN '='
-#define DEFINITION_ASSIGN ':'
+#define EXPRESSION_ASSIGN ':'
+#define DEFINITION_ASSIGN '='
 
 #define ESCAPE '\\'
 
@@ -145,10 +145,12 @@ std::shared_ptr<nfa> build_combined_nfa (std::vector<std::string> rules_file_lin
     std::shared_ptr<nfa> cur_nfa;
     if (line[0] == PUNCT_CLAUSE_START)
     {
+        std::cout << "Punct" << std::endl;
         cur_nfa = build_punctations_nfa (line);
     }
     else if (line[0] == KEYWORD_CLAUSE_START)
     {
+      std::cout << "keywords" << std::endl;
        cur_nfa = build_keywords_nfa (line);
     }
     else
@@ -159,13 +161,17 @@ std::shared_ptr<nfa> build_combined_nfa (std::vector<std::string> rules_file_lin
           if (line[i] == DEFINITION_ASSIGN)
           {
               is_def = true;
+              std::cout << "reg def" << std::endl;
               cur_nfa = build_regex_nfa (trim(line.substr(0, i)), trim(line.substr(i+1)),
                               sym_table);
+              break;
           }
           else if (line[i] == EXPRESSION_ASSIGN)
           {
+            std::cout << "regex" << std::endl;
               cur_nfa = build_regex_nfa (trim(line.substr(0, i)), trim(line.substr(i+1)),
                             sym_table);
+              break;
           }
         }
         if (invalid_line)
