@@ -58,7 +58,8 @@ void fa::visualize()
             "\"\" -> " << start_state->get_id() << "\n";
 
 
-    std::vector<bool> visited(100);
+    int MAX_DFS = 300;
+    std::vector<bool> visited(MAX_DFS);
     dfs(start_state, visited, visualizer, false, nullptr);
     *visualizer << "}\n";
     visualizer->close();

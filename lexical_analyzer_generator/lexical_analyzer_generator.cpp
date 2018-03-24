@@ -182,10 +182,13 @@ std::shared_ptr<nfa> build_combined_nfa (std::vector<std::string> rules_file_lin
     }
   }
 
+
     for (auto const& n : nfas)
     {
         std::shared_ptr<nfa> cur_nfa = n.first;
+//        cur_nfa->visualize();
         bool is_def = n.second;
+
         if (first_nfa)
         {
             combined_nfa = cur_nfa;
@@ -194,10 +197,10 @@ std::shared_ptr<nfa> build_combined_nfa (std::vector<std::string> rules_file_lin
         else
         {
             if (is_def)
-                combined_nfa->unify(cur_nfa);
+                combined_nfa->unify(cur_nfa, false);
             else
                 combined_nfa->unify(cur_nfa, false);
-            is_def = false;
+//            combined_nfa->visualize();
         }
     }
   combined_nfa->visualize();
