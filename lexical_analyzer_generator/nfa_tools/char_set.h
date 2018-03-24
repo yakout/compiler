@@ -14,6 +14,7 @@ private:
   std::vector<std::shared_ptr<char_range>> ranges;
 public:
     char_set();
+    char_set(char);
     char_set(const char_set&);
     void add_character(char);
     void add_range(char, char);
