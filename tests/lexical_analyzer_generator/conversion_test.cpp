@@ -18,8 +18,53 @@ bool dead_state(const std::shared_ptr<dfa_state> &shared_ptr);
 
 void draw_trans_table(std::shared_ptr<dfa> dfa)
 {
-
-
+    std::cout << "Total States: " << dfa->get_total_states() << "\n";
+    std::cout << "Start State(s): {" << dfa->get_start_state()->get_id() << "}\n";
+    std::cout << "Acceptance State(s): " << dfa->get_acceptance_states().size() << "\n";
+    for (auto acc_state : dfa->get_acceptance_states())
+    {
+        // Replace token class with acc_state->get_token_class()
+        std::cout << "{" << acc_state->get_id() << "}\t" << "TOKEN CLASS\n";
+    }
+    std::cout << "State\t";
+    for (auto inp_char : dfa->get_alphabet()->get_characters())
+    {
+        std::cout << inp_char.first << "\t";
+    }
+    for (auto inp_range : dfa->get_alphabet()->get_ranges())
+    {
+        std::cout << inp_range->get_range_string() << "\t";
+    }
+    std::cout << "\n";
+    for (auto state : dfa->get_dfa_states())
+    {
+        std::cout << "{" << state->get_id() << "}\t";
+        for (auto inp_char : dfa->get_alphabet()->get_characters())
+        {
+            auto target_state = state->get_next_state(inp_char.first);
+            if (target_state == nullptr)
+            {
+                std::cout << "{-}\t";
+            }
+            else
+            {
+                std::cout << "{" << target_state->get_id() << "}\t";
+            }
+        }
+        for (auto inp_range : dfa->get_alphabet()->get_ranges())
+        {
+            auto target_state = state->get_next_state(inp_range->get_range_string());
+            if (target_state == nullptr)
+            {
+                std::cout << "{-}\t";
+            }
+            else
+            {
+                std::cout << "{" << target_state->get_id() << "}\t";
+            }
+        }
+        std::cout << "\n";
+    }
 }
 
 std::shared_ptr<nfa> build_complex_nfa()
@@ -623,67 +668,68 @@ bool dead_state(const std::shared_ptr<dfa_state> &s) {
     return s->get_char_set()->is_empty();
 }
 
-//int main(int argc, char** argv) {
-//    // HEAAD
-//    std::shared_ptr<nfa> nfa_ptr = build_nfa1();
-////    std::shared_ptr<nfa> nfa_ptr = build_complex_nfa();
-//    nfa_ptr->visualize();
-//    std::shared_ptr<dfa> dfa_ptr = convert_nfa_dfa(nfa_ptr);
-//    dfa_ptr->visualize();
-//    std::shared_ptr<dfa> minimized_dfa = minimize(dfa_ptr);
+int main(int argc, char** argv) {
+    // HEAAD
+    std::shared_ptr<nfa> nfa_ptr = build_nfa1();
+//    std::shared_ptr<nfa> nfa_ptr = build_complex_nfa();
+    nfa_ptr->visualize();
+    std::shared_ptr<dfa> dfa_ptr = convert_nfa_dfa(nfa_ptr);
+    dfa_ptr->visualize();
+    std::shared_ptr<dfa> minimized_dfa = minimize(dfa_ptr);
 //    for (const auto &curr : minimized_dfa->get_acceptance_states())
 //    {
 //        std::cout << curr->get_id() << " ";
 //    }
-//    minimized_dfa->visualize();
-//}
-
-int main(int argc, char** argv) {
-    std::map <std::string,std::shared_ptr<nfa>> sym_table;
-    regular_expression regex1 = {"letter", "a-z | A-Z"};
-    std::shared_ptr<nfa> letter_nfa = evaluate_regex (regex1, sym_table);
-    sym_table["letter"] = letter_nfa;
-    regular_expression regex2 = {"digit", "0-9"};
-    std::shared_ptr<nfa> digit_nfa = evaluate_regex (regex2, sym_table);
-    sym_table["digit"] = digit_nfa ;
-    regular_expression regex3 = {"id", "letter (letter|digit)*"};
-    std::shared_ptr<nfa> id_nfa = evaluate_regex (regex3, sym_table);
-    sym_table["id"] = id_nfa;
-    regular_expression regex4 = {"digits", "digit+"};
-    std::shared_ptr<nfa> digits_nfa = evaluate_regex (regex4, sym_table);
-    sym_table["digits"] = digits_nfa;
-     regular_expression regex5 = {"num", "digit+ | digit+ . digits ( \\L | E digits)"};
-     std::shared_ptr<nfa> num_nfa = evaluate_regex (regex5, sym_table);
-     sym_table["num"] = num_nfa;
-
-    regular_expression regex6 = {"relop", "\\=\\= | !\\= | > | >\\= | < | <\\="};
-    std::shared_ptr<nfa> relop_nfa = evaluate_regex (regex6, sym_table);
-    sym_table["num"] = relop_nfa;
-
-    regular_expression regex7 = {"assign", "\\="};
-    std::shared_ptr<nfa> assign_nfa = evaluate_regex (regex7, sym_table);
-    sym_table["num"] = assign_nfa;
-
-    regular_expression regex8 = {"addop", "\\+ | \\-"};
-    std::shared_ptr<nfa> addop_nfa = evaluate_regex (regex8, sym_table);
-    sym_table["num"] = addop_nfa;
-
-    regular_expression regex9 = {"mulop", "\\* | /"};
-    std::shared_ptr<nfa> mulop_nfa = evaluate_regex (regex9, sym_table);
-    sym_table["num"] = mulop_nfa;
-
-
-    letter_nfa->unify(digit_nfa);
-    letter_nfa->unify(id_nfa);
-    letter_nfa->unify(digits_nfa);
-    letter_nfa->unify(num_nfa);
-    letter_nfa->unify(relop_nfa);
-    letter_nfa->unify(assign_nfa);
-    letter_nfa->unify(mulop_nfa);
-
-    if (letter_nfa != nullptr)
-    {
-        letter_nfa->visualize();
-    }
-    return 0;
+    minimized_dfa->visualize();
+    draw_trans_table(minimized_dfa);
 }
+
+//int main(int argc, char** argv) {
+//    std::map <std::string,std::shared_ptr<nfa>> sym_table;
+//    regular_expression regex1 = {"letter", "a-z | A-Z"};
+//    std::shared_ptr<nfa> letter_nfa = evaluate_regex (regex1, sym_table);
+//    sym_table["letter"] = letter_nfa;
+//    regular_expression regex2 = {"digit", "0-9"};
+//    std::shared_ptr<nfa> digit_nfa = evaluate_regex (regex2, sym_table);
+//    sym_table["digit"] = digit_nfa ;
+//    regular_expression regex3 = {"id", "letter (letter|digit)*"};
+//    std::shared_ptr<nfa> id_nfa = evaluate_regex (regex3, sym_table);
+//    sym_table["id"] = id_nfa;
+//    regular_expression regex4 = {"digits", "digit+"};
+//    std::shared_ptr<nfa> digits_nfa = evaluate_regex (regex4, sym_table);
+//    sym_table["digits"] = digits_nfa;
+//     regular_expression regex5 = {"num", "digit+ | digit+ . digits ( \\L | E digits)"};
+//     std::shared_ptr<nfa> num_nfa = evaluate_regex (regex5, sym_table);
+//     sym_table["num"] = num_nfa;
+//
+//    regular_expression regex6 = {"relop", "\\=\\= | !\\= | > | >\\= | < | <\\="};
+//    std::shared_ptr<nfa> relop_nfa = evaluate_regex (regex6, sym_table);
+//    sym_table["num"] = relop_nfa;
+//
+//    regular_expression regex7 = {"assign", "\\="};
+//    std::shared_ptr<nfa> assign_nfa = evaluate_regex (regex7, sym_table);
+//    sym_table["num"] = assign_nfa;
+//
+//    regular_expression regex8 = {"addop", "\\+ | \\-"};
+//    std::shared_ptr<nfa> addop_nfa = evaluate_regex (regex8, sym_table);
+//    sym_table["num"] = addop_nfa;
+//
+//    regular_expression regex9 = {"mulop", "\\* | /"};
+//    std::shared_ptr<nfa> mulop_nfa = evaluate_regex (regex9, sym_table);
+//    sym_table["num"] = mulop_nfa;
+//
+//
+//    letter_nfa->unify(digit_nfa);
+//    letter_nfa->unify(id_nfa);
+//    letter_nfa->unify(digits_nfa);
+//    letter_nfa->unify(num_nfa);
+//    letter_nfa->unify(relop_nfa);
+//    letter_nfa->unify(assign_nfa);
+//    letter_nfa->unify(mulop_nfa);
+//
+//    if (letter_nfa != nullptr)
+//    {
+//        letter_nfa->visualize();
+//    }
+//    return 0;
+//}
