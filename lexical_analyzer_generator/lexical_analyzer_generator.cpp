@@ -70,6 +70,7 @@ std::shared_ptr<nfa> build_punctations_nfa (std::string full_line, int order)
         cur_punct_nfa = p_nfa;
         cur_punct_nfa->set_acceptance_states_priority(order);
         cur_punct_nfa->set_acceptance_states_token_class(std::string() + line[i + 1]);
+        i++;
     }
     else
     {
