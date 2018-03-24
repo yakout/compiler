@@ -652,9 +652,21 @@ int main(int argc, char** argv) {
     regular_expression regex4 = {"digits", "digit+"};
     std::shared_ptr<nfa> digits_nfa = evaluate_regex (regex4, sym_table);
     sym_table["digits"] = digits_nfa;
-    regular_expression regex5 = {"num", "digit+ | digit+ . digits ( \\L | E digits)"};
-    std::shared_ptr<nfa> num_nfa = evaluate_regex (regex5, sym_table);
-    sym_table["num"] = digits_nfa;
+     regular_expression regex5 = {"num", "digit+ | digit+ . digits ( \\L | E digits)"};
+     std::shared_ptr<nfa> num_nfa = evaluate_regex (regex5, sym_table);
+     sym_table["num"] = num_nfa;
+//    regular_expression regex6 = {"relop", "\\=\\= | !\\= | > | >\\= | < | <\\="};
+//    std::shared_ptr<nfa> num_nfa = evaluate_regex (regex6, sym_table);
+//    sym_table["num"] = digits_nfa;
+//    regular_expression regex7 = {"assign", "\\="};
+//    std::shared_ptr<nfa> num_nfa = evaluate_regex (regex7, sym_table);
+//    sym_table["num"] = digits_nfa;
+//    regular_expression regex8 = {"num", "\\+ | -"};
+//    std::shared_ptr<nfa> num_nfa = evaluate_regex (regex8, sym_table);
+//    sym_table["num"] = digits_nfa;
+//    regular_expression regex9 = {"num", "\\+ | -"};
+//    std::shared_ptr<nfa> num_nfa = evaluate_regex (regex9, sym_table);
+//    sym_table["num"] = digits_nfa;
 
     //    std::shared_ptr<nfa> num_nfa = digit_nfa->copy();
 
