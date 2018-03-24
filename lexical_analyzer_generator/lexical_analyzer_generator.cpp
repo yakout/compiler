@@ -80,7 +80,7 @@ std::shared_ptr<nfa> build_punctations_nfa (std::string full_line)
     }
     else
     {
-      punct_nfa->unify(cur_punct_nfa);
+      punct_nfa->unify(cur_punct_nfa, false);
     }
   }
   if (line[line.length() - 1] != PUNCT_CLAUSE_END)
@@ -117,7 +117,7 @@ std::shared_ptr<nfa> build_keywords_nfa (std::string line)
       }
       else
       {
-        keywords_nfa->unify(nfa0);
+        keywords_nfa->unify(nfa0, false);
       }
   }
   return keywords_nfa;
@@ -139,6 +139,7 @@ std::shared_ptr<nfa> build_combined_nfa (std::vector<std::string> rules_file_lin
   std::map <std::string, std::shared_ptr<nfa>> sym_table;
   std::shared_ptr<nfa> combined_nfa;
   bool first_nfa = true;
+  bool is_def;
   for (auto line : rules_file_lines)
   {
     std::shared_ptr<nfa> cur_nfa;
@@ -157,6 +158,7 @@ std::shared_ptr<nfa> build_combined_nfa (std::vector<std::string> rules_file_lin
         {
           if (line[i] == DEFINITION_ASSIGN)
           {
+              is_def = true;
               cur_nfa = build_regex_nfa (trim(line.substr(0, i)), trim(line.substr(i+1)),
                               sym_table);
           }
@@ -178,7 +180,11 @@ std::shared_ptr<nfa> build_combined_nfa (std::vector<std::string> rules_file_lin
     }
     else
     {
-      combined_nfa->unify(cur_nfa);
+      if (is_def)
+        combined_nfa->unify(cur_nfa);
+      else
+        combined_nfa->unify(cur_nfa, false);
+      is_def = false;
     }
   }
   combined_nfa->visualize();

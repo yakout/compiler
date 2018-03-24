@@ -722,18 +722,18 @@ int main(int argc, char** argv) {
     // letter_nfa->unify(digit_nfa);
     // letter_nfa->unify(id_nfa);
     // letter_nfa->unify(digits_nfa);
-    // letter_nfa->unify(num_nfa);
-    // letter_nfa->unify(relop_nfa);
-    // letter_nfa->unify(assign_nfa);
-    // letter_nfa->unify(mulop_nfa);
+    // letter_nfa->unify(num_nfa, false);
+    // letter_nfa->unify(relop_nfa, false);
+    // letter_nfa->unify(assign_nfa, false);
+    // letter_nfa->unify(mulop_nfa, false);
     //
     // if (letter_nfa != nullptr)
     // {
     //     letter_nfa->visualize();
     // }
-    // lexical_analyzer_generator gen = lexical_analyzer_generator();
-    // gen.get_lexical_analyzer_file("rules.txt");
-    std::shared_ptr<nfa> nf = build_keywords_nfa("{ if else while }");
-    nf->visualize();
+    lexical_analyzer_generator gen = lexical_analyzer_generator();
+    gen.get_lexical_analyzer_file("rules.txt");
+    // std::shared_ptr<nfa> nf = build_keywords_nfa("{ if else while }");
+    // nf->visualize();
     return 0;
 }
