@@ -2,17 +2,18 @@
 #include "nfa_state.h"
 
 #include <utility>
+#include <climits>
 
 nfa_state::nfa_state (int id, state_type type, std::shared_ptr<char_set> st_ip)
         : state (id, type, std::move(st_ip))
 {
-
+    nfa_state::priority = INT_MAX;
 }
 
 nfa_state::nfa_state(const nfa_state & s)
         : state::state(s), transitions()
 {
-
+    nfa_state::priority = INT_MAX;
 }
 
 void nfa_state::insert_transition (std::string input, std::shared_ptr<state> const& state)

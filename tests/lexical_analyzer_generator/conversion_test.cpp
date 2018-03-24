@@ -3,6 +3,7 @@
 #include <queue>
 #include <iostream>
 #include <set>
+#include <climits>
 
 #include "../../lexical_analyzer_generator/finite_automata/finite_automata.h"
 #include "../../lexical_analyzer_generator/finite_automata/state.h"
@@ -26,8 +27,7 @@ void draw_trans_table(std::shared_ptr<dfa> dfa)
     *out_file << "Acceptance State(s): " << dfa->get_acceptance_states().size() << "\n";
     for (auto acc_state : dfa->get_acceptance_states())
     {
-        // Replace token class with acc_state->get_token_class()
-        *out_file << "{" << acc_state->get_id() << "}\t" << "TOKEN CLASS\n";
+        *out_file << "{" << acc_state->get_id() << "}\t" << acc_state->get_token_class() << "\n";
     }
     *out_file << "State\t";
     for (auto inp_char : dfa->get_alphabet()->get_characters())
@@ -180,6 +180,9 @@ std::shared_ptr<nfa> build_nfa1() {
     std::shared_ptr<nfa_state> s4 = std::make_shared<nfa_state>(nfa_state (4, INTERMEDIATE, c_0));
     std::shared_ptr<nfa_state> s5 = std::make_shared<nfa_state>(nfa_state (5, INTERMEDIATE, c_1));
     std::shared_ptr<nfa_state> s6 = std::make_shared<nfa_state>(nfa_state (6, ACCEPTANCE, eps));
+
+    s6->set_token_class("HALLELUIAH");
+    s6->set_priority(1);
 
     s0->insert_transition (EPSILON, s1);
     s0->insert_transition (EPSILON, s2);
@@ -344,6 +347,17 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
                 if (new_state->get_type() == ACCEPTANCE)
                 {
                     dfa_ptr->add_acceptance_state(new_state);
+                    int max_pri = INT_MAX;
+                    std::string token_class;
+                    for (auto s : new_state->get_composing_nfa_states())
+                    {
+                        if (s->get_token_class_priority() < max_pri)
+                        {
+                            token_class = s->get_token_class();
+                            max_pri = s->get_token_class_priority();
+                        }
+                    }
+                    new_state->set_token_class(token_class);
                 }
             }
             else
@@ -382,6 +396,17 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
                 if (new_state->get_type() == ACCEPTANCE)
                 {
                     dfa_ptr->add_acceptance_state(new_state);
+                    int max_pri = INT_MAX;
+                    std::string token_class;
+                    for (auto s : new_state->get_composing_nfa_states())
+                    {
+                        if (s->get_token_class_priority() < max_pri)
+                        {
+                            token_class = s->get_token_class();
+                            max_pri = s->get_token_class_priority();
+                        }
+                    }
+                    new_state->set_token_class(token_class);
                 }
             }
             else

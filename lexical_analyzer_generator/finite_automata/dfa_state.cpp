@@ -1,3 +1,4 @@
+#include <climits>
 #include "dfa_state.h"
 
 dfa_state::dfa_state (int id, state_type type, std::shared_ptr<char_set> st_ip, std::string token_class)
@@ -6,6 +7,7 @@ dfa_state::dfa_state (int id, state_type type, std::shared_ptr<char_set> st_ip, 
     dfa_state::marked = false;
     dfa_state::token_class = token_class;
     dfa_state::state_input = std::make_shared<char_set>(char_set());
+    dfa_state::priority = INT_MAX;
 }
 
 dfa_state::dfa_state(std::set<std::shared_ptr<nfa_state>> nfa_states, state_id id) {
@@ -50,6 +52,7 @@ dfa_state::dfa_state(std::set<std::shared_ptr<nfa_state>> nfa_states, state_id i
         }
     }
     dfa_state::marked = false;
+    dfa_state::priority = INT_MAX;
 }
 
 void dfa_state::insert_transition (std::string input, std::shared_ptr<state> const& state)
