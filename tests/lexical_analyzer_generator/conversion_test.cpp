@@ -22,9 +22,9 @@ void draw_trans_table(std::shared_ptr<dfa> dfa)
 {
     std::shared_ptr<std::ofstream> out_file(new std::ofstream());
     out_file->open("transition_table.txt");
-    *out_file << "Total States: " << dfa->get_total_states() << "\n";
-    *out_file << "Start State(s): {" << dfa->get_start_state()->get_id() << "}\n";
-    *out_file << "Acceptance State(s): " << dfa->get_acceptance_states().size() << "\n";
+    *out_file << "Total\tStates:\t" << dfa->get_total_states() << "\n";
+    *out_file << "Start\tState(s):\t{" << dfa->get_start_state()->get_id() << "}\n";
+    *out_file << "Acceptance State(s):\t" << dfa->get_acceptance_states().size() << "\n";
     for (auto acc_state : dfa->get_acceptance_states())
     {
         *out_file << "{" << acc_state->get_id() << "}\t" << acc_state->get_token_class() << "\n";
