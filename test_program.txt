@@ -1,5 +1,5 @@
-int sum , count , pass , 
-mnt; while (pass != 10)
-{
-	 pass = pass + 1 ;  
-} 
+int int1, int2, int3;
+boolean boolean1, boolean2, boolean3;
+float float1, float2, float3;
+while(bool1)
+	bool2=false;
