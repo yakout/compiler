@@ -140,16 +140,19 @@ std::shared_ptr<nfa> build_combined_nfa (std::vector<std::string> rules_file_lin
   std::shared_ptr<nfa> combined_nfa;
   bool first_nfa = true;
   bool is_def;
+    std::map<std::shared_ptr<nfa>, bool> nfas;
   for (auto line : rules_file_lines)
   {
     std::shared_ptr<nfa> cur_nfa;
     if (line[0] == PUNCT_CLAUSE_START)
     {
         cur_nfa = build_punctations_nfa (line);
+        nfas[cur_nfa] = false;
     }
     else if (line[0] == KEYWORD_CLAUSE_START)
     {
        cur_nfa = build_keywords_nfa (line);
+        nfas[cur_nfa] = false;
     }
     else
     {
@@ -161,12 +164,14 @@ std::shared_ptr<nfa> build_combined_nfa (std::vector<std::string> rules_file_lin
               is_def = true;
               cur_nfa = build_regex_nfa (trim(line.substr(0, i)), trim(line.substr(i+1)),
                               sym_table);
+              nfas[cur_nfa] = true;
               break;
           }
           else if (line[i] == EXPRESSION_ASSIGN)
           {
               cur_nfa = build_regex_nfa (trim(line.substr(0, i)), trim(line.substr(i+1)),
                             sym_table);
+              nfas[cur_nfa] = false;
               break;
           }
         }
@@ -175,20 +180,26 @@ std::shared_ptr<nfa> build_combined_nfa (std::vector<std::string> rules_file_lin
           //// TODO : Error
         }
     }
-    if (first_nfa)
-    {
-      combined_nfa = cur_nfa;
-      first_nfa = false;
-    }
-    else
-    {
-      if (is_def)
-        combined_nfa->unify(cur_nfa);
-      else
-        combined_nfa->unify(cur_nfa, false);
-      is_def = false;
-    }
   }
+
+    for (auto const& n : nfas)
+    {
+        std::shared_ptr<nfa> cur_nfa = n.first;
+        bool is_def = n.second;
+        if (first_nfa)
+        {
+            combined_nfa = cur_nfa;
+            first_nfa = false;
+        }
+        else
+        {
+            if (is_def)
+                combined_nfa->unify(cur_nfa);
+            else
+                combined_nfa->unify(cur_nfa, false);
+            is_def = false;
+        }
+    }
   combined_nfa->visualize();
 }
 

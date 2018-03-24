@@ -243,7 +243,7 @@ std::shared_ptr <nfa> evaluate_regex (regular_expression regex,
             {
                 if (last_push_type == VALUE && !values.empty()) operators.push(CONCAT);
                 std::shared_ptr<nfa> copy_nfa = sym_table[temp]->copy();
-                copy_nfa->update_acceptance_states();
+//                copy_nfa->update_acceptance_states();
                 values.push(copy_nfa);
                 last_push_type = VALUE;
             }
