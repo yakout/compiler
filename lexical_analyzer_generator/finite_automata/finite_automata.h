@@ -47,6 +47,8 @@ public:
 	void set_acceptance_states(std::vector<std::shared_ptr<state>>);
 	void add_acceptance_state(std::shared_ptr<state>);
 	void set_total_states(int total_states);
+	void set_acceptance_states_priority(int);
+	void set_acceptance_states_token_class(std::string);
 };
 
 

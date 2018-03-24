@@ -24,6 +24,8 @@ protected:
     state_type type;
     std::shared_ptr<char_set> state_input;
     std::string token_class;
+    int priority;
+
 public:
     state (state_id id, state_type type, std::shared_ptr<char_set> st_ip);
     state (const state&);
@@ -41,12 +43,13 @@ public:
     const state_type& get_type() const;
     const std::shared_ptr<char_set> get_char_set() const;
     const std::string get_token_class () const;
-
+    const int get_token_class_priority () const;
     // setters
     void set_type (state_type);
     void set_id (state_id);
     void set_char_set (std::shared_ptr<char_set>);
     void set_token_class (std::string);
+    void set_priority (int);
 };
 
 #endif // STATE_H

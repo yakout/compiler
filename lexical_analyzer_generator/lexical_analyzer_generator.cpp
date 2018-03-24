@@ -43,7 +43,7 @@ std::vector <std::string> read_file (std::string rules_file)
 
 
 
-std::shared_ptr<nfa> build_punctations_nfa (std::string full_line)
+std::shared_ptr<nfa> build_punctations_nfa (std::string full_line, int order)
 {
   std::string line;
   for (auto c : full_line)
@@ -66,12 +66,16 @@ std::shared_ptr<nfa> build_punctations_nfa (std::string full_line)
         std::shared_ptr<nfa>
           p_nfa(new nfa(c_s));
         cur_punct_nfa = p_nfa;
+        cur_punct_nfa->set_acceptance_states_priority(order);
+        cur_punct_nfa->set_acceptance_states_token_class("" + line[i + 1]);
     }
     else
     {
       std::shared_ptr<char_set> c_s(new char_set(line[i]));
       std::shared_ptr<nfa> p_nfa(new nfa(c_s));
       cur_punct_nfa = p_nfa;
+      cur_punct_nfa->set_acceptance_states_priority(order);
+      cur_punct_nfa->set_acceptance_states_token_class("" + line[i]);
     }
     if (first_nfa)
     {
@@ -90,7 +94,7 @@ std::shared_ptr<nfa> build_punctations_nfa (std::string full_line)
   return punct_nfa;
 }
 
-std::shared_ptr<nfa> build_keywords_nfa (std::string line)
+std::shared_ptr<nfa> build_keywords_nfa (std::string line, int order)
 {
   if (line[line.length() - 1] != KEYWORD_CLAUSE_END
       || line.length() <= 2);
@@ -110,6 +114,8 @@ std::shared_ptr<nfa> build_keywords_nfa (std::string line)
         std::shared_ptr<nfa> nfa1(new nfa(c_s));
         nfa0->concat(nfa1);
       }
+      nfa0->set_acceptance_states_priority(order);
+      nfa0->set_acceptance_states_token_class(word);
       if (first_nfa)
       {
         keywords_nfa = nfa0;
@@ -125,11 +131,14 @@ std::shared_ptr<nfa> build_keywords_nfa (std::string line)
 
 std::shared_ptr<nfa> build_regex_nfa (std::string lhs, std::string rhs,
                                         std::map <std::string,
-                                        std::shared_ptr<nfa>> &sym_table)
+                                        std::shared_ptr<nfa>> &sym_table,
+                                        int order)
 {
     regular_expression regex = {lhs, rhs};
     std::shared_ptr<nfa> reg_def_nfa = evaluate_regex(regex, sym_table);
     sym_table[lhs] = reg_def_nfa;
+    reg_def_nfa->set_acceptance_states_priority(order);
+    reg_def_nfa->set_acceptance_states_token_class(lhs);
     return reg_def_nfa;
 }
 
@@ -140,18 +149,19 @@ std::shared_ptr<nfa> build_combined_nfa (std::vector<std::string> rules_file_lin
   std::shared_ptr<nfa> combined_nfa;
   bool first_nfa = true;
   bool is_def;
+    int order = 1;
     std::map<std::shared_ptr<nfa>, bool> nfas;
   for (auto line : rules_file_lines)
   {
     std::shared_ptr<nfa> cur_nfa;
     if (line[0] == PUNCT_CLAUSE_START)
     {
-        cur_nfa = build_punctations_nfa (line);
+        cur_nfa = build_punctations_nfa (line, order);
         nfas[cur_nfa] = false;
     }
     else if (line[0] == KEYWORD_CLAUSE_START)
     {
-       cur_nfa = build_keywords_nfa (line);
+       cur_nfa = build_keywords_nfa (line, order);
         nfas[cur_nfa] = false;
     }
     else
@@ -162,15 +172,17 @@ std::shared_ptr<nfa> build_combined_nfa (std::vector<std::string> rules_file_lin
           if (line[i] == DEFINITION_ASSIGN)
           {
               is_def = true;
+              std::cout << "reg def" << std::endl;
               cur_nfa = build_regex_nfa (trim(line.substr(0, i)), trim(line.substr(i+1)),
-                              sym_table);
+                              sym_table, order);
               nfas[cur_nfa] = true;
               break;
           }
           else if (line[i] == EXPRESSION_ASSIGN)
           {
+            std::cout << "regex" << std::endl;
               cur_nfa = build_regex_nfa (trim(line.substr(0, i)), trim(line.substr(i+1)),
-                            sym_table);
+                            sym_table, order);
               nfas[cur_nfa] = false;
               break;
           }
@@ -180,6 +192,7 @@ std::shared_ptr<nfa> build_combined_nfa (std::vector<std::string> rules_file_lin
           //// TODO : Error
         }
     }
+    order++;
   }
 
 
