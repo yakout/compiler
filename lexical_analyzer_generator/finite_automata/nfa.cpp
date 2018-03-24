@@ -21,6 +21,7 @@ nfa::nfa() : fa()
 void add_transitions_from_char_set (std::shared_ptr<char_set> st_ip,
   std::shared_ptr<nfa_state> s0, std::shared_ptr<nfa_state> sf)
 {
+
   for (auto c : st_ip->get_characters())
   {
 //            std::cout << s0->get_id() << "--" << c.first << "-->" << sf->get_id() << std::endl;
@@ -31,6 +32,11 @@ void add_transitions_from_char_set (std::shared_ptr<char_set> st_ip,
   {
       s0->insert_transition (range->get_range_string(), sf);
   }
+    if (st_ip->is_empty())
+    {
+        s0->insert_transition ("", sf);
+    }
+
 }
 
 nfa::nfa(std::shared_ptr<char_set> st_ip, int id1, int id2)
@@ -117,13 +123,10 @@ void nfa::unify(std::shared_ptr<nfa> nfa2)
     std::shared_ptr<char_set> eps = build_epsilon_transition();
 
     std::shared_ptr<nfa_state> s0 = std::make_shared<nfa_state>(nfa_state (0, START, eps));
-//    visualize();
     renamify(1);
-//    visualize();
     nfa2->renamify(max_id + 1);
-//    nfa2->visualize();
     std::shared_ptr<nfa_state> sf = std::make_shared<nfa_state>(
-      nfa_state (nfa2->acceptance_states.front()->get_id() + 1, ACCEPTANCE, eps));
+      nfa_state (nfa2->max_id + 1, ACCEPTANCE, eps));
 
     std::shared_ptr<nfa_state> nfa2_s0 = std::static_pointer_cast<nfa_state>(nfa2->get_start_state());
     std::shared_ptr<nfa_state> nfa1_s0 = std::static_pointer_cast<nfa_state>(start_state);
@@ -164,7 +167,7 @@ void nfa::concat(std::shared_ptr<nfa> nfa2)
 
 void nfa::plus()
 {
-    std::shared_ptr<nfa> nfa2(new nfa(*this));
+    std::shared_ptr<nfa> nfa2 = copy();
     nfa2->update_acceptance_states();
     nfa2->renamify(acceptance_states.front()->get_id() + 1);
     nfa2->star();
@@ -287,3 +290,10 @@ void nfa::renamify (state_id starting_id)
     max_id = renamifiy_start_index - 1;
 }
 
+std::shared_ptr<char_set> nfa::get_alphabet()
+{
+    std::shared_ptr<char_set> alphabet(new char_set());
+    std::vector<bool> visited(100); // TODO
+    dfs(start_state, visited, nullptr, true, alphabet);
+    return alphabet;
+}

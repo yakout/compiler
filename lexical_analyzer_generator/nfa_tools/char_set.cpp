@@ -18,6 +18,11 @@ char_set::char_set(): ranges(), characters() {
 
 }
 
+char_set::char_set(char c) : ranges(), characters()
+{
+  characters[c] = true;
+}
+
 char_set::char_set(const char_set & c_s)
         : ranges(), characters(c_s.get_characters())
 {
@@ -45,3 +50,6 @@ const std::vector <std::shared_ptr<char_range>> &char_set::get_ranges() const
     return ranges;
 }
 
+bool char_set::is_empty() {
+    return characters.empty() && ranges.empty();
+}

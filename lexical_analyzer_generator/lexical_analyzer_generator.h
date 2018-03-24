@@ -5,7 +5,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-
+#include <memory>
 
 class lexical_analyzer_generator
 {

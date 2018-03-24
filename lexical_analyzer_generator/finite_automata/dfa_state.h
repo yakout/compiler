@@ -17,7 +17,9 @@ public:
     explicit dfa_state(std::set<std::shared_ptr<nfa_state>> nfa_states, state_id id);
 
     void insert_transition (std::string input, std::shared_ptr<state> const& state) override;
+    void set_transitions(const std::map<std::string, std::shared_ptr<dfa_state>> &transitions);
     std::shared_ptr<dfa_state> get_next_state (char input);
+    std::shared_ptr<dfa_state> get_next_state (std::string input);
     std::map <std::string, std::shared_ptr<dfa_state>> get_transitions();
     const std::set<std::shared_ptr<nfa_state>> &get_composing_nfa_states() const;
     const std::string get_token_class () const;
