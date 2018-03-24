@@ -16,20 +16,18 @@
 
 #define EPSILON ""
 
-bool dead_state(const std::shared_ptr<dfa_state> &shared_ptr);
-
 void draw_trans_table(std::shared_ptr<dfa> dfa)
 {
     std::shared_ptr<std::ofstream> out_file(new std::ofstream());
     out_file->open("transition_table.txt");
-    *out_file << "Total\tStates:\t" << dfa->get_total_states() << "\n";
-    *out_file << "Start\tState(s):\t{" << dfa->get_start_state()->get_id() << "}\n";
-    *out_file << "Acceptance State(s):\t" << dfa->get_acceptance_states().size() << "\n";
+    *out_file << "Total States: " << dfa->get_total_states() << "\n";
+    *out_file << "Start State(s): {" << dfa->get_start_state()->get_id() << "}\n";
+    *out_file << "Acceptance State(s): " << dfa->get_acceptance_states().size() << "\n";
     for (auto acc_state : dfa->get_acceptance_states())
     {
-        *out_file << "{" << acc_state->get_id() << "}\t" << acc_state->get_token_class() << "\n";
+        *out_file << "{" << acc_state->get_id() << "} " << acc_state->get_token_class() << "\n";
     }
-    *out_file << "State\t";
+    *out_file << "State ";
     std::set<char> alph_chars;
     std::set<std::string> alph_ranges;
     for (auto inp_char : dfa->get_alphabet()->get_characters())
@@ -37,29 +35,29 @@ void draw_trans_table(std::shared_ptr<dfa> dfa)
         alph_chars.insert(inp_char.first);
     }
     for (auto c : alph_chars) {
-        *out_file << c << "\t";
+        *out_file << c << " ";
     }
     for (auto inp_range : dfa->get_alphabet()->get_ranges())
     {
         alph_ranges.insert(inp_range->get_range_string());
     }
     for (auto range : alph_ranges) {
-        *out_file << range << "\t";
+        *out_file << range << " ";
     }
     *out_file << "\n";
     for (auto state : dfa->get_dfa_states())
     {
-        *out_file << "{" << state->get_id() << "}\t";
+        *out_file << "{" << state->get_id() << "} ";
         for (auto inp_char : dfa->get_alphabet()->get_characters())
         {
             auto target_state = state->get_next_state(inp_char.first);
             if (target_state == nullptr)
             {
-                *out_file << "{-}\t";
+                *out_file << "{-} ";
             }
             else
             {
-                *out_file << "{" << target_state->get_id() << "}\t";
+                *out_file << "{" << target_state->get_id() << "} ";
             }
         }
         for (auto inp_range : dfa->get_alphabet()->get_ranges())
@@ -67,11 +65,11 @@ void draw_trans_table(std::shared_ptr<dfa> dfa)
             auto target_state = state->get_next_state(inp_range->get_range_string());
             if (target_state == nullptr)
             {
-                *out_file << "{-}\t";
+                *out_file << "{-} ";
             }
             else
             {
-                *out_file << "{" << target_state->get_id() << "}\t";
+                *out_file << "{" << target_state->get_id() << "} ";
             }
         }
         *out_file << "\n";
@@ -137,14 +135,6 @@ std::set<std::shared_ptr<nfa_state>> e_closure(const std::set<std::shared_ptr<nf
 std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
     std::shared_ptr<dfa> dfa_ptr(new dfa());
     dfa_ptr->set_alphabet(nfa_ptr->get_alphabet());
-//    std::cout << "ALPHABET: ";
-//    for (auto ch : dfa_ptr->get_alphabet()->get_characters()) {
-//        std::cout << ch.first << " ";
-//    }
-//    for (auto x : dfa_ptr->get_alphabet()->get_ranges()) {
-//        std::cout << x->get_range_string() << " ";
-//    }
-//    exit(0);
     std::set<std::shared_ptr<nfa_state>> vec;
     vec.insert((std::shared_ptr<nfa_state> &&) nfa_ptr->get_start_state());
     std::shared_ptr<dfa_state> init_dfa_state(new dfa_state(e_closure(vec),
@@ -157,11 +147,6 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
     while ((curr_state = dfa_ptr->get_unmarked_state()) != nullptr)
     {
         curr_state->set_marked(true);
-        std::cout << "Current State = " << curr_state->get_id() << std::endl;
-        for (auto curr : curr_state->get_composing_nfa_states()) {
-            std::cout << curr->get_id() << " ";
-        }
-        std::cout << std::endl;
         for (const auto &curr_char : dfa_ptr->get_alphabet()->get_characters())
         {
             std::shared_ptr<dfa_state> new_state(new dfa_state(e_closure(move(curr_state->get_composing_nfa_states(),
@@ -175,11 +160,6 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
                 curr_state->insert_transition(dfa_ptr->get_alphabet()->get_string(curr_char.first), curr_state);
                 continue;
             }
-            std::cout << "New State = " << new_state->get_id() << std::endl;
-            for (auto curr : new_state->get_composing_nfa_states()) {
-                std::cout << curr->get_id() << " ";
-            }
-            std::cout << std::endl;
             if (!dfa_ptr->contains(new_state))
             {
                 dfa_ptr->add_state(new_state);
@@ -228,11 +208,6 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
                 curr_state->insert_transition(curr_range->get_range_string(), curr_state);
                 continue;
             }
-//            std::cout << "New State = " << new_state->get_id() << std::endl;
-//            for (auto curr : new_state->get_composing_nfa_states()) {
-//                std::cout << curr->get_id() << " ";
-//            }
-//            std::cout << std::endl;
             if (!dfa_ptr->contains(new_state))
             {
                 dfa_ptr->add_state(new_state);
@@ -271,7 +246,6 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
     return dfa_ptr;
 }
 
-/// CHECK THIS AGAIN!
 bool equal_partitions(std::set<std::set<std::shared_ptr<dfa_state>>> part1,
                       std::set<std::set<std::shared_ptr<dfa_state>>> part2) {
     return part1 == part2;
@@ -478,18 +452,8 @@ int main(int argc, char** argv) {
 
     lexical_analyzer_generator gen = lexical_analyzer_generator();
     auto combined_nfa = gen.get_lexical_analyzer_file("rules.txt");
-//    int i = 0;
-//    for (auto s : combined_nfa->get_acceptance_states()) {
-//        std::cout << s->get_token_class() << "\n";
-//        std::cout << i++ << "\n";
-//    }
     combined_nfa->visualize();
     auto dfa_ptr = convert_nfa_dfa(combined_nfa);
-    int i = 0;
-    for (auto s : dfa_ptr->get_acceptance_states()) {
-        std::cout << s->get_token_class() << "\n";
-        std::cout << i++ << "\n";
-    }
 //    dfa_ptr->visualize();
     auto min_dfa = minimize(dfa_ptr);
     min_dfa->visualize();
