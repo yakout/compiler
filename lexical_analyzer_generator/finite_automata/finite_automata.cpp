@@ -46,7 +46,7 @@ void fa::visualize()
     *visualizer <<
                 "digraph finite_state_machine {\n"
                         "\trankdir=LR;\n"
-                        "\tsize=\"8,5\"\n"
+                        "\tsize=\"20,5\"\n"
                         "\tnode [shape = doublecircle]; ";
     for (const auto &s : acceptance_states)
     {
@@ -111,7 +111,10 @@ void fa::add_acceptance_state(std::shared_ptr<state> s)
 
 void fa::update_acceptance_states()
 {
-    std::vector<bool> visted(static_cast<unsigned long>(total_states));
+    std::vector<bool> visted(static_cast<unsigned long>(100)); // TODO
     dfs(start_state, visted, nullptr, true, nullptr);
 }
 
+int fa::get_max_id() {
+    return max_id;
+}

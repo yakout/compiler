@@ -375,18 +375,18 @@ std::shared_ptr<nfa> build_nfa2()
 
 std::shared_ptr<nfa> build_nfa3()
 {
-  std::shared_ptr<char_set> a_char_set(new char_set());
+  std::shared_ptr<char_set> a_char_set (new char_set());
   a_char_set->add_character ('a');
 
 
-  std::shared_ptr<char_set> b_char_set(new char_set());
+  std::shared_ptr<char_set> b_char_set (new char_set());
   b_char_set->add_character ('b');
-
+  //// (a|b)* abb
   std::shared_ptr <nfa> nfa_a1_ptr (new nfa(a_char_set));
   std::shared_ptr <nfa> nfa_a2_ptr (new nfa(a_char_set));
-  std::shared_ptr<nfa> nfa_b1_ptr(new nfa(b_char_set));
-  std::shared_ptr<nfa> nfa_b2_ptr(new nfa(b_char_set));
-  std::shared_ptr<nfa> nfa_b3_ptr(new nfa(b_char_set));
+  std::shared_ptr<nfa> nfa_b1_ptr (new nfa(b_char_set));
+  std::shared_ptr<nfa> nfa_b2_ptr (new nfa(b_char_set));
+  std::shared_ptr<nfa> nfa_b3_ptr (new nfa(b_char_set));
   nfa_a1_ptr->unify(nfa_b1_ptr);
   nfa_a1_ptr->star();
   nfa_a1_ptr->concat(nfa_a2_ptr);
@@ -620,26 +620,60 @@ std::shared_ptr<dfa> minimize(const std::shared_ptr<dfa> &dfa_ptr)
 }
 
 bool dead_state(const std::shared_ptr<dfa_state> &s) {
-    return s->get_char_set()->get_characters().empty() && s->get_char_set()->get_ranges().empty();
+    return s->get_char_set()->is_empty();
 }
 
-int main(int argc, char** argv) {
-//    regular_expression regex = {"letter", "a-z"};
-//    std::map <std::string,std::shared_ptr<nfa>> sym_table;
-//    std::shared_ptr<nfa> my_nfa = evaluate_regex (regex, sym_table);
-//    if (my_nfa != nullptr)
-//      my_nfa->visualize();
-    std::shared_ptr<nfa> nfa_ptr = build_nfa1();
-//    std::shared_ptr<nfa> nfa_ptr = build_complex_nfa();
+//int main(int argc, char** argv) {
+//    // HEAAD
+//    std::shared_ptr<nfa> nfa_ptr = build_nfa1();
+////    std::shared_ptr<nfa> nfa_ptr = build_complex_nfa();
 //    nfa_ptr->visualize();
-    std::shared_ptr<dfa> dfa_ptr = convert_nfa_dfa(nfa_ptr);
+//    std::shared_ptr<dfa> dfa_ptr = convert_nfa_dfa(nfa_ptr);
 //    dfa_ptr->visualize();
-    std::shared_ptr<dfa> minimized_dfa = minimize(dfa_ptr);
-    for (const auto &curr : minimized_dfa->get_acceptance_states())
+//    std::shared_ptr<dfa> minimized_dfa = minimize(dfa_ptr);
+//    for (const auto &curr : minimized_dfa->get_acceptance_states())
+//    {
+//        std::cout << curr->get_id() << " ";
+//    }
+//    minimized_dfa->visualize();
+//}
+
+int main(int argc, char** argv) {
+    std::map <std::string,std::shared_ptr<nfa>> sym_table;
+    regular_expression regex1 = {"letter", "a-z | A-Z"};
+    std::shared_ptr<nfa> letter_nfa = evaluate_regex (regex1, sym_table);
+    sym_table["letter"] = letter_nfa;
+    regular_expression regex2 = {"digit", "0-9"};
+    std::shared_ptr<nfa> digit_nfa = evaluate_regex (regex2, sym_table);
+    sym_table["digit"] = digit_nfa ;
+    regular_expression regex3 = {"id", "letter (letter|digit)*"};
+    std::shared_ptr<nfa> id_nfa = evaluate_regex (regex3, sym_table);
+    sym_table["id"] = id_nfa;
+    regular_expression regex4 = {"digits", "digit+"};
+    std::shared_ptr<nfa> digits_nfa = evaluate_regex (regex4, sym_table);
+    sym_table["digits"] = digits_nfa;
+    regular_expression regex5 = {"num", "digit+ | digit+ . digits ( \\L | E digits)"};
+    std::shared_ptr<nfa> num_nfa = evaluate_regex (regex5, sym_table);
+    sym_table["num"] = digits_nfa;
+
+    //    std::shared_ptr<nfa> num_nfa = digit_nfa->copy();
+
+//    letter_nfa->unify(digit_nfa);
+//    letter_nfa->unify(id_nfa);
+//    letter_nfa->unify(digits_nfa);
+
+    if (num_nfa != nullptr)
     {
-        std::cout << curr->get_id() << " ";
+        num_nfa->visualize();
+        std::shared_ptr<char_set> c_s = num_nfa->get_alphabet();
+        for (auto const& c : c_s->get_characters())
+        {
+            std::cout << c.first << std::endl;
+        }
+        for (auto const& range : c_s->get_ranges())
+        {
+            std::cout << range->get_range_string() << std::endl;
+        }
     }
-    minimized_dfa->visualize();
-//    draw_trans_table(my_dfa);
     return 0;
 }

@@ -20,6 +20,7 @@ public:
 
     // getters
     std::string get_string (char input);
+    bool is_empty();
     const std::map <char, bool> &get_characters() const;
     const std::vector <std::shared_ptr<char_range>> &get_ranges() const;
 };

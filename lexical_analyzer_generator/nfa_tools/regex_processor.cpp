@@ -24,19 +24,20 @@ STACK_OPERATOR convert_to_stack_operator(char c)
 }
 
 /**
- * checks if c1 (new operator) is higher precdance than c2 (top of stack)
+ * checks if o1 (new operator) is higher precdance than o2 (top of stack)
  */
-bool is_lower_or_equal (char c1, char c2)
+bool is_lower_or_equal (STACK_OPERATOR o1, STACK_OPERATOR o2)
 {
-    if ((c1 == STAR || c1 == PLUS) && (c2 == STAR || c2 == PLUS))
+    if (o2 == LEFT_PAREN) return false;
+    if ((o1 == STAR || o1 == PLUS) && (o2 == STAR || o2 == PLUS))
         return true; // equal
-    else if ((c1 == STAR || c1 == PLUS))
+    else if ((o1 == STAR || o1 == PLUS))
         return false;
-    else if (c1 == CONCAT && (c2 == STAR || c2 == PLUS || c2 == CONCAT))
+    else if (o1 == CONCAT && (o2 == STAR || o2 == PLUS || o2 == CONCAT))
         return true;
-    else if (c1 == CONCAT)
+    else if (o1 == CONCAT)
         return false;
-    /// UNION Case always true
+    // UNION Case always true
     return true;
 }
 
@@ -74,6 +75,7 @@ bool perform_operation_on_stack (std::stack<STACK_OPERATOR> &operators,
         default:
             break;
     }
+
     return true;
 }
 
@@ -95,6 +97,14 @@ std::shared_ptr<nfa> build_nfa(char c)
     return nfa_c;
 }
 
+
+enum STACK_TYPE
+{
+    VALUE,
+    OPERATOR,
+    NONE
+};
+
 std::shared_ptr <nfa> evaluate_regex (regular_expression regex,
                                       std::map <std::string,
                                               std::shared_ptr<nfa>> &sym_table)
@@ -104,18 +114,24 @@ std::shared_ptr <nfa> evaluate_regex (regular_expression regex,
     std::string regex_name = regex.name;
     std::string regex_line = regex.rhs;
     std::string temp;
+    STACK_TYPE last_push_type = NONE;
     for (int i = 0; i < regex_line.length(); i++)
     {
         if (is_regex_operator(regex_line[i]) || regex_line[i] == LEFT_PAREN_SYMBOL)
         {
             while (regex_line[i] != LEFT_PAREN_SYMBOL && !operators.empty()
-                   && is_lower_or_equal (regex_line[i], operators.top()))
+                   && is_lower_or_equal (convert_to_stack_operator(regex_line[i]), operators.top()))
             {
                 if (!perform_operation_on_stack (operators, values))
                     return nullptr;
+                else {
+                    last_push_type = VALUE;
+                }
                 if (operators.empty()) break;
             }
+            if (regex_line[i] == LEFT_PAREN_SYMBOL && last_push_type == VALUE && !values.empty()) operators.push(CONCAT);
             operators.push(convert_to_stack_operator(regex_line[i]));
+            last_push_type = OPERATOR;
         }
         else if (regex_line[i] == RIGHT_PAREN_SYMBOL)
         {
@@ -123,6 +139,9 @@ std::shared_ptr <nfa> evaluate_regex (regular_expression regex,
             {
                 if (!perform_operation_on_stack (operators, values))
                     return nullptr;
+                else {
+                    last_push_type = VALUE;
+                }
                 if (operators.empty()) return nullptr;
             }
             operators.pop();
@@ -155,14 +174,24 @@ std::shared_ptr <nfa> evaluate_regex (regular_expression regex,
             }
             if (lower > upper) return nullptr; // TODO : Throw Exception
             values.push (build_nfa(lower, upper));
+            last_push_type = VALUE;
         }
         else if (regex_line[i] == SPACE || (regex_line[i] == ESC))
         {
             if (regex_line[i] == ESC && (i < regex_line.length() - 1)
                 && regex_line[i + 1] == LAMBDA)
-                values.push(build_nfa (EPS));
+            {
+                if (last_push_type == VALUE && !values.empty()) operators.push(CONCAT);
+                values.push(build_nfa(EPS));
+                i++;
+                last_push_type = VALUE;
+            }
             else if (regex_line[i] == ESC && (i < regex_line.length() - 1))
-                values.push(build_nfa (regex_line[++i]));
+            {
+                if (last_push_type == VALUE && !values.empty()) operators.push(CONCAT);
+                values.push(build_nfa(regex_line[++i]));
+                last_push_type = VALUE;
+            }
             else if (regex_line[i] == ESC)
             {
                 return nullptr;
@@ -173,35 +202,50 @@ std::shared_ptr <nfa> evaluate_regex (regular_expression regex,
         {
             // char
             while (!is_regex_operator(regex_line[i]) && regex_line[i] != LEFT_PAREN_SYMBOL
-                   && regex_line[i] != RIGHT_PAREN_SYMBOL && regex_line[i] != RANGE_SEP)
+                   && regex_line[i] != RIGHT_PAREN_SYMBOL && regex_line[i] != RANGE_SEP
+                   && regex_line[i] != SPACE && regex_line[i] != ESC)
             {
                 temp += regex_line[i++];
                 if (i == regex_line.length())
                     break;
             }
+            i--;
             if (sym_table.count(temp) == 0)
             {
-                i--;
+                int temp_size = temp.length();
                 std::shared_ptr<nfa> nfa1 = build_nfa(temp[0]); // nfa(1)
-                temp = temp.substr(1, temp.length() - 2); // abcd* only concats abc
-                char temp_last = temp[temp.length() - 1];
+                char temp_last = temp[temp_size - 1];
+                temp = temp.substr(1, temp_size - 2); // abcd* only concats abc
                 for (auto const& c : temp)
                 {
                     std::shared_ptr<nfa> nfa2 = build_nfa(c);
                     nfa1->concat(nfa2);
                 }
+                if ((last_push_type == VALUE && !values.empty())
+                    || (last_push_type == OPERATOR
+                       && (operators.top() == PLUS || operators.top() == STAR)))
+                {
+                    perform_operation_on_stack (operators, values);
+                    operators.push(CONCAT);
+                }
                 values.push(nfa1);
-                if (temp_last != '\0')
+                last_push_type = VALUE;
+                if (temp_last != '\0' && temp_size - 1 != 0)
                 {
                     operators.push(CONCAT);
                     std::shared_ptr<nfa> nfa_temp_last = build_nfa(temp_last);
                     values.push(nfa_temp_last);
+                    last_push_type = VALUE;
                 }
 
             }
             else
             {
-                values.push(sym_table[temp]);
+                if (last_push_type == VALUE && !values.empty()) operators.push(CONCAT);
+                std::shared_ptr<nfa> copy_nfa = sym_table[temp]->copy();
+                copy_nfa->update_acceptance_states();
+                values.push(copy_nfa);
+                last_push_type = VALUE;
             }
             temp.clear();
         }

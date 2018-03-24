@@ -41,8 +41,9 @@ public:
     const std::shared_ptr<char_set> get_char_set() const;
 
     // setters
-    void set_type(state_type);
-    void set_id(state_id);
+    void set_type (state_type);
+    void set_id (state_id);
+    void set_char_set (std::shared_ptr<char_set>);
 };
 
 #endif // STATE_H

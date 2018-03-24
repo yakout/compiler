@@ -13,6 +13,7 @@ protected:
 	std::shared_ptr<state> start_state;
 	std::vector<std::shared_ptr<state>> acceptance_states;
     int total_states;
+	int max_id;
 
 public:
 	explicit fa(std::shared_ptr<state> start_state,
@@ -35,6 +36,7 @@ public:
 	int get_total_states() const;
 	const std::vector<std::shared_ptr<state>> &get_acceptance_states() const;
 	const std::shared_ptr<state> &get_start_state() const;
+    int get_max_id();
 	/**
 	 * @brief returns the alphabet of the nfa.
 	 * @details returns set of all intpu characters to states in nfa.

@@ -3,17 +3,25 @@
 #include "nfa.h"
 #include "nfa_state.h"
 
+#include <utility>
+
 nfa::nfa(std::shared_ptr<state> start_state, std::vector<std::shared_ptr<state>> acceptance_states, int total_states)
-        : fa(start_state, acceptance_states, total_states) 
+        : fa(start_state, acceptance_states, total_states)
 {
     nfa::start_state = start_state;
     nfa::acceptance_states = acceptance_states;
     nfa::total_states = total_states;
 }
 
+nfa::nfa() : fa()
+{
+
+}
+
 void add_transitions_from_char_set (std::shared_ptr<char_set> st_ip,
   std::shared_ptr<nfa_state> s0, std::shared_ptr<nfa_state> sf)
 {
+
   for (auto c : st_ip->get_characters())
   {
 //            std::cout << s0->get_id() << "--" << c.first << "-->" << sf->get_id() << std::endl;
@@ -24,6 +32,11 @@ void add_transitions_from_char_set (std::shared_ptr<char_set> st_ip,
   {
       s0->insert_transition (range->get_range_string(), sf);
   }
+    if (st_ip->is_empty())
+    {
+        s0->insert_transition ("", sf);
+    }
+
 }
 
 nfa::nfa(std::shared_ptr<char_set> st_ip, int id1, int id2)
@@ -86,15 +99,17 @@ void nfa::dfs (std::shared_ptr<state> curr_state, std::vector<bool> &visited,
         for (auto state : next_states)
         {
             // Visualize
-            if (vis != nullptr) 
+            if (vis != nullptr)
             {
-                if (label.empty()) 
+                if (label.empty())
                 {
                     label = "ϵ";
                 }
+                if (label == "\\")
+                    label += '\\';
                 *vis << curr_state->get_id() << " -> " << state->get_id() << " [ label = \"" << label << "\" ];\n";
             }
-            if (!visited[state->get_id()]) 
+            if (!visited[state->get_id()])
             {
                 dfs(state, visited, vis, update_acceptance_states, alphabet);
             }
@@ -108,8 +123,11 @@ void nfa::unify(std::shared_ptr<nfa> nfa2)
     std::shared_ptr<char_set> eps = build_epsilon_transition();
 
     std::shared_ptr<nfa_state> s0 = std::make_shared<nfa_state>(nfa_state (0, START, eps));
+//    visualize();
     renamify(1);
-    nfa2->renamify(acceptance_states.front()->get_id() + 1);
+//    visualize();
+    nfa2->renamify(max_id + 1);
+//    nfa2->visualize();
     std::shared_ptr<nfa_state> sf = std::make_shared<nfa_state>(
       nfa_state (nfa2->acceptance_states.front()->get_id() + 1, ACCEPTANCE, eps));
 
@@ -152,7 +170,7 @@ void nfa::concat(std::shared_ptr<nfa> nfa2)
 
 void nfa::plus()
 {
-    std::shared_ptr<nfa> nfa2(new nfa(*this));
+    std::shared_ptr<nfa> nfa2 = copy();
     nfa2->update_acceptance_states();
     nfa2->renamify(acceptance_states.front()->get_id() + 1);
     nfa2->star();
@@ -172,17 +190,76 @@ std::shared_ptr<char_set> nfa::build_epsilon_transition()
 }
 
 
+int renamifiy_start_index = 0;
+
+void pre_copy_dfs (std::shared_ptr<state> curr_state, std::map<std::shared_ptr<state>, bool> &visited,
+                    std::map <int, std::vector<std::pair<std::string, int>>> &adj,
+                    std::map<int, std::shared_ptr<nfa_state>> &states)
+{
+  visited[curr_state] = true;
+  states[(curr_state)->get_id()] = std::static_pointer_cast<nfa_state>(curr_state);
+
+  std::map<std::string, std::vector<std::shared_ptr<nfa_state>>> transitions
+          = std::static_pointer_cast<nfa_state>(curr_state)->get_transitions();
+  std::vector <std::pair<std::string, int>> v;
+  for (auto edge : transitions)
+  {
+      std::string label = edge.first;
+      std::vector<std::shared_ptr<nfa_state>> next_states = edge.second;
+      int i = 1;
+      for (auto state : next_states)
+      {
+          if (!visited[state]) {
+              pre_copy_dfs(state, visited, adj, states);
+          }
+          v.push_back ({label ,state->get_id()});
+      }
+  }
+  adj[curr_state->get_id()] = v;
+}
+
+std::shared_ptr<nfa> nfa::copy()
+{
+    std::map <int, std::vector<std::pair<std::string, int>>> adj;
+    std::map<int, std::shared_ptr<nfa_state>> old_states;
+    std::map<std::shared_ptr<state>, bool> visited;
+    pre_copy_dfs (start_state, visited, adj, old_states);
+    std::map<int, std::shared_ptr<nfa_state>> new_states;
+
+    for (auto state : old_states)
+    {
+      std::shared_ptr<nfa_state> old_state = state.second;
+      std::shared_ptr<char_set> c_s(new char_set(*old_state->get_char_set()));
+      std::shared_ptr<nfa_state> nfa_st(new nfa_state( old_state->get_id(),
+                                      old_state->get_type(), c_s) );
+      new_states[state.first] = nfa_st;
+    }
+    for (auto transition : adj)
+    {
+        std::vector <std::pair<std::string, int>> v = transition.second;
+        int from_id = transition.first;
+        for (auto edge : v)
+        {
+          new_states[from_id]->insert_transition (edge.first ,new_states[edge.second]);
+        }
+    }
+    std::shared_ptr<nfa> copied_nfa(new nfa());
+    copied_nfa->set_start_state(new_states[start_state->get_id()]);
+    copied_nfa->update_acceptance_states();
+    return  copied_nfa;
+}
+
 /**
  * @brief util function for renamify.
  * @details dfs that iterates the nfa and remame it's states ids starting from the given id.
- * 
- * @param visited 
+ *
+ * @param visited
  * @param id the nfa's start_state will start naming from this id and increment it to rename next states.
  */
-void renamify_dfs (std::shared_ptr<state> curr_state, std::map<std::shared_ptr<state>, bool> &visited, state_id id)
+void renamify_dfs (std::shared_ptr<state> curr_state, std::map<std::shared_ptr<state>, bool> &visited)
 {
     visited[curr_state] = true;
-    curr_state->set_id(id); // update state_id
+    curr_state->set_id(renamifiy_start_index++); // update state_id
 
     std::map<std::string, std::vector<std::shared_ptr<nfa_state>>> transitions
             = std::static_pointer_cast<nfa_state>(curr_state)->get_transitions();
@@ -191,11 +268,11 @@ void renamify_dfs (std::shared_ptr<state> curr_state, std::map<std::shared_ptr<s
     {
         std::string label = edge.first;
         std::vector<std::shared_ptr<nfa_state>> next_states = edge.second;
+        int i = 1;
         for (auto state : next_states)
         {
             if (!visited[state]) {
-                //std::cout << state->get_id() << std::endl;
-                renamify_dfs(state, visited, id + 1);
+                renamify_dfs(state, visited);
             }
         }
     }
@@ -203,17 +280,17 @@ void renamify_dfs (std::shared_ptr<state> curr_state, std::map<std::shared_ptr<s
 
 /**
  * @brief rename nfa's states ids.
- * @details the nfa's start_state will start naming from given starting_id 
+ * @details the nfa's start_state will start naming from given starting_id
  * and increment it to rename next states.
- * 
- * @param starting_id 
+ *
+ * @param starting_id
  */
 void nfa::renamify (state_id starting_id)
 {
+    renamifiy_start_index = starting_id;
     std::map<std::shared_ptr<state>, bool> visited;
-    renamify_dfs (start_state, visited, starting_id);
-    /*start_state->set_id(starting_id);
-    acceptance_states.front()->set_id(starting_id + 1);*/
+    renamify_dfs (start_state, visited);
+    max_id = renamifiy_start_index - 1;
 }
 
 std::shared_ptr<char_set> nfa::get_alphabet()
