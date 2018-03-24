@@ -18,7 +18,7 @@ std::ofstream sym_tab_file;
 std::ofstream token_file;
 std::ofstream log_file;
 
-int main (int argc, char *argv[]) {	
+int main (int argc, char *argv[]) {
     if (argc > 5 || argc == 1 || argc == 3) {
         err_argc ();
     }
@@ -51,7 +51,7 @@ int main (int argc, char *argv[]) {
 
 void err_argc () {
     std::cout << "Invalid number of arguments.\n"
-        << "Please enter \"./compiler --help\" " 
+        << "Please enter \"./compiler --help\" "
         << "to know the supported options in this version.\n";
 
     exit (EXIT_FAILURE);
@@ -59,7 +59,7 @@ void err_argc () {
 
 void err_option () {
     std::cout << "Unsupported option.\n"
-        << "Please enter \"./compiler --help\" " 
+        << "Please enter \"./compiler --help\" "
         << "to know the supported options in this version.\n";
 
     exit (EXIT_FAILURE);
@@ -79,7 +79,7 @@ void help () {
         << "\t \" ./compiler --lex -g <rules-file> <source-code-file>. \"\n"
         << "\t \" ./compiler --lex <transition-table-file> <source-code-file>. \"\n\n"
         << "NOTE: This option will write its output in default files in the current directory.\n\n";
-        
+    
     return;
 }
 
@@ -128,15 +128,14 @@ void lex_tokenize (char *transition_table_file, char *code_file
 void print_output (std::vector<token> &token_vec) {
     for (auto t : token_vec) {
         if (t.token_class.empty ()) {
-            log_file << "[UNMATCHED]" << '\t' << 
+            log_file << "[UNMATCHED]" << '\t' <<
                 t.lexeme << '\t' << t.str_pos << '\n';
         } else {
-            log_file << "[MATCHED]" << '\t' << 
+            log_file << "[MATCHED]" << '\t' <<
                 t.lexeme << '\t' << t.token_class << '\t'
-                    << t.str_pos << '\n'; 
+                    << t.str_pos << '\n';
             sym_tab_file << t.lexeme << '\t' << t.token_class << '\n';
             token_file << t.token_class << '\n';
         }
     }
 }
-
