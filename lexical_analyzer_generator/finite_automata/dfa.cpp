@@ -80,3 +80,11 @@ bool dfa::contains(std::shared_ptr<dfa_state> s) {
     return false;
 }
 
+const std::shared_ptr<char_set> &dfa::get_alphabet() const {
+    return dfa::alphabet;
+}
+
+void dfa::set_alphabet(const std::shared_ptr<char_set> &alphabet) {
+    dfa::alphabet = alphabet;
+}
+

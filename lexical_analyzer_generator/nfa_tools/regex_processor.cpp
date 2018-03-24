@@ -144,7 +144,7 @@ std::shared_ptr <nfa> evaluate_regex (regular_expression regex,
                 }
                 if (operators.empty()) return nullptr;
             }
-            operators.pop();
+            operators.pop(); // pop left paren
         }
         else if (regex_line[i] == RANGE_SEP)
         {
