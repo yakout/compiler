@@ -132,7 +132,8 @@ std::set<std::shared_ptr<nfa_state>> e_closure(const std::set<std::shared_ptr<nf
     return reachable_states;
 }
 
-std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
+std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) 
+{
     std::shared_ptr<dfa> dfa_ptr(new dfa());
     dfa_ptr->set_alphabet(nfa_ptr->get_alphabet());
     std::set<std::shared_ptr<nfa_state>> vec;
@@ -251,7 +252,8 @@ bool equal_partitions(std::set<std::set<std::shared_ptr<dfa_state>>> part1,
     return part1 == part2;
 }
 bool same_group(const std::shared_ptr<dfa_state> &s1, const std::shared_ptr<dfa_state> &s2,
-                const std::string &inp, std::set<std::set<std::shared_ptr<dfa_state>>> partition) {
+                const std::string &inp, std::set<std::set<std::shared_ptr<dfa_state>>> partition) 
+{
     auto dest_state_1 = s1->get_next_state(inp);
     auto dest_state_2 = s2->get_next_state(inp);
     if (dest_state_1 == nullptr && dest_state_2 == nullptr) {
@@ -278,7 +280,8 @@ bool same_group(const std::shared_ptr<dfa_state> &s1, const std::shared_ptr<dfa_
 }
 
 bool same_group(const std::shared_ptr<dfa_state> &s1, const std::shared_ptr<dfa_state> &s2,
-                const char inp, std::set<std::set<std::shared_ptr<dfa_state>>> partition) {
+                const char inp, std::set<std::set<std::shared_ptr<dfa_state>>> partition) 
+{
     auto dest_state_1 = s1->get_next_state(inp);
     auto dest_state_2 = s2->get_next_state(inp);
     if (dest_state_1 == nullptr && dest_state_2 == nullptr) {
@@ -287,7 +290,6 @@ bool same_group(const std::shared_ptr<dfa_state> &s1, const std::shared_ptr<dfa_
     if (dest_state_1 == nullptr || dest_state_2 == nullptr) {
         return false;
     }
-//    std::cout << "Dest#1: " << dest_state_1->get_id() << ", Dest #2: " << dest_state_2->get_id() << "\n";
     for (auto grp : partition)
     {
         bool found_s1, found_s2;
@@ -307,7 +309,8 @@ bool same_group(const std::shared_ptr<dfa_state> &s1, const std::shared_ptr<dfa_
 
 std::set<std::set<std::shared_ptr<dfa_state>>>
 make_partition(std::set<std::set<std::shared_ptr<dfa_state>>> partition,
-               const std::shared_ptr<char_set> &alphabet) {
+               const std::shared_ptr<char_set> &alphabet) 
+{
     std::set<std::set<std::shared_ptr<dfa_state>>> new_partition;
     std::map<int, bool> partitioned;
     for (auto group : partition)
@@ -323,13 +326,11 @@ make_partition(std::set<std::set<std::shared_ptr<dfa_state>>> partition,
             partitioned[state->get_id()] = true;
             for (const auto &s : group)
             {
-//                std::cout << s->get_id() << "\n";
                 if (!partitioned[s->get_id()])
                 {
                     bool same_grp = true;
                     for (auto inp : alphabet->get_characters())
                     {
-//                        std::cout << "----" << state->get_id() << "    " << s->get_id() << " input = " << inp.first << "\n";
                         if (!same_group(state, s, inp.first, partition))
                         {
                             same_grp = false;
@@ -362,7 +363,6 @@ make_partition(std::set<std::set<std::shared_ptr<dfa_state>>> partition,
 
 std::shared_ptr<dfa> minimize(const std::shared_ptr<dfa> &dfa_ptr)
 {
-    // FIRST OF ALL MAKE A PARTITION OF ACC AND NON-ACC STATES
     std::set<std::set<std::shared_ptr<dfa_state>>> partition;
     std::set<std::shared_ptr<dfa_state>> non_acc_states, acc_states;
     for (const auto &s : dfa_ptr->get_dfa_states())
@@ -379,24 +379,17 @@ std::shared_ptr<dfa> minimize(const std::shared_ptr<dfa> &dfa_ptr)
     partition.insert(acc_states);
     partition.insert(non_acc_states);
 
-    // SECONDLY: PARTITION CURRENT PARTITION TO A NEW PARTITION
     auto new_partition = make_partition(partition, dfa_ptr->get_alphabet());
     while (!equal_partitions(partition, new_partition))
     {
         partition = new_partition;
         new_partition = make_partition(partition, dfa_ptr->get_alphabet());
     }
-    // PARTITION IS THE FINAL PARTITION, CHOOSE A REPRESENTATIVE FOR EACH GROUP AND REMOVE DEAD STATES.
     std::shared_ptr<dfa> min_dfa(new dfa());
     min_dfa->set_alphabet(dfa_ptr->get_alphabet());
     for (auto group : partition)
     {
-        // Choose representative and modify transitions.
         std::shared_ptr<dfa_state> grp_representative = *(group.begin());
-//        if (dead_state(grp_representative))
-//        {
-//            continue;
-//        }
         std::map<std::string, std::shared_ptr<dfa_state>> new_transitions;
         for (auto trans : grp_representative->get_transitions())
         {
@@ -419,10 +412,6 @@ std::shared_ptr<dfa> minimize(const std::shared_ptr<dfa> &dfa_ptr)
                 if (found_target_state)
                     break;
             }
-//            if (dead_state(target_state))
-//            {
-//                continue;
-//            }
             new_transitions[trans.first] = target_state;
         }
         grp_representative->set_transitions(new_transitions);
@@ -448,15 +437,3 @@ std::shared_ptr<dfa> minimize(const std::shared_ptr<dfa> &dfa_ptr)
     return min_dfa;
 }
 
-int main(int argc, char** argv) {
-
-    lexical_analyzer_generator gen = lexical_analyzer_generator();
-    auto combined_nfa = gen.get_lexical_analyzer_file("rules.txt");
-    combined_nfa->visualize();
-    auto dfa_ptr = convert_nfa_dfa(combined_nfa);
-//    dfa_ptr->visualize();
-    auto min_dfa = minimize(dfa_ptr);
-    min_dfa->visualize();
-    draw_trans_table(min_dfa);
-    return 0;
-}
