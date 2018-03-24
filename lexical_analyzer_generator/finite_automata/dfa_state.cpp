@@ -1,11 +1,10 @@
 #include <climits>
 #include "dfa_state.h"
 
-dfa_state::dfa_state (int id, state_type type, std::shared_ptr<char_set> st_ip, std::string token_class)
+dfa_state::dfa_state (int id, state_type type, std::shared_ptr<char_set> st_ip)
         : state (id, type, st_ip)
 {
     dfa_state::marked = false;
-    dfa_state::token_class = token_class;
     dfa_state::state_input = std::make_shared<char_set>(char_set());
     dfa_state::priority = INT_MAX;
 }
