@@ -788,27 +788,27 @@ int main(int argc, char** argv) {
     // }
     lexical_analyzer_generator gen = lexical_analyzer_generator();
     auto combined_nfa = gen.get_lexical_analyzer_file("rules.txt");
-    for (auto s : combined_nfa->get_acceptance_states()) {
-        if(s->get_type() != ACCEPTANCE)
-        {
-            s->set_type(ACCEPTANCE);
-        }
-    }
-//    combined_nfa->visualize();
+    // for (auto s : combined_nfa->get_acceptance_states()) {
+    //     if(s->get_type() != ACCEPTANCE)
+    //     {
+    //         s->set_type(ACCEPTANCE);
+    //     }
+    // }
+   combined_nfa->visualize();
 
-    auto dfa_ptr = convert_nfa_dfa(combined_nfa);
+    // auto dfa_ptr = convert_nfa_dfa(combined_nfa);
 //    dfa_ptr->visualize();
-    for (auto s : dfa_ptr->get_acceptance_states()) {
-        std::cout << s->get_id() << " ";
-    }
-    std::cout << "\n";
-    auto min_dfa = minimize(dfa_ptr);
-    for (auto s : min_dfa->get_acceptance_states()) {
-        std::cout << s->get_id() << " ";
-    }
-    std::cout << "\n";
-    min_dfa->visualize();
-    draw_trans_table(min_dfa);
+    // for (auto s : dfa_ptr->get_acceptance_states()) {
+    //     std::cout << s->get_id() << " ";
+    // }
+    // std::cout << "\n";
+    // auto min_dfa = minimize(dfa_ptr);
+    // for (auto s : min_dfa->get_acceptance_states()) {
+    //     std::cout << s->get_id() << " ";
+    // }
+    // std::cout << "\n";
+    // min_dfa->visualize();
+    // draw_trans_table(min_dfa);
     // std::shared_ptr<nfa> nf = build_keywords_nfa("{ if else while }");
     // nf->visualize();
     return 0;
