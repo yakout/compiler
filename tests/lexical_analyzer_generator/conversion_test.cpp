@@ -493,6 +493,9 @@ bool same_group(const std::shared_ptr<dfa_state> &s1, const std::shared_ptr<dfa_
                 const std::string &inp, std::set<std::set<std::shared_ptr<dfa_state>>> partition) {
     auto dest_state_1 = s1->get_next_state(inp);
     auto dest_state_2 = s2->get_next_state(inp);
+    if (dest_state_1 == nullptr && dest_state_2 == nullptr) {
+        return true;
+    }
     if (dest_state_1 == nullptr || dest_state_2 == nullptr) {
         return false;
     }
@@ -517,6 +520,9 @@ bool same_group(const std::shared_ptr<dfa_state> &s1, const std::shared_ptr<dfa_
                 const char inp, std::set<std::set<std::shared_ptr<dfa_state>>> partition) {
     auto dest_state_1 = s1->get_next_state(inp);
     auto dest_state_2 = s2->get_next_state(inp);
+    if (dest_state_1 == nullptr && dest_state_2 == nullptr) {
+        return true;
+    }
     if (dest_state_1 == nullptr || dest_state_2 == nullptr) {
         return false;
     }
@@ -790,18 +796,18 @@ int main(int argc, char** argv) {
 //    combined_nfa->visualize();
 
     auto dfa_ptr = convert_nfa_dfa(combined_nfa);
-    dfa_ptr->visualize();
-//    for (auto s : dfa_ptr->get_acceptance_states()) {
-//        std::cout << s->get_id() << " ";
-//    }
-//    std::cout << "\n";
+//    dfa_ptr->visualize();
+    for (auto s : dfa_ptr->get_acceptance_states()) {
+        std::cout << s->get_id() << " ";
+    }
+    std::cout << "\n";
     auto min_dfa = minimize(dfa_ptr);
     for (auto s : min_dfa->get_acceptance_states()) {
         std::cout << s->get_id() << " ";
     }
     std::cout << "\n";
     min_dfa->visualize();
-    draw_trans_table(min_dfa);
+//    draw_trans_table(min_dfa);
     // std::shared_ptr<nfa> nf = build_keywords_nfa("{ if else while }");
     // nf->visualize();
     return 0;
