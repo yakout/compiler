@@ -72,6 +72,14 @@ void nfa::dfs (std::shared_ptr<state> curr_state, std::vector<bool> &visited,
                std::shared_ptr<std::ofstream> vis, bool update_acceptance_states,
                 std::shared_ptr<char_set> alphabet)
 {
+//    std::cout << "Current state = " << curr_state->get_id() << ", input types allowed: \n";
+//    for (auto x : curr_state->get_char_set()->get_characters()) {
+//        std::cout << x.first << " ";
+//    }
+//    for (auto x : curr_state->get_char_set()->get_ranges()) {
+//        std::cout << x->get_range_string() << " ";
+//    }
+//    std::cout << "\n";
     visited[curr_state->get_id()] = true;
     if (update_acceptance_states && curr_state->get_type() == ACCEPTANCE)
     {

@@ -216,13 +216,16 @@ std::shared_ptr<nfa> build_combined_nfa (std::vector<std::string> rules_file_lin
 //            combined_nfa->visualize();
         }
     }
-  combined_nfa->visualize();
+    return combined_nfa;
 }
 
 
-FILE* lexical_analyzer_generator::get_lexical_analyzer_file (std::string rules_file)
+std::shared_ptr<nfa> lexical_analyzer_generator::get_lexical_analyzer_file (std::string rules_file)
 {
-    //SetConsoleOutputCP( CP_UTF8 );
+//    SetConsoleOutputCP( CP_UTF8 );
     std::vector<std::string> rules_file_lines = read_file (rules_file);
-    std::shared_ptr<nfa> comined_nfa = build_combined_nfa(rules_file_lines);
+    std::shared_ptr<nfa> combined_nfa = build_combined_nfa(rules_file_lines);
+
+    // MOVE THIS LOGIC FROM HERE.
+    return combined_nfa;
 }

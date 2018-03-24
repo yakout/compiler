@@ -1,4 +1,4 @@
-    letter = a-z | A-Z 
+letter = a-z | A-Z
 digit = 0-9
 id: letter (letter|digit)*
 digits = digit+

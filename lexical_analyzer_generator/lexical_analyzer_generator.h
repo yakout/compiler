@@ -27,7 +27,7 @@ std::shared_ptr<nfa> build_punctations_nfa (std::string line, int order);
 class lexical_analyzer_generator
 {
     public:
-      FILE* get_lexical_analyzer_file(std::string rules_file);
+      std::shared_ptr<nfa> get_lexical_analyzer_file(std::string rules_file);
 };
 
 #endif // LEXICAL_ANALYZER_GENERATOR_H
