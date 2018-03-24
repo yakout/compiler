@@ -30,13 +30,21 @@ void draw_trans_table(std::shared_ptr<dfa> dfa)
         *out_file << "{" << acc_state->get_id() << "}\t" << acc_state->get_token_class() << "\n";
     }
     *out_file << "State\t";
+    std::set<char> alph_chars;
+    std::set<std::string> alph_ranges;
     for (auto inp_char : dfa->get_alphabet()->get_characters())
     {
-        *out_file << inp_char.first << "\t";
+        alph_chars.insert(inp_char.first);
+    }
+    for (auto c : alph_chars) {
+        *out_file << c << "\t";
     }
     for (auto inp_range : dfa->get_alphabet()->get_ranges())
     {
-        *out_file << inp_range->get_range_string() << "\t";
+        alph_ranges.insert(inp_range->get_range_string());
+    }
+    for (auto range : alph_ranges) {
+        *out_file << range << "\t";
     }
     *out_file << "\n";
     for (auto state : dfa->get_dfa_states())
