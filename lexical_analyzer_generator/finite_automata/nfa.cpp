@@ -118,7 +118,7 @@ void nfa::dfs (std::shared_ptr<state> curr_state, std::vector<bool> &visited,
 }
 
 
-void nfa::unify(std::shared_ptr<nfa> nfa2)
+void nfa::unify(std::shared_ptr<nfa> nfa2, bool unifiy_acceptance_states)
 {
     std::shared_ptr<char_set> eps = build_epsilon_transition();
 
@@ -144,13 +144,23 @@ void nfa::unify(std::shared_ptr<nfa> nfa2)
     nfa2_sf->set_type(INTERMEDIATE);
     nfa1_sf->set_type(INTERMEDIATE);
 
-    nfa1_sf->insert_transition(EPSILON, sf);
-    nfa2_sf->insert_transition(EPSILON, sf);
 
     start_state = s0;
 
-    acceptance_states.clear();
-    acceptance_states.push_back(sf);
+    if (unifiy_acceptance_states)
+    {
+        nfa1_sf->insert_transition(EPSILON, sf);
+        nfa2_sf->insert_transition(EPSILON, sf);
+        acceptance_states.clear();
+        acceptance_states.push_back(sf);
+    }
+    else
+    {
+        for (auto const& acc_s : nfa2->get_acceptance_states())
+        {
+            acceptance_states.push_back(acc_s);
+        }
+    }
 }
 
 void nfa::concat(std::shared_ptr<nfa> nfa2)

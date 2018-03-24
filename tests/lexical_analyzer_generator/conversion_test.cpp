@@ -646,12 +646,15 @@ int main(int argc, char** argv) {
     regular_expression regex2 = {"digit", "0-9"};
     std::shared_ptr<nfa> digit_nfa = evaluate_regex (regex2, sym_table);
     sym_table["digit"] = digit_nfa ;
+
     regular_expression regex3 = {"id", "letter (letter|digit)*"};
     std::shared_ptr<nfa> id_nfa = evaluate_regex (regex3, sym_table);
     sym_table["id"] = id_nfa;
+
     regular_expression regex4 = {"digits", "digit+"};
     std::shared_ptr<nfa> digits_nfa = evaluate_regex (regex4, sym_table);
     sym_table["digits"] = digits_nfa;
+
      regular_expression regex5 = {"num", "digit+ | digit+ . digits ( \\L | E digits)"};
      std::shared_ptr<nfa> num_nfa = evaluate_regex (regex5, sym_table);
      sym_table["num"] = num_nfa;
@@ -676,10 +679,10 @@ int main(int argc, char** argv) {
     letter_nfa->unify(digit_nfa);
     letter_nfa->unify(id_nfa);
     letter_nfa->unify(digits_nfa);
-    letter_nfa->unify(num_nfa);
-    letter_nfa->unify(relop_nfa);
-    letter_nfa->unify(assign_nfa);
-    letter_nfa->unify(mulop_nfa);
+    letter_nfa->unify(num_nfa, false);
+    letter_nfa->unify(relop_nfa, false);
+    letter_nfa->unify(assign_nfa, false);
+    letter_nfa->unify(mulop_nfa, false);
 
     if (letter_nfa != nullptr)
     {
