@@ -628,38 +628,10 @@ std::shared_ptr<dfa> minimize(const std::shared_ptr<dfa> &dfa_ptr)
 
     // SECONDLY: PARTITION CURRENT PARTITION TO A NEW PARTITION
     auto new_partition = make_partition(partition, dfa_ptr->get_alphabet());
-    std::cout << "Original\n";
-    for (auto group : partition) {
-        for (auto s : group) {
-            std::cout << s->get_id() << " ";
-        }
-        std::cout << "\n";
-    }
-    std::cout << "New\n";
-    for (auto group : new_partition) {
-        for (auto s : group) {
-            std::cout << s->get_id() << " ";
-        }
-        std::cout << "\n";
-    }
     while (!equal_partitions(partition, new_partition))
     {
         partition = new_partition;
         new_partition = make_partition(partition, dfa_ptr->get_alphabet());
-        std::cout << "Copy\n";
-        for (auto group : partition) {
-            for (auto s : group) {
-                std::cout << s->get_id() << " ";
-            }
-            std::cout << "\n";
-        }
-        std::cout << "New\n";
-        for (auto group : new_partition) {
-            for (auto s : group) {
-                std::cout << s->get_id() << " ";
-            }
-            std::cout << "\n";
-        }
     }
     // PARTITION IS THE FINAL PARTITION, CHOOSE A REPRESENTATIVE FOR EACH GROUP AND REMOVE DEAD STATES.
     std::shared_ptr<dfa> min_dfa(new dfa());
@@ -723,30 +695,6 @@ std::shared_ptr<dfa> minimize(const std::shared_ptr<dfa> &dfa_ptr)
     return min_dfa;
 }
 
-//bool dead_state(const std::shared_ptr<dfa_state> &s) {
-//    return s->get_char_set()->is_empty();
-//}
-
-//int main(int argc, char** argv) {
-////    std::shared_ptr<nfa> nfa_ptr = build_nfa1();
-//////    std::shared_ptr<nfa> nfa_ptr = build_complex_nfa();
-////    nfa_ptr->visualize();
-////    std::shared_ptr<dfa> dfa_ptr = convert_nfa_dfa(nfa_ptr);
-////    dfa_ptr->visualize();
-////    std::shared_ptr<dfa> minimized_dfa = minimize(dfa_ptr);
-//////    for (const auto &curr : minimized_dfa->get_acceptance_states())
-//////    {
-//////        std::cout << curr->get_id() << " ";
-//////    }
-////    minimized_dfa->visualize();
-////    draw_trans_table(minimized_dfa);
-//
-//    // Integration i guess.
-////    lexical_analyzer_generator gen = lexical_analyzer_generator();
-////    gen.get_lexical_analyzer_file("rules.txt");
-//    return 0;
-//}
-
 int main(int argc, char** argv) {
     // std::map <std::string,std::shared_ptr<nfa>> sym_table;
     // regular_expression regex1 = {"letter", "a-z | A-Z"};
@@ -797,24 +745,13 @@ int main(int argc, char** argv) {
     lexical_analyzer_generator gen = lexical_analyzer_generator();
     auto combined_nfa = gen.get_lexical_analyzer_file("rules.txt");
     for (auto s : combined_nfa->get_acceptance_states()) {
-        if(s->get_type() != ACCEPTANCE)
-        {
-            s->set_type(ACCEPTANCE);
-        }
+        std::cout << s->get_token_class() << "\n";
     }
 //    combined_nfa->visualize();
 
     auto dfa_ptr = convert_nfa_dfa(combined_nfa);
 //    dfa_ptr->visualize();
-    for (auto s : dfa_ptr->get_acceptance_states()) {
-        std::cout << s->get_id() << " ";
-    }
-    std::cout << "\n";
     auto min_dfa = minimize(dfa_ptr);
-    for (auto s : min_dfa->get_acceptance_states()) {
-        std::cout << s->get_id() << " ";
-    }
-    std::cout << "\n";
     min_dfa->visualize();
     draw_trans_table(min_dfa);
     // std::shared_ptr<nfa> nf = build_keywords_nfa("{ if else while }");

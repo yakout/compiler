@@ -227,5 +227,11 @@ std::shared_ptr<nfa> lexical_analyzer_generator::get_lexical_analyzer_file (std:
     std::shared_ptr<nfa> combined_nfa = build_combined_nfa(rules_file_lines);
 
     // MOVE THIS LOGIC FROM HERE.
+    for (auto s : combined_nfa->get_acceptance_states()) {
+        if(s->get_type() != ACCEPTANCE)
+        {
+            s->set_type(ACCEPTANCE);
+        }
+    }
     return combined_nfa;
 }
