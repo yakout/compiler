@@ -3,21 +3,16 @@
 //#include <Windows.h>
 
 #include <sstream>
-
-#include "nfa_tools/lexical_rules.h"
-#include "nfa_tools/regex_processor.h"
-#include "finite_automata/nfa.h"
-#include "finite_automata/dfa.h"
+#include <iostream>
 
 #define PUNCT_CLAUSE_START '['
 #define PUNCT_CLAUSE_END ']'
 #define KEYWORD_CLAUSE_START '{'
 #define KEYWORD_CLAUSE_END '}'
-#define EXPRESSION_ASSIGN '='
-#define DEFINITION_ASSIGN ':'
+#define EXPRESSION_ASSIGN ':'
+#define DEFINITION_ASSIGN '='
 
 #define ESCAPE '\\'
-
 
 std::string trim(std::string const& str)
 {
@@ -48,8 +43,14 @@ std::vector <std::string> read_file (std::string rules_file)
 
 
 
-std::shared_ptr<nfa> build_punctations_nfa (std::string line)
+std::shared_ptr<nfa> build_punctations_nfa (std::string full_line)
 {
+  std::string line;
+  for (auto c : full_line)
+  {
+    if (c != SPACE && c != PUNCT_CLAUSE_START && c != PUNCT_CLAUSE_END)
+      line += c;
+  }
   std::shared_ptr<nfa> punct_nfa;
   bool first_nfa = true;
   for (int i = 0; i < line.length(); i++)
@@ -79,7 +80,7 @@ std::shared_ptr<nfa> build_punctations_nfa (std::string line)
     }
     else
     {
-      punct_nfa->unify(cur_punct_nfa);
+      punct_nfa->unify(cur_punct_nfa, false);
     }
   }
   if (line[line.length() - 1] != PUNCT_CLAUSE_END)
@@ -89,24 +90,25 @@ std::shared_ptr<nfa> build_punctations_nfa (std::string line)
   return punct_nfa;
 }
 
-std::shared_ptr<nfa> build_keywords_line (std::string line)
+std::shared_ptr<nfa> build_keywords_nfa (std::string line)
 {
   if (line[line.length() - 1] != KEYWORD_CLAUSE_END
       || line.length() <= 2);
       //// TODO : Error
   std::shared_ptr<nfa> keywords_nfa;
   bool first_nfa = true;
-  std::istringstream iss(line.substr(1,line.length() - 2));
+  std::istringstream iss(trim(line.substr(1,line.length() - 2)));
   while (iss) {
       std::string word;
       iss >> word;
+      if (word.length() == 0) continue;
       std::shared_ptr<char_set> c_s0(new char_set(word[0]));
       std::shared_ptr<nfa> nfa0(new nfa(c_s0));
       for (int i = 1; i < word.length(); i++)
       {
         std::shared_ptr<char_set> c_s(new char_set(word[i]));
         std::shared_ptr<nfa> nfa1(new nfa(c_s));
-        nfa0->unify(nfa1);
+        nfa0->concat(nfa1);
       }
       if (first_nfa)
       {
@@ -115,7 +117,7 @@ std::shared_ptr<nfa> build_keywords_line (std::string line)
       }
       else
       {
-        keywords_nfa->unify(nfa0);
+        keywords_nfa->unify(nfa0, false);
       }
   }
   return keywords_nfa;
@@ -137,6 +139,7 @@ std::shared_ptr<nfa> build_combined_nfa (std::vector<std::string> rules_file_lin
   std::map <std::string, std::shared_ptr<nfa>> sym_table;
   std::shared_ptr<nfa> combined_nfa;
   bool first_nfa = true;
+  bool is_def;
   for (auto line : rules_file_lines)
   {
     std::shared_ptr<nfa> cur_nfa;
@@ -146,7 +149,7 @@ std::shared_ptr<nfa> build_combined_nfa (std::vector<std::string> rules_file_lin
     }
     else if (line[0] == KEYWORD_CLAUSE_START)
     {
-       cur_nfa = build_keywords_line (line);
+       cur_nfa = build_keywords_nfa (line);
     }
     else
     {
@@ -155,13 +158,16 @@ std::shared_ptr<nfa> build_combined_nfa (std::vector<std::string> rules_file_lin
         {
           if (line[i] == DEFINITION_ASSIGN)
           {
+              is_def = true;
               cur_nfa = build_regex_nfa (trim(line.substr(0, i)), trim(line.substr(i+1)),
                               sym_table);
+              break;
           }
           else if (line[i] == EXPRESSION_ASSIGN)
           {
               cur_nfa = build_regex_nfa (trim(line.substr(0, i)), trim(line.substr(i+1)),
                             sym_table);
+              break;
           }
         }
         if (invalid_line)
@@ -176,9 +182,14 @@ std::shared_ptr<nfa> build_combined_nfa (std::vector<std::string> rules_file_lin
     }
     else
     {
-      combined_nfa->unify(cur_nfa);
+      if (is_def)
+        combined_nfa->unify(cur_nfa);
+      else
+        combined_nfa->unify(cur_nfa, false);
+      is_def = false;
     }
   }
+  combined_nfa->visualize();
 }
 
 
@@ -187,5 +198,4 @@ FILE* lexical_analyzer_generator::get_lexical_analyzer_file (std::string rules_f
     //SetConsoleOutputCP( CP_UTF8 );
     std::vector<std::string> rules_file_lines = read_file (rules_file);
     std::shared_ptr<nfa> comined_nfa = build_combined_nfa(rules_file_lines);
-
 }
