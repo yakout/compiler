@@ -586,7 +586,7 @@ make_partition(std::set<std::set<std::shared_ptr<dfa_state>>> partition,
                             }
                         }
                     }
-                    if (same_grp)
+                    if (same_grp && state->get_token_class() == s->get_token_class())
                     {
                         new_group.insert(s);
                         partitioned[s->get_id()] = true;
@@ -620,20 +620,20 @@ std::shared_ptr<dfa> minimize(const std::shared_ptr<dfa> &dfa_ptr)
 
     // SECONDLY: PARTITION CURRENT PARTITION TO A NEW PARTITION
     auto new_partition = make_partition(partition, dfa_ptr->get_alphabet());
-//    std::cout << "Original\n";
-//    for (auto group : partition) {
-//        for (auto s : group) {
-//            std::cout << s->get_id() << " ";
-//        }
-//        std::cout << "\n";
-//    }
-//    std::cout << "New\n";
-//    for (auto group : new_partition) {
-//        for (auto s : group) {
-//            std::cout << s->get_id() << " ";
-//        }
-//        std::cout << "\n";
-//    }
+    std::cout << "Original\n";
+    for (auto group : partition) {
+        for (auto s : group) {
+            std::cout << s->get_id() << " ";
+        }
+        std::cout << "\n";
+    }
+    std::cout << "New\n";
+    for (auto group : new_partition) {
+        for (auto s : group) {
+            std::cout << s->get_id() << " ";
+        }
+        std::cout << "\n";
+    }
     while (!equal_partitions(partition, new_partition))
     {
         partition = new_partition;
@@ -790,7 +790,6 @@ int main(int argc, char** argv) {
         if(s->get_type() != ACCEPTANCE)
         {
             s->set_type(ACCEPTANCE);
-//            std::cout << s->get_id() << " ";
         }
     }
 //    combined_nfa->visualize();
