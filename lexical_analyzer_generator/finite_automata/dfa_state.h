@@ -10,8 +10,6 @@ private:
     std::map <std::string, std::shared_ptr<dfa_state>> transitions;
     std::set<std::shared_ptr<nfa_state>> composing_nfa_states;
     bool marked;
-    std::string token_class;
-
 public:
     dfa_state (int, state_type, std::shared_ptr<char_set>, std::string = "");
     explicit dfa_state(std::set<std::shared_ptr<nfa_state>> nfa_states, state_id id);
@@ -22,7 +20,6 @@ public:
     std::shared_ptr<dfa_state> get_next_state (std::string input);
     std::map <std::string, std::shared_ptr<dfa_state>> get_transitions();
     const std::set<std::shared_ptr<nfa_state>> &get_composing_nfa_states() const;
-    const std::string get_token_class () const;
     bool is_marked() const;
     void set_marked(bool marked);
     bool equals(std::shared_ptr<dfa_state> s);

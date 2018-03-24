@@ -74,10 +74,6 @@ const std::set<std::shared_ptr<nfa_state>> &dfa_state::get_composing_nfa_states(
     return composing_nfa_states;
 }
 
-const std::string dfa_state::get_token_class() const {
-    return token_class;
-}
-
 bool dfa_state::is_marked() const {
     return marked;
 }
