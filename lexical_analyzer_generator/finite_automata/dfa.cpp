@@ -85,6 +85,26 @@ const std::shared_ptr<char_set> &dfa::get_alphabet() const {
 }
 
 void dfa::set_alphabet(const std::shared_ptr<char_set> &alphabet) {
-    dfa::alphabet = alphabet;
+    dfa::alphabet = std::make_shared<char_set>(char_set());
+    std::set<char> alph_chars;
+    std::set<std::string> alph_ranges;
+    for (auto inp : alphabet->get_characters()) {
+        alph_chars.insert(inp.first);
+    }
+    for (auto inp : alphabet->get_ranges()) {
+        alph_ranges.insert(inp->get_range_string());
+    }
+    for (char curr : alph_chars) {
+        dfa::alphabet->add_character(curr);
+    }
+    for (auto curr : alph_ranges) {
+        for (auto inp : alphabet->get_ranges()) {
+            if (inp->get_range_string() == curr) {
+                dfa::alphabet->add_range(inp->get_lower(), inp->get_upper());
+                break;
+            }
+        }
+    }
+//    dfa::alphabet = alphabet;
 }
 

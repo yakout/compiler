@@ -58,7 +58,7 @@ void fa::visualize()
             "\"\" -> " << start_state->get_id() << "\n";
 
 
-    int MAX_DFS = 300;
+    int MAX_DFS = 1000;
     std::vector<bool> visited(MAX_DFS);
     dfs(start_state, visited, visualizer, false, nullptr);
     *visualizer << "}\n";
@@ -112,7 +112,7 @@ void fa::add_acceptance_state(std::shared_ptr<state> s)
 
 void fa::update_acceptance_states()
 {
-    std::vector<bool> visted(static_cast<unsigned long>(100)); // TODO
+    std::vector<bool> visted(static_cast<unsigned long>(1000)); // TODO
     dfs(start_state, visted, nullptr, true, nullptr);
 }
 

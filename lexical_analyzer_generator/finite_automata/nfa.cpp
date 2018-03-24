@@ -313,7 +313,7 @@ void nfa::renamify (state_id starting_id)
 std::shared_ptr<char_set> nfa::get_alphabet()
 {
     std::shared_ptr<char_set> alphabet(new char_set());
-    std::vector<bool> visited(100); // TODO
+    std::vector<bool> visited(1000); // TODO
     dfs(start_state, visited, nullptr, true, alphabet);
     return alphabet;
 }
