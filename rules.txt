@@ -8,5 +8,5 @@ num: digit+ | digit+ . digits ( \L | E digits)
 assign: \=
 { if else while }
            [ ; , \( \) { } ]
-addop: \+ | -
+addop: \+ | \-
 mulop: \* | /
