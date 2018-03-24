@@ -176,7 +176,7 @@ std::shared_ptr<nfa> build_combined_nfa (std::vector<std::string> rules_file_lin
           if (line[i] == DEFINITION_ASSIGN)
           {
               is_def = true;
-              std::cout << "reg def" << std::endl;
+              // std::cout << "reg def" << std::endl;
               cur_nfa = build_regex_nfa (trim(line.substr(0, i)), trim(line.substr(i+1)),
                               sym_table, order);
               nfas.push_back({cur_nfa, true});
@@ -184,7 +184,7 @@ std::shared_ptr<nfa> build_combined_nfa (std::vector<std::string> rules_file_lin
           }
           else if (line[i] == EXPRESSION_ASSIGN)
           {
-            std::cout << "regex" << std::endl;
+            // std::cout << "regex" << std::endl;
               cur_nfa = build_regex_nfa (trim(line.substr(0, i)), trim(line.substr(i+1)),
                             sym_table, order);
               nfas.push_back({cur_nfa, false});
