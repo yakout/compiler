@@ -26,7 +26,7 @@ fa::fa()
     fa::total_states = 0;
 }
 
-std::string exec(const char* cmd) 
+std::string exec(const char* cmd)
 {
     std::array<char, 128> buffer{};
     std::string result;
@@ -39,7 +39,7 @@ std::string exec(const char* cmd)
     return result;
 }
 
-void fa::visualize() 
+void fa::visualize()
 {
     std::shared_ptr<std::ofstream> visualizer(new std::ofstream());
     visualizer->open("fsm.dot");
@@ -99,12 +99,12 @@ void fa::set_acceptance_states(std::vector<std::shared_ptr<state>> new_acceptanc
     acceptance_states = new_acceptance_states;
 }
 
-void fa::set_total_states(int total_states) 
+void fa::set_total_states(int total_states)
 {
     fa::total_states = total_states;
 }
 
-void fa::add_acceptance_state(std::shared_ptr<state> s) 
+void fa::add_acceptance_state(std::shared_ptr<state> s)
 {
     fa::acceptance_states.push_back(s);
 }
@@ -117,4 +117,20 @@ void fa::update_acceptance_states()
 
 int fa::get_max_id() {
     return max_id;
+}
+
+void fa::set_acceptance_states_priority(int pri)
+{
+  for (auto state : acceptance_states)
+  {
+    state->set_priority(pri);
+  }
+}
+
+void fa::set_acceptance_states_token_class(std::string token_class)
+{
+  for (auto state : acceptance_states)
+  {
+    state->set_token_class(token_class);
+  }
 }

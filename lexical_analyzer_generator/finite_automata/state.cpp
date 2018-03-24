@@ -37,6 +37,10 @@ const std::string state::get_token_class() const {
     return token_class;
 }
 
+const int state::get_token_class_priority () const {
+    return priority;
+}
+
 void state::set_type(state_type new_type) {
     type = new_type;
 }
@@ -52,4 +56,9 @@ void state::set_char_set (std::shared_ptr<char_set> ch_set) {
 void state::set_token_class (std::string new_token_class)
 {
     token_class = new_token_class;
+}
+
+void state::set_priority (int pri)
+{
+    priority = pri;
 }

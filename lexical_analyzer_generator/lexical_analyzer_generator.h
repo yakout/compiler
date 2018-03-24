@@ -15,12 +15,13 @@
 std::shared_ptr<nfa> build_combined_nfa (std::vector<std::string> rules_file_lines);
 
 std::shared_ptr<nfa> build_regex_nfa (std::string lhs, std::string rhs,
-                                        std::map <std::string,
-                                        std::shared_ptr<nfa>> &sym_table);
+                                      std::map <std::string,
+                                      std::shared_ptr<nfa>> &sym_table,
+                                      int order);
 
-std::shared_ptr<nfa> build_keywords_nfa (std::string line);
+std::shared_ptr<nfa> build_keywords_nfa (std::string line, int order);
 
-std::shared_ptr<nfa> build_punctations_nfa (std::string line);
+std::shared_ptr<nfa> build_punctations_nfa (std::string line, int order);
 
 
 class lexical_analyzer_generator
