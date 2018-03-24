@@ -1,0 +1,16 @@
+int int1, int2, int3;
+boolean boolean1, boolean2, 					boolean3;
+float float1, float2, 				float3;
+if (boolean1 =	= boolean2)
+	{float1 						= float2*float1;										}		
+if 					(boolean2 == boolean3)
+	{float2 = float3*float2;}
+if (boolea3 = boolean1)
+	{
+				while (int3 + int2 - int1 / (int) float1 <= 0)
+{
+	if (boolean1 < boolean3) int1 = 1423;		
+}
+	float3 = float1*float3;
+
+}
