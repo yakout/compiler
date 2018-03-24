@@ -17,6 +17,7 @@ set(HEADER_FILES
         lexical_analyzer_generator/lexical_analyzer_generator.h
         lexical_analyzer_generator/nfa_creator.h
         lexical_analyzer/lexical_analyzer.h
+        tests/lexical_analyzer_generator/dfa_construction.h
         )
 
 set(SOURCE_FILES main.cpp
@@ -32,7 +33,7 @@ set(SOURCE_FILES main.cpp
         lexical_analyzer_generator/nfa_tools/regex_processor.cpp
         lexical_analyzer_generator/lexical_analyzer_generator.cpp
         lexical_analyzer_generator/nfa_creator.cpp
-        tests/lexical_analyzer_generator/conversion_test.cpp
+        tests/lexical_analyzer_generator/dfa_construction.cpp
         lexical_analyzer/lexical_analyzer.cpp
         tests/lexical_analyzer/test.cpp
         )

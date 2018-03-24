@@ -2,6 +2,12 @@
 #define CONVERSION_TEST_H
 
 
+#include <memory>
+#include <set>
+#include "../../lexical_analyzer_generator/finite_automata/nfa_state.h"
+#include "../../lexical_analyzer_generator/finite_automata/dfa.h"
+#include "../../lexical_analyzer_generator/finite_automata/nfa.h"
+
 void draw_trans_table(std::shared_ptr<dfa> dfa);
 std::set<std::shared_ptr<nfa_state>> move(const std::set<std::shared_ptr<nfa_state>> &nfa_states, const char inp);
 std::set<std::shared_ptr<nfa_state>> move(const std::set<std::shared_ptr<nfa_state>> &nfa_states, const std::string &inp);

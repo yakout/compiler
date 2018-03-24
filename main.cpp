@@ -1,6 +1,7 @@
  #include "lexical_analyzer/lexical_analyzer.h"
  #include "lexical_analyzer_generator/lexical_analyzer_generator.h"
- #include <iostream>
+#include "tests/lexical_analyzer_generator/dfa_construction.h"
+#include <iostream>
  #include <string.h>
  #include <fstream>
  #include <memory>
@@ -90,7 +91,14 @@
 
  void lex_generate_tokenize (char *rules_file, char *code_file
                                              , std::vector<token> &token_vec) {
+     lexical_analyzer_generator gen = lexical_analyzer_generator();
+     auto combined_nfa = gen.get_lexical_analyzer_file(std::string(rules_file));
+     auto dfa_ptr = convert_nfa_dfa(combined_nfa);
+     auto min_dfa = minimize(dfa_ptr);
+     min_dfa->visualize();
+     draw_trans_table(min_dfa);
 
+     // Continue.
  }
 
  void lex_tokenize (char *transition_table_file, char *code_file
