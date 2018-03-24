@@ -16,7 +16,6 @@
 
 #define EPSILON ""
 
-bool dead_state(const std::shared_ptr<dfa_state> &shared_ptr);
 
 void draw_trans_table(std::shared_ptr<dfa> dfa)
 {
@@ -134,7 +133,8 @@ std::set<std::shared_ptr<nfa_state>> e_closure(const std::set<std::shared_ptr<nf
     return reachable_states;
 }
 
-std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
+std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) 
+{
     std::shared_ptr<dfa> dfa_ptr(new dfa());
     dfa_ptr->set_alphabet(nfa_ptr->get_alphabet());
 //    std::cout << "ALPHABET: ";
@@ -157,11 +157,11 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
     while ((curr_state = dfa_ptr->get_unmarked_state()) != nullptr)
     {
         curr_state->set_marked(true);
-        std::cout << "Current State = " << curr_state->get_id() << std::endl;
+        // std::cout << "Current State = " << curr_state->get_id() << std::endl;
         for (auto curr : curr_state->get_composing_nfa_states()) {
-            std::cout << curr->get_id() << " ";
+            // std::cout << curr->get_id() << " ";
         }
-        std::cout << std::endl;
+        // std::cout << std::endl;
         for (const auto &curr_char : dfa_ptr->get_alphabet()->get_characters())
         {
             std::shared_ptr<dfa_state> new_state(new dfa_state(e_closure(move(curr_state->get_composing_nfa_states(),
@@ -175,11 +175,11 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
                 curr_state->insert_transition(dfa_ptr->get_alphabet()->get_string(curr_char.first), curr_state);
                 continue;
             }
-            std::cout << "New State = " << new_state->get_id() << std::endl;
+            // std::cout << "New State = " << new_state->get_id() << std::endl;
             for (auto curr : new_state->get_composing_nfa_states()) {
-                std::cout << curr->get_id() << " ";
+                // std::cout << curr->get_id() << " ";
             }
-            std::cout << std::endl;
+            // std::cout << std::endl;
             if (!dfa_ptr->contains(new_state))
             {
                 dfa_ptr->add_state(new_state);
@@ -277,7 +277,8 @@ bool equal_partitions(std::set<std::set<std::shared_ptr<dfa_state>>> part1,
     return part1 == part2;
 }
 bool same_group(const std::shared_ptr<dfa_state> &s1, const std::shared_ptr<dfa_state> &s2,
-                const std::string &inp, std::set<std::set<std::shared_ptr<dfa_state>>> partition) {
+                const std::string &inp, std::set<std::set<std::shared_ptr<dfa_state>>> partition) 
+{
     auto dest_state_1 = s1->get_next_state(inp);
     auto dest_state_2 = s2->get_next_state(inp);
     if (dest_state_1 == nullptr && dest_state_2 == nullptr) {
@@ -304,7 +305,8 @@ bool same_group(const std::shared_ptr<dfa_state> &s1, const std::shared_ptr<dfa_
 }
 
 bool same_group(const std::shared_ptr<dfa_state> &s1, const std::shared_ptr<dfa_state> &s2,
-                const char inp, std::set<std::set<std::shared_ptr<dfa_state>>> partition) {
+                const char inp, std::set<std::set<std::shared_ptr<dfa_state>>> partition) 
+{
     auto dest_state_1 = s1->get_next_state(inp);
     auto dest_state_2 = s2->get_next_state(inp);
     if (dest_state_1 == nullptr && dest_state_2 == nullptr) {
@@ -333,7 +335,8 @@ bool same_group(const std::shared_ptr<dfa_state> &s1, const std::shared_ptr<dfa_
 
 std::set<std::set<std::shared_ptr<dfa_state>>>
 make_partition(std::set<std::set<std::shared_ptr<dfa_state>>> partition,
-               const std::shared_ptr<char_set> &alphabet) {
+               const std::shared_ptr<char_set> &alphabet) 
+{
     std::set<std::set<std::shared_ptr<dfa_state>>> new_partition;
     std::map<int, bool> partitioned;
     for (auto group : partition)
@@ -474,25 +477,3 @@ std::shared_ptr<dfa> minimize(const std::shared_ptr<dfa> &dfa_ptr)
     return min_dfa;
 }
 
-int main(int argc, char** argv) {
-
-    lexical_analyzer_generator gen = lexical_analyzer_generator();
-    auto combined_nfa = gen.get_lexical_analyzer_file("rules.txt");
-//    int i = 0;
-//    for (auto s : combined_nfa->get_acceptance_states()) {
-//        std::cout << s->get_token_class() << "\n";
-//        std::cout << i++ << "\n";
-//    }
-    combined_nfa->visualize();
-    auto dfa_ptr = convert_nfa_dfa(combined_nfa);
-    int i = 0;
-    for (auto s : dfa_ptr->get_acceptance_states()) {
-        std::cout << s->get_token_class() << "\n";
-        std::cout << i++ << "\n";
-    }
-//    dfa_ptr->visualize();
-    auto min_dfa = minimize(dfa_ptr);
-    min_dfa->visualize();
-    draw_trans_table(min_dfa);
-    return 0;
-}

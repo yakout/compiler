@@ -35,7 +35,6 @@ std::vector <std::string> read_file (std::string rules_file)
     while ( getline (infile,line) )
     {
       file_lines.push_back (trim(line));
-      // std::cout << line << std::endl;
     }
     infile.close();
   }
@@ -56,7 +55,6 @@ std::shared_ptr<nfa> build_punctations_nfa (std::string full_line, int order)
   bool first_nfa = true;
   for (int i = 0; i < line.length(); i++)
   {
-    // std::cout << line[i] << std::endl;
     std::shared_ptr<nfa> cur_punct_nfa;
     if (line[i] == ESCAPE && i >= line.length() - 2)
     {
@@ -159,7 +157,6 @@ std::shared_ptr<nfa> build_combined_nfa (std::vector<std::string> rules_file_lin
     std::shared_ptr<nfa> cur_nfa;
     if (line[0] == PUNCT_CLAUSE_START)
     {
-        // std::cout << line << std::endl;
         cur_nfa = build_punctations_nfa (line, order - 100);
         nfas.push_back({cur_nfa, false});
     }
@@ -176,7 +173,6 @@ std::shared_ptr<nfa> build_combined_nfa (std::vector<std::string> rules_file_lin
           if (line[i] == DEFINITION_ASSIGN)
           {
               is_def = true;
-              std::cout << "reg def" << std::endl;
               cur_nfa = build_regex_nfa (trim(line.substr(0, i)), trim(line.substr(i+1)),
                               sym_table, order);
               nfas.push_back({cur_nfa, true});
@@ -184,7 +180,6 @@ std::shared_ptr<nfa> build_combined_nfa (std::vector<std::string> rules_file_lin
           }
           else if (line[i] == EXPRESSION_ASSIGN)
           {
-            std::cout << "regex" << std::endl;
               cur_nfa = build_regex_nfa (trim(line.substr(0, i)), trim(line.substr(i+1)),
                             sym_table, order);
               nfas.push_back({cur_nfa, false});
