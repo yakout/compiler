@@ -24,7 +24,7 @@ void split_str_on_space (std::vector<std::string> &, std::string &);
  *  , removes brackets and returns tokens in a vector, example for the
  *  input string: {1,2,3}.
  */
-void split_set_on_comma (std::vector<std::string> &, std::string &);
+void remove_brackets (std::vector<std::string> &, std::string &);
 
 /**
  *  Converts string to integer using std::stringstream.
@@ -202,17 +202,16 @@ void split_str_on_space (std::vector<std::string> &vec, std::string &str) {
     std::stringstream ss_str (str);
     std::string token;
     while (getline (ss_str, token, ' ')) {
-        split_set_on_comma (vec, token);
+        remove_brackets (vec, token);
     }
     return;
 }
 
-void split_set_on_comma (std::vector<std::string> &vec, std::string &str) {
+void remove_brackets (std::vector<std::string> &vec, std::string &str) {
     if (str.length () > 2) {
         str.erase (remove (str.begin (), str.end (), '{'), str.end ());
         str.erase (remove (str.begin (), str.end (), '}'), str.end ());
     }
-
     vec.push_back (str);
     return;
 }
