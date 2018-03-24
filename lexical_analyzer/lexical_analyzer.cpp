@@ -88,7 +88,7 @@ lexical_analyzer::lexical_analyzer (std::string &lexical_analyzer_file
                                                 , std::string &code_file) {
     dfa_ptr = lexical_analyzer::parse_lexical_analyzer_machine (
                                                         lexical_analyzer_file);
-    code_file_content = get_code_file_contents (code_file);
+    input_str = get_code_file_contents (code_file);
     matcher_pos = 0;
     prev_matcher_pos = 0;
 }
@@ -96,55 +96,57 @@ lexical_analyzer::lexical_analyzer (std::string &lexical_analyzer_file
 lexical_analyzer::lexical_analyzer (std::shared_ptr<dfa> &dfa_ptr
                             , std::string &code_file) {
     lexical_analyzer::dfa_ptr = dfa_ptr;
-    code_file_content = get_code_file_contents (code_file);
+    input_str = get_code_file_contents (code_file);
     matcher_pos = 0;
     prev_matcher_pos = 0;
 }
 
-token lexical_analyzer::get_next_token () {
+int lexical_analyzer::get_next_token (token &t) {
     int acceptance_state_id = -1;
     int accepted_pos;
     int curr_state = start_state_id;
     int i = matcher_pos;
-    std::cout << "Current state: " << curr_state << std::endl;
-    std::cout << "Current index in the given string: " << i << std::endl;
-    while (i < code_file_content.length () 
-                    && is_valid_inp (code_file_content[i]
+    bool match_occured = false;
+    while (i < input_str.length () 
+                    && is_valid_inp (input_str[i]
                         , dfa_ptr->get_dfa_states ()[curr_state])) {
         curr_state = dfa_ptr->get_dfa_states ()[curr_state]->get_next_state (
-                                    code_file_content[i])->get_id ();
-        std::cout << "i: " << i << " current state id: " << curr_state << std::endl;
+                                    input_str[i])->get_id ();
         if (dfa_ptr->get_dfa_states ()[curr_state]->get_type () 
                          == state_type::ACCEPTANCE) {
-            std::cout << "i: " << i << " Reached an acceptance state: " 
-                                                << curr_state << std::endl;
             acceptance_state_id = curr_state;
             accepted_pos = i;
+            match_occured = true;
         }
         i++;
     }
 
-    token t;
-    if (acceptance_state_id == -1) {
-        return t;
+    if (match_occured) {
+        curr_state = acceptance_state_id;
+        matcher_pos = accepted_pos;
     }
-    curr_state = acceptance_state_id;
-    matcher_pos = accepted_pos;
 
-    std::cout << "Current state: " << curr_state << " matcher position: " << matcher_pos << std::endl;
+    if (acceptance_state_id == -1) {
+        t.token_class = "";
+    } else {
+        t.token_class = dfa_ptr->get_dfa_states ()[curr_state]->get_token_class ();
+    }
 
-    t = create_token (matcher_pos, prev_matcher_pos
-                                , dfa_ptr->get_dfa_states ()[curr_state], code_file_content);
-
-    matcher_pos += 1;
+    t.lexeme = input_str.substr (prev_matcher_pos
+                , matcher_pos - prev_matcher_pos + 1);
+    t.str_pos = matcher_pos + 1;
     
-    while (std::isspace (code_file_content[matcher_pos])) {
+    matcher_pos += 1;
+
+    while (std::isspace (input_str[matcher_pos])) {
         matcher_pos++;
     }
-
     prev_matcher_pos = matcher_pos;
 
-    return t;
+    if (matcher_pos > input_str.length ()) {
+        return 0;
+    }
+    return 1;
 }
 
 const std::shared_ptr<dfa> &lexical_analyzer::get_dfa() const {
@@ -328,13 +330,4 @@ std::string get_code_file_contents(std::string code_file) {
         return (contents);
     }
     return "";
-}
-
-token create_token (int matcher_pos, int prev_matcher_pos
-                                , std::shared_ptr<dfa_state> dfa_s, std::string code_str) {
-    token t;
-    t.lexeme = code_str.substr (prev_matcher_pos, matcher_pos - prev_matcher_pos + 1);
-    t.str_pos = matcher_pos;
-    t.token_class = dfa_s->get_token_class ();
-    return t;
 }

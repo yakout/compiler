@@ -15,7 +15,7 @@ public:
     void dfs (std::shared_ptr<state> state, std::vector<bool> &visited,
               std::shared_ptr<std::ofstream> vis, bool update_acceptance_states,
               std::shared_ptr<char_set> alphabet) override;
-    void unify(std::shared_ptr<nfa>);
+    void unify(std::shared_ptr<nfa>, bool unifiy_acceptance_states = true);
     void concat(std::shared_ptr<nfa>);
     void plus();
     void star();

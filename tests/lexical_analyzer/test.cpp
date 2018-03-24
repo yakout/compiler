@@ -24,14 +24,14 @@
 //    lex->get_dfa ()->visualize ();
 
 //    token t;
-//    while (true) {
-//        t = lex->get_next_token ();
-//        std::cout << t.lexeme << " " << t.token_class 
+
+//    while (lex->get_next_token (t)) {
+//        if (t.token_class == "") {
+//             std::cout << t.lexeme << " " << t.str_pos 
+//                             << " Matching Error" << std::endl;
+//        } else {
+//             std::cout << t.lexeme << " " << t.token_class 
 //                             << " " << t.str_pos << std::endl;
-//        if (t.lexeme == "") {
-//            break;
 //        }
-//        std::cout << t.lexeme << " " << t.token_class 
-//                             << " " << t.str_pos << std::endl;
 //    }
 // }
