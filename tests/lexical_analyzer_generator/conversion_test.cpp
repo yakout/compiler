@@ -14,6 +14,8 @@
 
 #define EPSILON ""
 
+bool dead_state(const std::shared_ptr<dfa_state> &shared_ptr);
+
 void draw_trans_table(std::shared_ptr<dfa> dfa)
 {
 
@@ -115,20 +117,20 @@ std::shared_ptr<nfa> build_complex_nfa()
 }
 
 std::shared_ptr<nfa> build_nfa1() {
-    std::shared_ptr<char_set> char_set_0;
-    char_set_0->add_character('0');
+    std::shared_ptr<char_set> c_0(new char_set()), c_1(new char_set()), eps(new char_set),
+                c_01(new char_set());
+    c_0->add_character('0');
+    c_1->add_character('1');
+    c_01->add_character('0');
+    c_01->add_character('1');
 
-    std::shared_ptr<char_set> char_set_1;
-    char_set_1->add_character('1');
-
-    std::shared_ptr<char_set> eps;
 
     std::shared_ptr<nfa_state> s0 = std::make_shared<nfa_state>(nfa_state (0, START, eps));
-    std::shared_ptr<nfa_state> s1 = std::make_shared<nfa_state>(nfa_state (1, INTERMEDIATE, eps));
-    std::shared_ptr<nfa_state> s2 = std::make_shared<nfa_state>(nfa_state (2, INTERMEDIATE, char_set_0));
-    std::shared_ptr<nfa_state> s3 = std::make_shared<nfa_state>(nfa_state (3, INTERMEDIATE, eps));
-    std::shared_ptr<nfa_state> s4 = std::make_shared<nfa_state>(nfa_state (4, INTERMEDIATE, char_set_1));
-    std::shared_ptr<nfa_state> s5 = std::make_shared<nfa_state>(nfa_state (5, INTERMEDIATE, eps));
+    std::shared_ptr<nfa_state> s1 = std::make_shared<nfa_state>(nfa_state (1, INTERMEDIATE, c_01));
+    std::shared_ptr<nfa_state> s2 = std::make_shared<nfa_state>(nfa_state (2, INTERMEDIATE, c_0));
+    std::shared_ptr<nfa_state> s3 = std::make_shared<nfa_state>(nfa_state (3, INTERMEDIATE, c_01));
+    std::shared_ptr<nfa_state> s4 = std::make_shared<nfa_state>(nfa_state (4, INTERMEDIATE, c_0));
+    std::shared_ptr<nfa_state> s5 = std::make_shared<nfa_state>(nfa_state (5, INTERMEDIATE, c_1));
     std::shared_ptr<nfa_state> s6 = std::make_shared<nfa_state>(nfa_state (6, ACCEPTANCE, eps));
 
     s0->insert_transition (EPSILON, s1);
@@ -267,6 +269,11 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
     while ((curr_state = dfa_ptr->get_unmarked_state()) != nullptr)
     {
         curr_state->set_marked(true);
+//        std::cout << "Current State = " << curr_state->get_id() << std::endl;
+//        for (auto curr : curr_state->get_composing_nfa_states()) {
+//            std::cout << curr->get_id() << " ";
+//        }
+//        std::cout << std::endl;
         for (const auto &curr_char : dfa_ptr->get_alphabet()->get_characters())
         {
             std::shared_ptr<dfa_state> new_state(new dfa_state(e_closure(move(curr_state->get_composing_nfa_states(),
@@ -277,10 +284,19 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
                 curr_state->insert_transition(dfa_ptr->get_alphabet()->get_string(curr_char.first), curr_state);
                 continue;
             }
+//            std::cout << "New State = " << new_state->get_id() << std::endl;
+//            for (auto curr : new_state->get_composing_nfa_states()) {
+//                std::cout << curr->get_id() << " ";
+//            }
+//            std::cout << std::endl;
             if (!dfa_ptr->contains(new_state))
             {
                 dfa_ptr->add_state(new_state);
                 dfa_ptr->set_total_states(dfa_ptr->get_total_states() + 1);
+                if (new_state->get_type() == ACCEPTANCE)
+                {
+                    dfa_ptr->add_acceptance_state(new_state);
+                }
             }
             else
             {
@@ -295,10 +311,6 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
                 }
             }
             curr_state->insert_transition(dfa_ptr->get_alphabet()->get_string(curr_char.first), new_state);
-            if (new_state->get_type() == ACCEPTANCE)
-            {
-                dfa_ptr->add_acceptance_state(new_state);
-            }
         }
         for (const auto &curr_range : dfa_ptr->get_alphabet()->get_ranges())
         {
@@ -310,10 +322,19 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
                 curr_state->insert_transition(curr_range->get_range_string(), curr_state);
                 continue;
             }
+//            std::cout << "New State = " << new_state->get_id() << std::endl;
+//            for (auto curr : new_state->get_composing_nfa_states()) {
+//                std::cout << curr->get_id() << " ";
+//            }
+//            std::cout << std::endl;
             if (!dfa_ptr->contains(new_state))
             {
                 dfa_ptr->add_state(new_state);
                 dfa_ptr->set_total_states(dfa_ptr->get_total_states() + 1);
+                if (new_state->get_type() == ACCEPTANCE)
+                {
+                    dfa_ptr->add_acceptance_state(new_state);
+                }
             }
             else
             {
@@ -328,10 +349,6 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
                 }
             }
             curr_state->insert_transition(curr_range->get_range_string(), new_state);
-            if (new_state->get_type() == ACCEPTANCE)
-            {
-                dfa_ptr->add_acceptance_state(new_state);
-            }
         }
     }
     return dfa_ptr;
@@ -379,9 +396,231 @@ std::shared_ptr<nfa> build_nfa3()
   return nfa_a1_ptr;
 }
 
-void minimize(std::shared_ptr<dfa> dfa_ptr)
-{
+/// CHECK THIS AGAIN!
+bool equal_partitions(std::set<std::set<std::shared_ptr<dfa_state>>> part1,
+                      std::set<std::set<std::shared_ptr<dfa_state>>> part2) {
+    return part1 == part2;
+}
+bool same_group(const std::shared_ptr<dfa_state> &s1, const std::shared_ptr<dfa_state> &s2,
+                const std::string &inp, std::set<std::set<std::shared_ptr<dfa_state>>> partition) {
+    auto dest_state_1 = s1->get_next_state(inp);
+    auto dest_state_2 = s2->get_next_state(inp);
+    if (dest_state_1 == nullptr || dest_state_2 == nullptr) {
+        return false;
+    }
+    for (auto grp : partition)
+    {
+        bool found_s1, found_s2;
+        found_s1 = found_s2 = false;
+        for (const auto &state : grp)
+        {
+            if (state->get_id() == dest_state_1->get_id())
+                found_s1 = true;
+            if (state->get_id() == dest_state_2->get_id())
+                found_s2 = true;
+        }
+        if (found_s1 && found_s2)
+            return true;
+    }
+    return false;
+}
 
+bool same_group(const std::shared_ptr<dfa_state> &s1, const std::shared_ptr<dfa_state> &s2,
+                const char inp, std::set<std::set<std::shared_ptr<dfa_state>>> partition) {
+    auto dest_state_1 = s1->get_next_state(inp);
+    auto dest_state_2 = s2->get_next_state(inp);
+    if (dest_state_1 == nullptr || dest_state_2 == nullptr) {
+        return false;
+    }
+//    std::cout << "Dest#1: " << dest_state_1->get_id() << ", Dest #2: " << dest_state_2->get_id() << "\n";
+    for (auto grp : partition)
+    {
+        bool found_s1, found_s2;
+        found_s1 = found_s2 = false;
+        for (const auto &state : grp)
+        {
+            if (state->get_id() == dest_state_1->get_id())
+                found_s1 = true;
+            if (state->get_id() == dest_state_2->get_id())
+                found_s2 = true;
+        }
+        if (found_s1 && found_s2)
+            return true;
+    }
+    return false;
+}
+
+std::set<std::set<std::shared_ptr<dfa_state>>>
+make_partition(std::set<std::set<std::shared_ptr<dfa_state>>> partition,
+               const std::shared_ptr<char_set> &alphabet) {
+    std::set<std::set<std::shared_ptr<dfa_state>>> new_partition;
+    std::map<int, bool> partitioned;
+    for (auto group : partition)
+    {
+        for (const auto &state : group)
+        {
+            if (partitioned[state->get_id()])
+            {
+                continue;
+            }
+            std::set<std::shared_ptr<dfa_state>> new_group;
+            new_group.insert(state);
+            partitioned[state->get_id()] = true;
+            for (const auto &s : group)
+            {
+//                std::cout << s->get_id() << "\n";
+                if (!partitioned[s->get_id()])
+                {
+                    bool same_grp = true;
+                    for (auto inp : alphabet->get_characters())
+                    {
+//                        std::cout << "----" << state->get_id() << "    " << s->get_id() << " input = " << inp.first << "\n";
+                        if (!same_group(state, s, inp.first, partition))
+                        {
+                            same_grp = false;
+                            break;
+                        }
+                    }
+                    if (same_grp)
+                    {
+                        for (const auto &range : alphabet->get_ranges())
+                        {
+                            if (!same_group(state, s, range->get_range_string(), partition))
+                            {
+                                same_grp = false;
+                                break;
+                            }
+                        }
+                    }
+                    if (same_grp)
+                    {
+                        new_group.insert(s);
+                        partitioned[s->get_id()] = true;
+                    }
+                }
+            }
+            new_partition.insert(new_group);
+        }
+    }
+    return new_partition;
+}
+
+std::shared_ptr<dfa> minimize(const std::shared_ptr<dfa> &dfa_ptr)
+{
+    // FIRST OF ALL MAKE A PARTITION OF ACC AND NON-ACC STATES
+    std::set<std::set<std::shared_ptr<dfa_state>>> partition;
+    std::set<std::shared_ptr<dfa_state>> non_acc_states, acc_states;
+    for (const auto &s : dfa_ptr->get_dfa_states())
+    {
+        if (s->get_type() != ACCEPTANCE)
+        {
+            non_acc_states.insert(s);
+        }
+        else
+        {
+            acc_states.insert(s);
+        }
+    }
+    partition.insert(acc_states);
+    partition.insert(non_acc_states);
+
+    // SECONDLY: PARTITION CURRENT PARTITION TO A NEW PARTITION
+    auto new_partition = make_partition(partition, dfa_ptr->get_alphabet());
+    std::cout << "Original\n";
+    for (auto group : partition) {
+        for (auto s : group) {
+            std::cout << s->get_id() << " ";
+        }
+        std::cout << "\n";
+    }
+    std::cout << "New\n";
+    for (auto group : new_partition) {
+        for (auto s : group) {
+            std::cout << s->get_id() << " ";
+        }
+        std::cout << "\n";
+    }
+    while (!equal_partitions(partition, new_partition))
+    {
+        partition = new_partition;
+        new_partition = make_partition(partition, dfa_ptr->get_alphabet());
+        std::cout << "Copy\n";
+        for (auto group : partition) {
+            for (auto s : group) {
+                std::cout << s->get_id() << " ";
+            }
+            std::cout << "\n";
+        }
+        std::cout << "New\n";
+        for (auto group : new_partition) {
+            for (auto s : group) {
+                std::cout << s->get_id() << " ";
+            }
+            std::cout << "\n";
+        }
+    }
+
+    // PARTITION IS THE FINAL PARTITION, CHOOSE A REPRESENTATIVE FOR EACH GROUP AND REMOVE DEAD STATES.
+    std::shared_ptr<dfa> min_dfa(new dfa());
+    min_dfa->set_alphabet(dfa_ptr->get_alphabet());
+    for (auto group : partition)
+    {
+        // Choose representative and modify transitions.
+        std::shared_ptr<dfa_state> grp_representative = *(group.begin());
+        if (dead_state(grp_representative))
+        {
+            continue;
+        }
+        std::map<std::string, std::shared_ptr<dfa_state>> new_transitions;
+        for (auto trans : grp_representative->get_transitions())
+        {
+            std::shared_ptr<dfa_state> target_state;
+            for (auto grp : partition)
+            {
+                bool found_target_state = false;
+                for (auto s : grp)
+                {
+                    if (s->get_id() == trans.second->get_id())
+                    {
+                        target_state = *(grp.begin());
+                        found_target_state = true;
+                        break;
+                    }
+                }
+                if (found_target_state)
+                    break;
+            }
+            if (dead_state(target_state))
+            {
+                continue;
+            }
+            new_transitions[trans.first] = target_state;
+        }
+        grp_representative->set_transitions(new_transitions);
+
+        // Modify ID.
+        grp_representative->set_id(static_cast<state_id>(min_dfa->get_total_states()));
+
+        for (const auto &s : group)
+        {
+            if (s->get_type() == START)
+            {
+                grp_representative->set_type(START);
+                min_dfa->set_start_state(grp_representative);
+            }
+        }
+        if (grp_representative->get_type() == ACCEPTANCE)
+        {
+            min_dfa->add_acceptance_state(grp_representative);
+        }
+        min_dfa->add_state(grp_representative);
+        min_dfa->set_total_states(min_dfa->get_total_states() + 1);
+    }
+    return min_dfa;
+}
+
+bool dead_state(const std::shared_ptr<dfa_state> &s) {
+    return s->get_char_set()->get_characters().empty() && s->get_char_set()->get_ranges().empty();
 }
 
 int main(int argc, char** argv) {
@@ -390,15 +629,17 @@ int main(int argc, char** argv) {
 //    std::shared_ptr<nfa> my_nfa = evaluate_regex (regex, sym_table);
 //    if (my_nfa != nullptr)
 //      my_nfa->visualize();
-    std::shared_ptr<nfa> nfa_ptr = build_nfa();
+    std::shared_ptr<nfa> nfa_ptr = build_nfa1();
 //    std::shared_ptr<nfa> nfa_ptr = build_complex_nfa();
 //    nfa_ptr->visualize();
     std::shared_ptr<dfa> dfa_ptr = convert_nfa_dfa(nfa_ptr);
-    std::cout << "# of produced dfa states = " << dfa_ptr->get_total_states() << "\n";
-    for (auto curr : dfa_ptr->get_acceptance_states())
+//    dfa_ptr->visualize();
+    std::shared_ptr<dfa> minimized_dfa = minimize(dfa_ptr);
+    for (const auto &curr : minimized_dfa->get_acceptance_states())
+    {
         std::cout << curr->get_id() << " ";
-    dfa_ptr->visualize();
-    minimize(dfa_ptr);
+    }
+    minimized_dfa->visualize();
 //    draw_trans_table(my_dfa);
     return 0;
 }

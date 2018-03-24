@@ -48,7 +48,7 @@ void fa::visualize()
                         "\trankdir=LR;\n"
                         "\tsize=\"8,5\"\n"
                         "\tnode [shape = doublecircle]; ";
-    for (auto s : acceptance_states)
+    for (const auto &s : acceptance_states)
     {
         *visualizer << s->get_id() << " ";
     }
@@ -58,7 +58,7 @@ void fa::visualize()
             "\"\" -> " << start_state->get_id() << "\n";
 
 
-    std::vector<bool> visited(10);
+    std::vector<bool> visited(100);
     dfs(start_state, visited, visualizer, false, nullptr);
     *visualizer << "}\n";
     visualizer->close();
