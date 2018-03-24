@@ -23,8 +23,7 @@ private:
   int total_states;
   int matcher_pos;
   int prev_matcher_pos;
-  int matcher_start_state_id;
-  std::string code_file_content;
+  std::string input_str;
   std::shared_ptr<dfa> dfa_ptr;
   std::vector<acceptance_state> acceptance_states_info;
   std::vector<std::string> transition_table_inputs;
@@ -32,7 +31,7 @@ private:
 public:
   lexical_analyzer (std::string &, std::string &);
   lexical_analyzer (std::shared_ptr<dfa> &, std::string &);
-  token get_next_token ();
+  int get_next_token (token &);
   const std::shared_ptr<dfa> &get_dfa() const;
 };
 

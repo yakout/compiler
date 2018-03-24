@@ -19,8 +19,53 @@ bool dead_state(const std::shared_ptr<dfa_state> &shared_ptr);
 
 void draw_trans_table(std::shared_ptr<dfa> dfa)
 {
-
-
+    std::cout << "Total States: " << dfa->get_total_states() << "\n";
+    std::cout << "Start State(s): {" << dfa->get_start_state()->get_id() << "}\n";
+    std::cout << "Acceptance State(s): " << dfa->get_acceptance_states().size() << "\n";
+    for (auto acc_state : dfa->get_acceptance_states())
+    {
+        // Replace token class with acc_state->get_token_class()
+        std::cout << "{" << acc_state->get_id() << "}\t" << "TOKEN CLASS\n";
+    }
+    std::cout << "State\t";
+    for (auto inp_char : dfa->get_alphabet()->get_characters())
+    {
+        std::cout << inp_char.first << "\t";
+    }
+    for (auto inp_range : dfa->get_alphabet()->get_ranges())
+    {
+        std::cout << inp_range->get_range_string() << "\t";
+    }
+    std::cout << "\n";
+    for (auto state : dfa->get_dfa_states())
+    {
+        std::cout << "{" << state->get_id() << "}\t";
+        for (auto inp_char : dfa->get_alphabet()->get_characters())
+        {
+            auto target_state = state->get_next_state(inp_char.first);
+            if (target_state == nullptr)
+            {
+                std::cout << "{-}\t";
+            }
+            else
+            {
+                std::cout << "{" << target_state->get_id() << "}\t";
+            }
+        }
+        for (auto inp_range : dfa->get_alphabet()->get_ranges())
+        {
+            auto target_state = state->get_next_state(inp_range->get_range_string());
+            if (target_state == nullptr)
+            {
+                std::cout << "{-}\t";
+            }
+            else
+            {
+                std::cout << "{" << target_state->get_id() << "}\t";
+            }
+        }
+        std::cout << "\n";
+    }
 }
 
 std::shared_ptr<nfa> build_complex_nfa()
@@ -625,18 +670,18 @@ bool dead_state(const std::shared_ptr<dfa_state> &s) {
 }
 
 //int main(int argc, char** argv) {
-//    // HEAAD
 //    std::shared_ptr<nfa> nfa_ptr = build_nfa1();
 ////    std::shared_ptr<nfa> nfa_ptr = build_complex_nfa();
 //    nfa_ptr->visualize();
 //    std::shared_ptr<dfa> dfa_ptr = convert_nfa_dfa(nfa_ptr);
 //    dfa_ptr->visualize();
 //    std::shared_ptr<dfa> minimized_dfa = minimize(dfa_ptr);
-//    for (const auto &curr : minimized_dfa->get_acceptance_states())
-//    {
-//        std::cout << curr->get_id() << " ";
-//    }
+////    for (const auto &curr : minimized_dfa->get_acceptance_states())
+////    {
+////        std::cout << curr->get_id() << " ";
+////    }
 //    minimized_dfa->visualize();
+//    draw_trans_table(minimized_dfa);
 //}
 
 int main(int argc, char** argv) {
