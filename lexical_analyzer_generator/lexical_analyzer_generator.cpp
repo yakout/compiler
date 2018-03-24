@@ -35,6 +35,7 @@ std::vector <std::string> read_file (std::string rules_file)
     while ( getline (infile,line) )
     {
       file_lines.push_back (trim(line));
+      // std::cout << line << std::endl;
     }
     infile.close();
   }
@@ -46,15 +47,16 @@ std::vector <std::string> read_file (std::string rules_file)
 std::shared_ptr<nfa> build_punctations_nfa (std::string full_line, int order)
 {
   std::string line;
-  for (auto c : full_line)
+  for (char c : full_line)
   {
-    if (c != SPACE && c != PUNCT_CLAUSE_START && c != PUNCT_CLAUSE_END)
+    if (c != '\0' && c != SPACE && c != PUNCT_CLAUSE_START && c != PUNCT_CLAUSE_END)
       line += c;
   }
   std::shared_ptr<nfa> punct_nfa;
   bool first_nfa = true;
   for (int i = 0; i < line.length(); i++)
   {
+    // std::cout << line[i] << std::endl;
     std::shared_ptr<nfa> cur_punct_nfa;
     if (line[i] == ESCAPE && i >= line.length() - 2)
     {
@@ -67,7 +69,7 @@ std::shared_ptr<nfa> build_punctations_nfa (std::string full_line, int order)
           p_nfa(new nfa(c_s));
         cur_punct_nfa = p_nfa;
         cur_punct_nfa->set_acceptance_states_priority(order);
-        cur_punct_nfa->set_acceptance_states_token_class("" + line[i + 1]);
+        cur_punct_nfa->set_acceptance_states_token_class(std::string() + line[i + 1]);
     }
     else
     {
@@ -75,7 +77,7 @@ std::shared_ptr<nfa> build_punctations_nfa (std::string full_line, int order)
       std::shared_ptr<nfa> p_nfa(new nfa(c_s));
       cur_punct_nfa = p_nfa;
       cur_punct_nfa->set_acceptance_states_priority(order);
-      cur_punct_nfa->set_acceptance_states_token_class("" + line[i]);
+      cur_punct_nfa->set_acceptance_states_token_class(std::string() + line[i]);
     }
     if (first_nfa)
     {
@@ -150,19 +152,20 @@ std::shared_ptr<nfa> build_combined_nfa (std::vector<std::string> rules_file_lin
   bool first_nfa = true;
   bool is_def;
     int order = 1;
-    std::map<std::shared_ptr<nfa>, bool> nfas;
+    std::vector<std::pair<std::shared_ptr<nfa>, bool>> nfas;
   for (auto line : rules_file_lines)
   {
     std::shared_ptr<nfa> cur_nfa;
     if (line[0] == PUNCT_CLAUSE_START)
     {
-        cur_nfa = build_punctations_nfa (line, order);
-        nfas[cur_nfa] = false;
+        // std::cout << line << std::endl;
+        cur_nfa = build_punctations_nfa (line, order - 100);
+        nfas.push_back({cur_nfa, false});
     }
     else if (line[0] == KEYWORD_CLAUSE_START)
     {
-       cur_nfa = build_keywords_nfa (line, order);
-        nfas[cur_nfa] = false;
+       cur_nfa = build_keywords_nfa (line, order - 100);
+        nfas.push_back({cur_nfa, false});
     }
     else
     {
@@ -175,7 +178,7 @@ std::shared_ptr<nfa> build_combined_nfa (std::vector<std::string> rules_file_lin
               std::cout << "reg def" << std::endl;
               cur_nfa = build_regex_nfa (trim(line.substr(0, i)), trim(line.substr(i+1)),
                               sym_table, order);
-              nfas[cur_nfa] = true;
+              nfas.push_back({cur_nfa, true});
               break;
           }
           else if (line[i] == EXPRESSION_ASSIGN)
@@ -183,7 +186,7 @@ std::shared_ptr<nfa> build_combined_nfa (std::vector<std::string> rules_file_lin
             std::cout << "regex" << std::endl;
               cur_nfa = build_regex_nfa (trim(line.substr(0, i)), trim(line.substr(i+1)),
                             sym_table, order);
-              nfas[cur_nfa] = false;
+              nfas.push_back({cur_nfa, false});
               break;
           }
         }
@@ -202,15 +205,15 @@ std::shared_ptr<nfa> build_combined_nfa (std::vector<std::string> rules_file_lin
 //        cur_nfa->visualize();
         bool is_def = n.second;
 
-        if (first_nfa)
+        if (first_nfa && !is_def)
         {
             combined_nfa = cur_nfa;
             first_nfa = false;
         }
         else
         {
-            if (is_def)
-                combined_nfa->unify(cur_nfa, false);
+            if (is_def){}
+                // combined_nfa->unify(cur_nfa, false);
             else
                 combined_nfa->unify(cur_nfa, false);
 //            combined_nfa->visualize();
@@ -227,5 +230,11 @@ std::shared_ptr<nfa> lexical_analyzer_generator::get_lexical_analyzer_file (std:
     std::shared_ptr<nfa> combined_nfa = build_combined_nfa(rules_file_lines);
 
     // MOVE THIS LOGIC FROM HERE.
+    for (auto s : combined_nfa->get_acceptance_states()) {
+        if(s->get_type() != ACCEPTANCE)
+        {
+            s->set_type(ACCEPTANCE);
+        }
+    }
     return combined_nfa;
 }
