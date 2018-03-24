@@ -159,12 +159,12 @@ std::shared_ptr<nfa> build_combined_nfa (std::vector<std::string> rules_file_lin
     if (line[0] == PUNCT_CLAUSE_START)
     {
         // std::cout << line << std::endl;
-        cur_nfa = build_punctations_nfa (line, order + 100);
+        cur_nfa = build_punctations_nfa (line, order - 100);
         nfas.push_back({cur_nfa, false});
     }
     else if (line[0] == KEYWORD_CLAUSE_START)
     {
-       cur_nfa = build_keywords_nfa (line, order + 100);
+       cur_nfa = build_keywords_nfa (line, order - 100);
         nfas.push_back({cur_nfa, false});
     }
     else
