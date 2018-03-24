@@ -79,22 +79,22 @@ void add_states_to_dfa (std::shared_ptr<dfa>
 
 bool is_valid_inp (char, std::shared_ptr<dfa_state>);
 
-std::string get_code_file_contents (std::string);
+std::string get_code_file_contents (char *);
 
 token create_token (int, int, std::shared_ptr<dfa_state>
                                             , std::string);
 
-lexical_analyzer::lexical_analyzer (std::string &lexical_analyzer_file
-                                                , std::string &code_file) {
+lexical_analyzer::lexical_analyzer (char *transition_table_file
+                                                , char *code_file) {
     dfa_ptr = lexical_analyzer::parse_lexical_analyzer_machine (
-                                                        lexical_analyzer_file);
+                                                        transition_table_file);
     input_str = get_code_file_contents (code_file);
     matcher_pos = 0;
     prev_matcher_pos = 0;
 }
 
 lexical_analyzer::lexical_analyzer (std::shared_ptr<dfa> &dfa_ptr
-                            , std::string &code_file) {
+                            , char *code_file) {
     lexical_analyzer::dfa_ptr = dfa_ptr;
     input_str = get_code_file_contents (code_file);
     matcher_pos = 0;
@@ -124,12 +124,9 @@ int lexical_analyzer::get_next_token (token &t) {
     if (match_occured) {
         curr_state = acceptance_state_id;
         matcher_pos = accepted_pos;
-    }
-
-    if (acceptance_state_id == -1) {
-        t.token_class = "";
-    } else {
         t.token_class = dfa_ptr->get_dfa_states ()[curr_state]->get_token_class ();
+    } else {
+        t.token_class = "";
     }
 
     t.lexeme = input_str.substr (prev_matcher_pos
@@ -149,13 +146,13 @@ int lexical_analyzer::get_next_token (token &t) {
     return 1;
 }
 
-const std::shared_ptr<dfa> &lexical_analyzer::get_dfa() const {
+const std::shared_ptr<dfa> lexical_analyzer::get_dfa() const {
     return dfa_ptr;
 }
 
 std::shared_ptr<dfa> lexical_analyzer::parse_lexical_analyzer_machine (
-                                std::string lexical_analyzer_file) {
-    std::ifstream input_file (lexical_analyzer_file.c_str ());
+                                char *transition_table_file) {
+    std::ifstream input_file (transition_table_file);
     std::string line;
     std::vector<std::string> vec;
     std::vector<std::shared_ptr<dfa_state>> dfa_states;
@@ -168,15 +165,14 @@ std::shared_ptr<dfa> lexical_analyzer::parse_lexical_analyzer_machine (
             start_state_id = string_to_integer (vec[2]);
         } else if (line_counter == ACCEPTANCE_STATES_LINE) {
             int acceptance_states_count = string_to_integer (vec[2]);
-            vec.clear ();
             while (acceptance_states_count--
                             && std::getline (input_file, line)) {
+                vec.clear ();
                 split_str_on_space (vec, line);
                 acceptance_state accept_state;
                 accept_state.state_id = string_to_integer (vec[0]);
                 accept_state.token_class = vec[1];
                 acceptance_states_info.push_back (accept_state);
-                vec.clear ();
             }
         } else if (line_counter == TRANSITION_TABLE_INPUT_LINE) {
             vec.erase (vec.begin ());
@@ -245,7 +241,8 @@ std::vector<std::shared_ptr<dfa_state>> generate_dfa_states (int count
                                                     , acceptance_states_info);
         if (acceptance_state_index != -1) {
             s = std::make_shared<dfa_state>(dfa_state (i, state_type::ACCEPTANCE
-                , dfa_state_char_set, acceptance_states_info[acceptance_state_index].token_class));
+                , dfa_state_char_set));
+            s->set_token_class (acceptance_states_info[acceptance_state_index].token_class);
         } else if (i == start_state_id) {
             s = std::make_shared<dfa_state>(dfa_state (i, state_type::START
                                                 , dfa_state_char_set));
@@ -318,8 +315,8 @@ bool is_valid_inp (char input, std::shared_ptr<dfa_state> dfa_s) {
     return dfa_s->get_char_set ()->get_string (input) != EPSILON;
 }
 
-std::string get_code_file_contents(std::string code_file) {
-    std::ifstream in_file (code_file.c_str (), std::ios::in | std::ios::binary);
+std::string get_code_file_contents(char *code_file) {
+    std::ifstream in_file (code_file, std::ios::in | std::ios::binary);
     if (in_file) {
         std::string contents;
         in_file.seekg (0, std::ios::end);
