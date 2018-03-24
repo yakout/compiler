@@ -46,7 +46,7 @@ void fa::visualize()
     *visualizer <<
                 "digraph finite_state_machine {\n"
                         "\trankdir=LR;\n"
-                        "\tsize=\"20,5\"\n"
+                        "\tsize=\"30,5\"\n"
                         "\tnode [shape = doublecircle]; ";
     for (const auto &s : acceptance_states)
     {

@@ -655,37 +655,35 @@ int main(int argc, char** argv) {
      regular_expression regex5 = {"num", "digit+ | digit+ . digits ( \\L | E digits)"};
      std::shared_ptr<nfa> num_nfa = evaluate_regex (regex5, sym_table);
      sym_table["num"] = num_nfa;
-//    regular_expression regex6 = {"relop", "\\=\\= | !\\= | > | >\\= | < | <\\="};
-//    std::shared_ptr<nfa> num_nfa = evaluate_regex (regex6, sym_table);
-//    sym_table["num"] = digits_nfa;
-//    regular_expression regex7 = {"assign", "\\="};
-//    std::shared_ptr<nfa> num_nfa = evaluate_regex (regex7, sym_table);
-//    sym_table["num"] = digits_nfa;
-//    regular_expression regex8 = {"num", "\\+ | -"};
-//    std::shared_ptr<nfa> num_nfa = evaluate_regex (regex8, sym_table);
-//    sym_table["num"] = digits_nfa;
-//    regular_expression regex9 = {"num", "\\+ | -"};
-//    std::shared_ptr<nfa> num_nfa = evaluate_regex (regex9, sym_table);
-//    sym_table["num"] = digits_nfa;
 
-    //    std::shared_ptr<nfa> num_nfa = digit_nfa->copy();
+    regular_expression regex6 = {"relop", "\\=\\= | !\\= | > | >\\= | < | <\\="};
+    std::shared_ptr<nfa> relop_nfa = evaluate_regex (regex6, sym_table);
+    sym_table["num"] = relop_nfa;
 
-//    letter_nfa->unify(digit_nfa);
-//    letter_nfa->unify(id_nfa);
-//    letter_nfa->unify(digits_nfa);
+    regular_expression regex7 = {"assign", "\\="};
+    std::shared_ptr<nfa> assign_nfa = evaluate_regex (regex7, sym_table);
+    sym_table["num"] = assign_nfa;
 
-    if (num_nfa != nullptr)
+    regular_expression regex8 = {"addop", "\\+ | \\-"};
+    std::shared_ptr<nfa> addop_nfa = evaluate_regex (regex8, sym_table);
+    sym_table["num"] = addop_nfa;
+
+    regular_expression regex9 = {"mulop", "\\* | /"};
+    std::shared_ptr<nfa> mulop_nfa = evaluate_regex (regex9, sym_table);
+    sym_table["num"] = mulop_nfa;
+
+
+    letter_nfa->unify(digit_nfa);
+    letter_nfa->unify(id_nfa);
+    letter_nfa->unify(digits_nfa);
+    letter_nfa->unify(num_nfa);
+    letter_nfa->unify(relop_nfa);
+    letter_nfa->unify(assign_nfa);
+    letter_nfa->unify(mulop_nfa);
+
+    if (letter_nfa != nullptr)
     {
-        num_nfa->visualize();
-        std::shared_ptr<char_set> c_s = num_nfa->get_alphabet();
-        for (auto const& c : c_s->get_characters())
-        {
-            std::cout << c.first << std::endl;
-        }
-        for (auto const& range : c_s->get_ranges())
-        {
-            std::cout << range->get_range_string() << std::endl;
-        }
+        letter_nfa->visualize();
     }
     return 0;
 }
