@@ -1,0 +1,11 @@
+int int1, int2, int3;
+boolean boolean1, boolean2, boolean3;
+float float1, float2, float3;
+while(boolean1)
+	{
+boolean2=false;
+boolean3=true;
+	if (
+	boolean1)
+		boolean1 = false;
+	}
