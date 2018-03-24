@@ -178,7 +178,8 @@ void nfa::concat(std::shared_ptr<nfa> nfa2)
 void nfa::plus()
 {
     std::shared_ptr<nfa> nfa2 = copy();
-    nfa2->update_acceptance_states();
+//    nfa2->update_acceptance_states();
+    update_acceptance_states();
     nfa2->renamify(acceptance_states.front()->get_id() + 1);
     nfa2->star();
     concat(nfa2);

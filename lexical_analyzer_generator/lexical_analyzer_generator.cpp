@@ -9,8 +9,8 @@
 #define PUNCT_CLAUSE_END ']'
 #define KEYWORD_CLAUSE_START '{'
 #define KEYWORD_CLAUSE_END '}'
-#define EXPRESSION_ASSIGN '='
-#define DEFINITION_ASSIGN ':'
+#define EXPRESSION_ASSIGN ':'
+#define DEFINITION_ASSIGN '='
 
 #define ESCAPE '\\'
 
@@ -161,11 +161,13 @@ std::shared_ptr<nfa> build_combined_nfa (std::vector<std::string> rules_file_lin
               is_def = true;
               cur_nfa = build_regex_nfa (trim(line.substr(0, i)), trim(line.substr(i+1)),
                               sym_table);
+              break;
           }
           else if (line[i] == EXPRESSION_ASSIGN)
           {
               cur_nfa = build_regex_nfa (trim(line.substr(0, i)), trim(line.substr(i+1)),
                             sym_table);
+              break;
           }
         }
         if (invalid_line)
