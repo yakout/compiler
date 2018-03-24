@@ -91,12 +91,27 @@ bool file_exists (char *file_name) {
 
 void lex_generate_tokenize (char *rules_file, char *code_file
                                             , std::vector<token> &token_vec) {
+    if (!file_exists (rules_file)) {
+        err_no_file_exists (rules_file);
+    }
+
+    if (!file_exists (code_file)) {
+        err_no_file_exists (code_file);
+    }
+
     lexical_analyzer_generator gen = lexical_analyzer_generator();
     auto combined_nfa = gen.get_lexical_analyzer_file(std::string(rules_file));
     auto dfa_ptr = convert_nfa_dfa(combined_nfa);
     auto min_dfa = minimize(dfa_ptr);
     min_dfa->visualize();
     draw_trans_table(min_dfa);
+    char * transition_table_file = "transition_table.txt";
+    std::shared_ptr<lexical_analyzer> lex = std::make_shared<lexical_analyzer>(
+                                lexical_analyzer (transition_table_file, code_file));
+    token t;
+    while (lex->get_next_token (t)) {
+        token_vec.push_back (token (t));
+    }
 }
 
 void lex_tokenize (char *transition_table_file, char *code_file
