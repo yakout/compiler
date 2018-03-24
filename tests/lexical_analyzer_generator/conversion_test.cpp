@@ -338,7 +338,7 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
             std::shared_ptr<dfa_state> new_state(new dfa_state(e_closure(move(curr_state->get_composing_nfa_states(),
                                                                               curr_char.first)),
                                     static_cast<state_id>(dfa_ptr->get_total_states())));
-            if (new_state->get_composing_nfa_states().size() == 0) { // dead state
+            if (new_state->get_composing_nfa_states().empty()) { // dead state
                 continue;
             }
             if (new_state->equals(curr_state))
@@ -391,7 +391,7 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr) {
                                                                               curr_range->get_range_string())),
                                                                static_cast<state_id>(dfa_ptr->get_total_states())));
             // dead state
-            if (new_state->get_composing_nfa_states().size() == 0) { // dead state
+            if (new_state->get_composing_nfa_states().empty()) { // dead state
                 continue;
             }
             if (new_state->equals(curr_state))
@@ -653,7 +653,6 @@ std::shared_ptr<dfa> minimize(const std::shared_ptr<dfa> &dfa_ptr)
             std::cout << "\n";
         }
     }
-
     // PARTITION IS THE FINAL PARTITION, CHOOSE A REPRESENTATIVE FOR EACH GROUP AND REMOVE DEAD STATES.
     std::shared_ptr<dfa> min_dfa(new dfa());
     min_dfa->set_alphabet(dfa_ptr->get_alphabet());
@@ -668,6 +667,9 @@ std::shared_ptr<dfa> minimize(const std::shared_ptr<dfa> &dfa_ptr)
         std::map<std::string, std::shared_ptr<dfa_state>> new_transitions;
         for (auto trans : grp_representative->get_transitions())
         {
+            if (trans.second == nullptr) {
+                continue;
+            }
             std::shared_ptr<dfa_state> target_state;
             for (auto grp : partition)
             {
@@ -806,7 +808,7 @@ int main(int argc, char** argv) {
     }
     std::cout << "\n";
     min_dfa->visualize();
-//    draw_trans_table(min_dfa);
+    draw_trans_table(min_dfa);
     // std::shared_ptr<nfa> nf = build_keywords_nfa("{ if else while }");
     // nf->visualize();
     return 0;
