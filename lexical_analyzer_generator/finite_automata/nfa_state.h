@@ -15,6 +15,7 @@ public:
 
     // getters
     std::vector<std::shared_ptr<nfa_state>> get_next_state (char input);
+    std::vector<std::shared_ptr<nfa_state>> get_next_state (std::string input);
     const std::map <std::string, std::vector<std::shared_ptr<nfa_state>>>& get_transitions() const;
 };
 

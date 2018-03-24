@@ -48,7 +48,7 @@ void fa::visualize()
                         "\trankdir=LR;\n"
                         "\tsize=\"20,5\"\n"
                         "\tnode [shape = doublecircle]; ";
-    for (auto s : acceptance_states)
+    for (const auto &s : acceptance_states)
     {
         *visualizer << s->get_id() << " ";
     }
@@ -115,15 +115,6 @@ void fa::update_acceptance_states()
     dfs(start_state, visted, nullptr, true, nullptr);
 }
 
-std::shared_ptr<char_set> fa::get_alphabet()
-{
-    std::shared_ptr<char_set> alphabet(new char_set());
-    std::vector<bool> visited(10); // TODO
-    dfs(start_state, visited, nullptr, true, alphabet);
-    return alphabet;
-}
-
 int fa::get_max_id() {
     return max_id;
 }
-
