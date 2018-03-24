@@ -133,7 +133,7 @@ int lexical_analyzer::get_next_token (token &t) {
                 , matcher_pos - prev_matcher_pos + 1);
     t.str_pos = matcher_pos + 1;
     
-    matcher_pos += 1;
+    matcher_pos++;
 
     while (std::isspace (input_str[matcher_pos])) {
         matcher_pos++;
@@ -213,12 +213,7 @@ void split_set_on_comma (std::vector<std::string> &vec, std::string &str) {
         str.erase (remove (str.begin (), str.end (), '}'), str.end ());
     }
 
-    std::stringstream ss_str (str);
-    std::string token;
-
-    while (getline (ss_str, token, ',')) {
-        vec.push_back (token);
-    }
+    vec.push_back (str);
     return;
 }
 
