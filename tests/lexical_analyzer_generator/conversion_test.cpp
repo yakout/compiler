@@ -696,65 +696,15 @@ std::shared_ptr<dfa> minimize(const std::shared_ptr<dfa> &dfa_ptr)
 }
 
 int main(int argc, char** argv) {
-    // std::map <std::string,std::shared_ptr<nfa>> sym_table;
-    // regular_expression regex1 = {"letter", "a-z | A-Z"};
-    // std::shared_ptr<nfa> letter_nfa = evaluate_regex (regex1, sym_table);
-    // sym_table["letter"] = letter_nfa;
-    // regular_expression regex2 = {"digit", "0-9"};
-    // std::shared_ptr<nfa> digit_nfa = evaluate_regex (regex2, sym_table);
-    // sym_table["digit"] = digit_nfa ;
-    // regular_expression regex3 = {"id", "letter (letter|digit)*"};
-    // std::shared_ptr<nfa> id_nfa = evaluate_regex (regex3, sym_table);
-    // sym_table["id"] = id_nfa;
-    // regular_expression regex4 = {"digits", "digit+"};
-    // std::shared_ptr<nfa> digits_nfa = evaluate_regex (regex4, sym_table);
-    // sym_table["digits"] = digits_nfa;
-    //  regular_expression regex5 = {"num", "digit+ | digit+ . digits ( \\L | E digits)"};
-    //  std::shared_ptr<nfa> num_nfa = evaluate_regex (regex5, sym_table);
-    //  sym_table["num"] = num_nfa;
-    //
-    // regular_expression regex6 = {"relop", "\\=\\= | !\\= | > | >\\= | < | <\\="};
-    // std::shared_ptr<nfa> relop_nfa = evaluate_regex (regex6, sym_table);
-    // sym_table["num"] = relop_nfa;
-    //
-    // regular_expression regex7 = {"assign", "\\="};
-    // std::shared_ptr<nfa> assign_nfa = evaluate_regex (regex7, sym_table);
-    // sym_table["num"] = assign_nfa;
-    //
-    // regular_expression regex8 = {"addop", "\\+ | \\-"};
-    // std::shared_ptr<nfa> addop_nfa = evaluate_regex (regex8, sym_table);
-    // sym_table["num"] = addop_nfa;
-    //
-    // regular_expression regex9 = {"mulop", "\\* | /"};
-    // std::shared_ptr<nfa> mulop_nfa = evaluate_regex (regex9, sym_table);
-    // sym_table["num"] = mulop_nfa;
-    //
-    //
-    // letter_nfa->unify(digit_nfa);
-    // letter_nfa->unify(id_nfa);
-    // letter_nfa->unify(digits_nfa);
-    // letter_nfa->unify(num_nfa, false);
-    // letter_nfa->unify(relop_nfa, false);
-    // letter_nfa->unify(assign_nfa, false);
-    // letter_nfa->unify(mulop_nfa, false);
-    //
-    // if (letter_nfa != nullptr)
-    // {
-    //     letter_nfa->visualize();
-    // }
+
     lexical_analyzer_generator gen = lexical_analyzer_generator();
     auto combined_nfa = gen.get_lexical_analyzer_file("rules.txt");
     for (auto s : combined_nfa->get_acceptance_states()) {
         std::cout << s->get_token_class() << "\n";
     }
-//    combined_nfa->visualize();
-
     auto dfa_ptr = convert_nfa_dfa(combined_nfa);
-//    dfa_ptr->visualize();
     auto min_dfa = minimize(dfa_ptr);
     min_dfa->visualize();
     draw_trans_table(min_dfa);
-    // std::shared_ptr<nfa> nf = build_keywords_nfa("{ if else while }");
-    // nf->visualize();
     return 0;
 }
