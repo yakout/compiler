@@ -16,19 +16,18 @@
 
 #define EPSILON ""
 
-
 void draw_trans_table(std::shared_ptr<dfa> dfa)
 {
     std::shared_ptr<std::ofstream> out_file(new std::ofstream());
     out_file->open("transition_table.txt");
-    *out_file << "Total\tStates:\t" << dfa->get_total_states() << "\n";
-    *out_file << "Start\tState(s):\t{" << dfa->get_start_state()->get_id() << "}\n";
-    *out_file << "Acceptance State(s):\t" << dfa->get_acceptance_states().size() << "\n";
+    *out_file << "Total States: " << dfa->get_total_states() << "\n";
+    *out_file << "Start State(s): {" << dfa->get_start_state()->get_id() << "}\n";
+    *out_file << "Acceptance State(s): " << dfa->get_acceptance_states().size() << "\n";
     for (auto acc_state : dfa->get_acceptance_states())
     {
-        *out_file << "{" << acc_state->get_id() << "}\t" << acc_state->get_token_class() << "\n";
+        *out_file << "{" << acc_state->get_id() << "} " << acc_state->get_token_class() << "\n";
     }
-    *out_file << "State\t";
+    *out_file << "State ";
     std::set<char> alph_chars;
     std::set<std::string> alph_ranges;
     for (auto inp_char : dfa->get_alphabet()->get_characters())
@@ -36,29 +35,29 @@ void draw_trans_table(std::shared_ptr<dfa> dfa)
         alph_chars.insert(inp_char.first);
     }
     for (auto c : alph_chars) {
-        *out_file << c << "\t";
+        *out_file << c << " ";
     }
     for (auto inp_range : dfa->get_alphabet()->get_ranges())
     {
         alph_ranges.insert(inp_range->get_range_string());
     }
     for (auto range : alph_ranges) {
-        *out_file << range << "\t";
+        *out_file << range << " ";
     }
     *out_file << "\n";
     for (auto state : dfa->get_dfa_states())
     {
-        *out_file << "{" << state->get_id() << "}\t";
+        *out_file << "{" << state->get_id() << "} ";
         for (auto inp_char : dfa->get_alphabet()->get_characters())
         {
             auto target_state = state->get_next_state(inp_char.first);
             if (target_state == nullptr)
             {
-                *out_file << "{-}\t";
+                *out_file << "{-} ";
             }
             else
             {
-                *out_file << "{" << target_state->get_id() << "}\t";
+                *out_file << "{" << target_state->get_id() << "} ";
             }
         }
         for (auto inp_range : dfa->get_alphabet()->get_ranges())
@@ -66,11 +65,11 @@ void draw_trans_table(std::shared_ptr<dfa> dfa)
             auto target_state = state->get_next_state(inp_range->get_range_string());
             if (target_state == nullptr)
             {
-                *out_file << "{-}\t";
+                *out_file << "{-} ";
             }
             else
             {
-                *out_file << "{" << target_state->get_id() << "}\t";
+                *out_file << "{" << target_state->get_id() << "} ";
             }
         }
         *out_file << "\n";
@@ -137,14 +136,6 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr)
 {
     std::shared_ptr<dfa> dfa_ptr(new dfa());
     dfa_ptr->set_alphabet(nfa_ptr->get_alphabet());
-//    std::cout << "ALPHABET: ";
-//    for (auto ch : dfa_ptr->get_alphabet()->get_characters()) {
-//        std::cout << ch.first << " ";
-//    }
-//    for (auto x : dfa_ptr->get_alphabet()->get_ranges()) {
-//        std::cout << x->get_range_string() << " ";
-//    }
-//    exit(0);
     std::set<std::shared_ptr<nfa_state>> vec;
     vec.insert((std::shared_ptr<nfa_state> &&) nfa_ptr->get_start_state());
     std::shared_ptr<dfa_state> init_dfa_state(new dfa_state(e_closure(vec),
@@ -157,11 +148,6 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr)
     while ((curr_state = dfa_ptr->get_unmarked_state()) != nullptr)
     {
         curr_state->set_marked(true);
-        // std::cout << "Current State = " << curr_state->get_id() << std::endl;
-        for (auto curr : curr_state->get_composing_nfa_states()) {
-            // std::cout << curr->get_id() << " ";
-        }
-        // std::cout << std::endl;
         for (const auto &curr_char : dfa_ptr->get_alphabet()->get_characters())
         {
             std::shared_ptr<dfa_state> new_state(new dfa_state(e_closure(move(curr_state->get_composing_nfa_states(),
@@ -175,11 +161,6 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr)
                 curr_state->insert_transition(dfa_ptr->get_alphabet()->get_string(curr_char.first), curr_state);
                 continue;
             }
-            // std::cout << "New State = " << new_state->get_id() << std::endl;
-            for (auto curr : new_state->get_composing_nfa_states()) {
-                // std::cout << curr->get_id() << " ";
-            }
-            // std::cout << std::endl;
             if (!dfa_ptr->contains(new_state))
             {
                 dfa_ptr->add_state(new_state);
@@ -228,11 +209,6 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr)
                 curr_state->insert_transition(curr_range->get_range_string(), curr_state);
                 continue;
             }
-//            std::cout << "New State = " << new_state->get_id() << std::endl;
-//            for (auto curr : new_state->get_composing_nfa_states()) {
-//                std::cout << curr->get_id() << " ";
-//            }
-//            std::cout << std::endl;
             if (!dfa_ptr->contains(new_state))
             {
                 dfa_ptr->add_state(new_state);
@@ -271,7 +247,6 @@ std::shared_ptr<dfa> convert_nfa_dfa(const std::shared_ptr<nfa> &nfa_ptr)
     return dfa_ptr;
 }
 
-/// CHECK THIS AGAIN!
 bool equal_partitions(std::set<std::set<std::shared_ptr<dfa_state>>> part1,
                       std::set<std::set<std::shared_ptr<dfa_state>>> part2) {
     return part1 == part2;
@@ -315,7 +290,6 @@ bool same_group(const std::shared_ptr<dfa_state> &s1, const std::shared_ptr<dfa_
     if (dest_state_1 == nullptr || dest_state_2 == nullptr) {
         return false;
     }
-//    std::cout << "Dest#1: " << dest_state_1->get_id() << ", Dest #2: " << dest_state_2->get_id() << "\n";
     for (auto grp : partition)
     {
         bool found_s1, found_s2;
@@ -352,13 +326,11 @@ make_partition(std::set<std::set<std::shared_ptr<dfa_state>>> partition,
             partitioned[state->get_id()] = true;
             for (const auto &s : group)
             {
-//                std::cout << s->get_id() << "\n";
                 if (!partitioned[s->get_id()])
                 {
                     bool same_grp = true;
                     for (auto inp : alphabet->get_characters())
                     {
-//                        std::cout << "----" << state->get_id() << "    " << s->get_id() << " input = " << inp.first << "\n";
                         if (!same_group(state, s, inp.first, partition))
                         {
                             same_grp = false;
@@ -391,7 +363,6 @@ make_partition(std::set<std::set<std::shared_ptr<dfa_state>>> partition,
 
 std::shared_ptr<dfa> minimize(const std::shared_ptr<dfa> &dfa_ptr)
 {
-    // FIRST OF ALL MAKE A PARTITION OF ACC AND NON-ACC STATES
     std::set<std::set<std::shared_ptr<dfa_state>>> partition;
     std::set<std::shared_ptr<dfa_state>> non_acc_states, acc_states;
     for (const auto &s : dfa_ptr->get_dfa_states())
@@ -408,24 +379,17 @@ std::shared_ptr<dfa> minimize(const std::shared_ptr<dfa> &dfa_ptr)
     partition.insert(acc_states);
     partition.insert(non_acc_states);
 
-    // SECONDLY: PARTITION CURRENT PARTITION TO A NEW PARTITION
     auto new_partition = make_partition(partition, dfa_ptr->get_alphabet());
     while (!equal_partitions(partition, new_partition))
     {
         partition = new_partition;
         new_partition = make_partition(partition, dfa_ptr->get_alphabet());
     }
-    // PARTITION IS THE FINAL PARTITION, CHOOSE A REPRESENTATIVE FOR EACH GROUP AND REMOVE DEAD STATES.
     std::shared_ptr<dfa> min_dfa(new dfa());
     min_dfa->set_alphabet(dfa_ptr->get_alphabet());
     for (auto group : partition)
     {
-        // Choose representative and modify transitions.
         std::shared_ptr<dfa_state> grp_representative = *(group.begin());
-//        if (dead_state(grp_representative))
-//        {
-//            continue;
-//        }
         std::map<std::string, std::shared_ptr<dfa_state>> new_transitions;
         for (auto trans : grp_representative->get_transitions())
         {
@@ -448,10 +412,6 @@ std::shared_ptr<dfa> minimize(const std::shared_ptr<dfa> &dfa_ptr)
                 if (found_target_state)
                     break;
             }
-//            if (dead_state(target_state))
-//            {
-//                continue;
-//            }
             new_transitions[trans.first] = target_state;
         }
         grp_representative->set_transitions(new_transitions);
