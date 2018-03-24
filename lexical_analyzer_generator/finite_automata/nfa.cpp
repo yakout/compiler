@@ -123,13 +123,10 @@ void nfa::unify(std::shared_ptr<nfa> nfa2)
     std::shared_ptr<char_set> eps = build_epsilon_transition();
 
     std::shared_ptr<nfa_state> s0 = std::make_shared<nfa_state>(nfa_state (0, START, eps));
-//    visualize();
     renamify(1);
-//    visualize();
     nfa2->renamify(max_id + 1);
-//    nfa2->visualize();
     std::shared_ptr<nfa_state> sf = std::make_shared<nfa_state>(
-      nfa_state (nfa2->acceptance_states.front()->get_id() + 1, ACCEPTANCE, eps));
+      nfa_state (nfa2->max_id + 1, ACCEPTANCE, eps));
 
     std::shared_ptr<nfa_state> nfa2_s0 = std::static_pointer_cast<nfa_state>(nfa2->get_start_state());
     std::shared_ptr<nfa_state> nfa1_s0 = std::static_pointer_cast<nfa_state>(start_state);
