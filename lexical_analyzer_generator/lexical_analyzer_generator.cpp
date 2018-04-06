@@ -98,8 +98,10 @@ std::shared_ptr<nfa> build_punctations_nfa (std::string full_line, int order)
 std::shared_ptr<nfa> build_keywords_nfa (std::string line, int order)
 {
   if (line[line.length() - 1] != KEYWORD_CLAUSE_END
-      || line.length() <= 2);
+      || line.length() <= 2)
+  {
       //// TODO : Error
+  }
   std::shared_ptr<nfa> keywords_nfa;
   bool first_nfa = true;
   std::istringstream iss(trim(line.substr(1,line.length() - 2)));
@@ -232,5 +234,6 @@ std::shared_ptr<nfa> lexical_analyzer_generator::get_lexical_analyzer_file (std:
             s->set_type(ACCEPTANCE);
         }
     }
+    // combined_nfa->visualize();
     return combined_nfa;
 }

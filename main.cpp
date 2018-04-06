@@ -103,7 +103,7 @@ void lex_generate_tokenize (char *rules_file, char *code_file
     auto combined_nfa = gen.get_lexical_analyzer_file(std::string(rules_file));
     auto dfa_ptr = convert_nfa_dfa(combined_nfa);
     auto min_dfa = minimize(dfa_ptr);
-    min_dfa->visualize();
+    // min_dfa->visualize();
     draw_trans_table(min_dfa);
     char * transition_table_file = "transition_table.txt";
     std::shared_ptr<lexical_analyzer> lex = std::make_shared<lexical_analyzer>(
@@ -139,7 +139,7 @@ void lex_tokenize (char *transition_table_file, char *code_file
 //                        << vec[i]->get_type() << " State Token Class: " << vec[i]->get_token_class () << std::endl;
 //     }
 
-    lex->get_dfa ()->visualize ();
+    // lex->get_dfa ()->visualize ();
     token t;
     while (lex->get_next_token (t)) {
         token_vec.push_back (token (t));
