@@ -3,9 +3,37 @@ Yet Another Dummy Java Compiler (YADJC)
 
 ![image](images/JavaArchitecture1.jpg)
 
-# Table of Contents
- // TODO
+#### Build
+```bash
+$ mkdir build
+$ cd build
+$ cmake ..
+```
+#### Run the tests
+```bash
+$ make test
+# or 
+$ ctest
+```
+#### Run
+```bash
+# builds lexical analyzer generator as a transition table file from <rules-file> 
+# and use it in tokenizing the input source code file.
+$ ./compiler --lex -g <rules-file> <source-code-file>
 
+# Performs lexical analysis only on the given source code using the given rules file.
+$ ./compiler --lex <transition-table-file> <source-code-file> 
+
+# For help
+$ ./compiler --help
+```
+
+#### Table of Contents
+* [Introduction](#introduction)
+* [Specifications](#specifications)
+* [Example](#example)
+* [Assumptions](#assumptions)
+* [Notes](#notes)
 
 ## Introduction
 The lexical analyzer generator automatically construct a lexical analyzer from a regular expression description of a set of tokens. The tool construct a nondeterministic finite automata (NFA) for the given regular expressions, combine these NFAs together with a new starting state, convert the resulting NFA to a DFA, minimize it and emit the transition table for the reduced DFA together with a lexical analyzer program that simulates the resulting DFA machine.
@@ -36,7 +64,6 @@ The generated lexical analyzer will be integrated with a generated parser which 
 * \L represents Lambda symbol.
 * The following symbols are used in regular definitions and regular expressions with the meaning discussed in class: \- \| \+ \* \( \)
 * Any reserved symbol needed to be used within the language, is preceded by an escape backslash character.
-
 
 ## Example
 ### Input file example for the lexical rules
@@ -198,6 +225,5 @@ State | ! | (  | ) |  \*| +| ,| -| .| /| ;| <| =| >| E| a| b| e| f| h| i| l| n| 
 * In the rules file the negative sign should be escaped (e.g addop = \\+ | \\-)
 That’s because how we handle the reserved keywords, for us the dash ‘-’ is reserved keyword to specify ranges like A-Z, and any keywords symbol should be escaped like +, *, = ..
 
-
-## Last Notes 
+## Notes 
 * The visualization tool used is [Graphviz](http://graphviz.org/)
