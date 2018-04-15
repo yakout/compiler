@@ -39,3 +39,42 @@ set(SOURCE_FILES main.cpp
 
 
 add_executable(compiler ${SOURCE_FILES} ${HEADER_FILES})
+
+
+# ------------------------------------------------------------------------------
+# Valgrind
+# ------------------------------------------------------------------------------
+
+set(MEMORYCHECK_COMMAND_OPTIONS "${MEMORYCHECK_COMMAND_OPTIONS} --leak-check=full")
+set(MEMORYCHECK_COMMAND_OPTIONS "${MEMORYCHECK_COMMAND_OPTIONS} --track-fds=yes")
+set(MEMORYCHECK_COMMAND_OPTIONS "${MEMORYCHECK_COMMAND_OPTIONS} --trace-children=yes")
+set(MEMORYCHECK_COMMAND_OPTIONS "${MEMORYCHECK_COMMAND_OPTIONS} --error-exitcode=1")
+
+
+# ------------------------------------------------------------------------------
+# Tests
+# ------------------------------------------------------------------------------
+
+include (CTest)
+
+enable_testing()
+
+# add_test( test_transition_table_run compiler --lex -g ${PROJECT_SOURCE_DIR}/tests/rules.txt ${PROJECT_SOURCE_DIR}/tests/test_program.txt)
+# add_test( test_transition_table_compare ${CMAKE_COMMAND} -E compare_files ${PROJECT_SOURCE_DIR}/build/transition_table.txt ${PROJECT_SOURCE_DIR}/tests/transition_table.txt)
+
+macro(do_test test_num)
+        add_test( test_${test_num}_run compiler --lex ${PROJECT_SOURCE_DIR}/tests/transition_table.txt ${PROJECT_SOURCE_DIR}/tests/test_${test_num}/test_${test_num}.txt)
+
+        add_test( test_${test_num}_compare_token_file ${CMAKE_COMMAND} -E compare_files ${PROJECT_SOURCE_DIR}/build/token-file.txt ${PROJECT_SOURCE_DIR}/tests/test_${test_num}/token-file.txt)
+
+        add_test( test_${test_num}_compare_symbol_table ${CMAKE_COMMAND} -E compare_files ${PROJECT_SOURCE_DIR}/build/symbol-table.txt ${PROJECT_SOURCE_DIR}/tests/test_${test_num}/symbol-table.txt)
+
+        add_test( test_${test_num}_compare_log ${CMAKE_COMMAND} -E compare_files ${PROJECT_SOURCE_DIR}/build/compiler.log ${PROJECT_SOURCE_DIR}/tests/test_${test_num}/compiler.log)
+endmacro(do_test)
+
+do_test(1)
+do_test(2)
+do_test(3)
+do_test(4)
+do_test(5)
+

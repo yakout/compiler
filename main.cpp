@@ -136,7 +136,7 @@ void lex_tokenize (char *transition_table_file, char *code_file
 //                        << vec[i]->get_type() << " State Token Class: " << vec[i]->get_token_class () << std::endl;
 //     }
 
-    lex->get_dfa ()->visualize ();
+    // lex->get_dfa ()->visualize ();
     token t;
     while (lex->get_next_token (t)) {
         token_vec.push_back (token (t));
