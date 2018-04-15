@@ -1,6 +1,5 @@
 #include "lexical_analyzer/lexical_analyzer.h"
 #include "lexical_analyzer_generator/lexical_analyzer_generator.h"
-#include "tests/lexical_analyzer_generator/dfa_construction.h"
 #include <iostream>
 #include <string.h>
 #include <fstream>
@@ -80,8 +79,6 @@ void help () {
         << "\t \" ./compiler --lex -g <rules-file> <source-code-file>. \"\n"
         << "\t \" ./compiler --lex <transition-table-file> <source-code-file>. \"\n\n"
         << "NOTE: This option will write its output in default files in the current directory.\n\n";
-    
-    return;
 }
 
 bool file_exists (char *file_name) {
@@ -101,10 +98,10 @@ void lex_generate_tokenize (char *rules_file, char *code_file
 
     lexical_analyzer_generator gen = lexical_analyzer_generator();
     auto combined_nfa = gen.get_lexical_analyzer_file(std::string(rules_file));
-    auto dfa_ptr = convert_nfa_dfa(combined_nfa);
-    auto min_dfa = minimize(dfa_ptr);
-    min_dfa->visualize();
-    draw_trans_table(min_dfa);
+    std::shared_ptr<dfa> dfa_ptr(new dfa(combined_nfa));
+    auto minimized_dfa = dfa_ptr->minimize();
+    minimized_dfa->visualize();
+    minimized_dfa->draw_trans_table();
     char * transition_table_file = "transition_table.txt";
     std::shared_ptr<lexical_analyzer> lex = std::make_shared<lexical_analyzer>(
                                 lexical_analyzer (transition_table_file, code_file));

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.5)
 project(compiler)
 
 set(CMAKE_CXX_STANDARD 11)
@@ -17,7 +17,7 @@ set(HEADER_FILES
         lexical_analyzer_generator/lexical_analyzer_generator.h
         lexical_analyzer_generator/nfa_creator.h
         lexical_analyzer/lexical_analyzer.h
-        tests/lexical_analyzer_generator/dfa_construction.h
+        lexical_analyzer_generator/finite_automata/util/util.h
         )
 
 set(SOURCE_FILES main.cpp
@@ -33,10 +33,9 @@ set(SOURCE_FILES main.cpp
         lexical_analyzer_generator/nfa_tools/regex_processor.cpp
         lexical_analyzer_generator/lexical_analyzer_generator.cpp
         lexical_analyzer_generator/nfa_creator.cpp
-        tests/lexical_analyzer_generator/dfa_construction.cpp
         lexical_analyzer/lexical_analyzer.cpp
         tests/lexical_analyzer/test.cpp
-        )
+        lexical_analyzer_generator/finite_automata/util/util.cpp)
 
 
 add_executable(compiler ${SOURCE_FILES} ${HEADER_FILES})

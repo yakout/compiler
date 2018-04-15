@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <array>
 #include <utility>
+#include <set>
 #include "finite_automata.h"
 #include "nfa_state.h"
 
