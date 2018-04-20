@@ -10,8 +10,9 @@ Yet Another Dummy Java Compiler (YADJC)
 $ mkdir build
 $ cd build
 $ cmake ..
+$ make
 ```
-#### Run the tests
+#### Run the tests locally
 ```bash
 $ make test
 # or 
