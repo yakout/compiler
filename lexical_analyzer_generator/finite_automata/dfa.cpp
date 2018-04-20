@@ -153,6 +153,8 @@ void dfa::dfs(std::shared_ptr<state> curr_state, std::vector<bool> &visited,
             if (label.empty()) {
                 label = "ϵ";
             }
+            if (label == "\\")
+                label += '\\';
             *vis << curr_state->get_id() << " -> " << next_state->get_id() << " [ label = \"" << label << "\" ];\n";
         }
         if (!visited[next_state->get_id()]) {

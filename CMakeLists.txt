@@ -3,6 +3,10 @@ project(compiler)
 
 set(CMAKE_CXX_STANDARD 11)
 
+# ------------------------------------------------------------------------------
+# Build
+# ------------------------------------------------------------------------------
+
 set(HEADER_FILES
         lexical_analyzer_generator/finite_automata/finite_automata.h
         lexical_analyzer_generator/finite_automata/state.h
@@ -15,7 +19,6 @@ set(HEADER_FILES
         lexical_analyzer_generator/nfa_tools/lexical_rules.h
         lexical_analyzer_generator/nfa_tools/regex_processor.h
         lexical_analyzer_generator/lexical_analyzer_generator.h
-        lexical_analyzer_generator/nfa_creator.h
         lexical_analyzer/lexical_analyzer.h
         lexical_analyzer_generator/finite_automata/util/util.h
         )
@@ -32,7 +35,6 @@ set(SOURCE_FILES main.cpp
         lexical_analyzer_generator/nfa_tools/lexical_rules.cpp
         lexical_analyzer_generator/nfa_tools/regex_processor.cpp
         lexical_analyzer_generator/lexical_analyzer_generator.cpp
-        lexical_analyzer_generator/nfa_creator.cpp
         lexical_analyzer/lexical_analyzer.cpp
         tests/lexical_analyzer/test.cpp
         lexical_analyzer_generator/finite_automata/util/util.cpp)
@@ -59,11 +61,11 @@ include (CTest)
 
 enable_testing()
 
-# add_test( test_transition_table_run compiler --lex -g ${PROJECT_SOURCE_DIR}/tests/rules.txt ${PROJECT_SOURCE_DIR}/tests/test_program.txt)
-# add_test( test_transition_table_compare ${CMAKE_COMMAND} -E compare_files ${PROJECT_SOURCE_DIR}/build/transition_table.txt ${PROJECT_SOURCE_DIR}/tests/transition_table.txt)
+add_test( test_0_run compiler --lex -g ${PROJECT_SOURCE_DIR}/tests/rules.txt ${PROJECT_SOURCE_DIR}/tests/test_program.txt)
+add_test( test_0 ${CMAKE_COMMAND} -E compare_files ${PROJECT_SOURCE_DIR}/build/token-file.txt ${PROJECT_SOURCE_DIR}/tests/token-file.txt)
 
 macro(do_test test_num)
-        add_test( test_${test_num}_run compiler --lex ${PROJECT_SOURCE_DIR}/tests/transition_table.txt ${PROJECT_SOURCE_DIR}/tests/test_${test_num}/test_${test_num}.txt)
+        add_test( test_${test_num}_run compiler --lex ${PROJECT_SOURCE_DIR}/build/transition_table.txt ${PROJECT_SOURCE_DIR}/tests/test_${test_num}/test_${test_num}.txt)
 
         add_test( test_${test_num}_compare_token_file ${CMAKE_COMMAND} -E compare_files ${PROJECT_SOURCE_DIR}/build/token-file.txt ${PROJECT_SOURCE_DIR}/tests/test_${test_num}/token-file.txt)
 
@@ -72,9 +74,8 @@ macro(do_test test_num)
         add_test( test_${test_num}_compare_log ${CMAKE_COMMAND} -E compare_files ${PROJECT_SOURCE_DIR}/build/compiler.log ${PROJECT_SOURCE_DIR}/tests/test_${test_num}/compiler.log)
 endmacro(do_test)
 
-do_test(1)
-do_test(2)
-do_test(3)
-do_test(4)
-do_test(5)
-
+ do_test(1)
+ do_test(2)
+ do_test(3)
+ do_test(4)
+ do_test(5)
