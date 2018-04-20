@@ -1,0 +1,53 @@
+Match State         Lexeme                                  Token Class                   Position
+-----------         ------                                  -----------                   --------
+[MATCHED]           int                                     int                           3
+[UNMATCHED]         #                                                                     5
+[UNMATCHED]         _                                                                     6
+[MATCHED]           sum                                     id                            9
+[MATCHED]           ,                                       ,                             11
+[MATCHED]           111                                     num                           15
+[MATCHED]           count                                   id                            20
+[MATCHED]           ,                                       ,                             22
+[MATCHED]           pass                                    id                            27
+[MATCHED]           ,                                       ,                             29
+[MATCHED]           mnt                                     id                            33
+[MATCHED]           ;                                       ;                             34
+[MATCHED]           while                                   while                         40
+[MATCHED]           (                                       (                             42
+[MATCHED]           pass                                    id                            46
+[UNMATCHED]         !                                                                     48
+[UNMATCHED]         @                                                                     49
+[MATCHED]           10                                      num                           52
+[MATCHED]           )                                       )                             53
+[MATCHED]           {                                       {                             55
+[MATCHED]           while                                   while                         65
+[MATCHED]           (                                       (                             67
+[UNMATCHED]         !                                                                     69
+[UNMATCHED]         #                                                                     70
+[UNMATCHED]         @                                                                     71
+[MATCHED]           abc                                     id                            74
+[UNMATCHED]         _                                                                     75
+[MATCHED]           1                                       num                           76
+[UNMATCHED]         !                                                                     77
+[MATCHED]           -                                       addop                         78
+[MATCHED]           -                                       addop                         79
+[MATCHED]           =                                       assign                        80
+[MATCHED]           )                                       )                             82
+[MATCHED]           {                                       {                             84
+[MATCHED]           int                                     int                           96
+[MATCHED]           boolean                                 boolean                       104
+[MATCHED]           float                                   float                         110
+[MATCHED]           gloat                                   id                            116
+[MATCHED]           r                                       id                            118
+[MATCHED]           -                                       addop                         119
+[MATCHED]           >                                       relop                         120
+[MATCHED]           d                                       id                            121
+[MATCHED]           <                                       relop                         122
+[UNMATCHED]         \                                                                     123
+[MATCHED]           z                                       id                            124
+[MATCHED]           ;                                       ;                             125
+[MATCHED]           ;                                       ;                             126
+[MATCHED]           ;                                       ;                             127
+[MATCHED]           ;                                       ;                             128
+[MATCHED]           }                                       }                             134
+[MATCHED]           }                                       }                             136

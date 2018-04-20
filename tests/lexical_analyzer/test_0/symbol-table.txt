@@ -1,0 +1,17 @@
+int                                     int
+sum                                     id
+,                                       ,
+count                                   id
+pass                                    id
+mnt                                     id
+;                                       ;
+while                                   while
+(                                       (
+!=                                      relop
+10                                      num
+)                                       )
+{                                       {
+=                                       assign
++                                       addop
+1                                       num
+}                                       }

@@ -1,13 +1,13 @@
-cmake_minimum_required(VERSION 3.5)
-project(compiler)
+cmake_minimum_required (VERSION 3.5)
+project (compiler)
 
-set(CMAKE_CXX_STANDARD 11)
+set (CMAKE_CXX_STANDARD 11)
 
 # ------------------------------------------------------------------------------
 # Build
 # ------------------------------------------------------------------------------
 
-set(HEADER_FILES
+set (HEADER_FILES
         lexical_analyzer_generator/finite_automata/finite_automata.h
         lexical_analyzer_generator/finite_automata/state.h
         lexical_analyzer_generator/finite_automata/nfa.h
@@ -20,10 +20,9 @@ set(HEADER_FILES
         lexical_analyzer_generator/nfa_tools/regex_processor.h
         lexical_analyzer_generator/lexical_analyzer_generator.h
         lexical_analyzer/lexical_analyzer.h
-        lexical_analyzer_generator/finite_automata/util/util.h
-        )
+        lexical_analyzer_generator/finite_automata/util/util.h)
 
-set(SOURCE_FILES main.cpp
+set (SOURCE_FILES main.cpp
         lexical_analyzer_generator/finite_automata/finite_automata.cpp
         lexical_analyzer_generator/finite_automata/state.cpp
         lexical_analyzer_generator/finite_automata/nfa_state.cpp
@@ -36,20 +35,18 @@ set(SOURCE_FILES main.cpp
         lexical_analyzer_generator/nfa_tools/regex_processor.cpp
         lexical_analyzer_generator/lexical_analyzer_generator.cpp
         lexical_analyzer/lexical_analyzer.cpp
-        tests/lexical_analyzer/test.cpp
         lexical_analyzer_generator/finite_automata/util/util.cpp)
 
 
-add_executable(compiler ${SOURCE_FILES} ${HEADER_FILES})
-
+add_executable (compiler ${SOURCE_FILES} ${HEADER_FILES})
 
 # ------------------------------------------------------------------------------
 # Valgrind
 # ------------------------------------------------------------------------------
 
-set(MEMORYCHECK_COMMAND_OPTIONS "${MEMORYCHECK_COMMAND_OPTIONS} --leak-check=full")
-set(MEMORYCHECK_COMMAND_OPTIONS "${MEMORYCHECK_COMMAND_OPTIONS} --trace-children=yes")
-set(MEMORYCHECK_COMMAND_OPTIONS "${MEMORYCHECK_COMMAND_OPTIONS} --error-exitcode=1")
+set (MEMORYCHECK_COMMAND_OPTIONS "${MEMORYCHECK_COMMAND_OPTIONS} --leak-check=full")
+set (MEMORYCHECK_COMMAND_OPTIONS "${MEMORYCHECK_COMMAND_OPTIONS} --trace-children=yes")
+set (MEMORYCHECK_COMMAND_OPTIONS "${MEMORYCHECK_COMMAND_OPTIONS} --error-exitcode=1")
 
 
 # ------------------------------------------------------------------------------
@@ -58,23 +55,45 @@ set(MEMORYCHECK_COMMAND_OPTIONS "${MEMORYCHECK_COMMAND_OPTIONS} --error-exitcode
 
 include (CTest)
 
-enable_testing()
+enable_testing ()
 
-add_test( test_0_run compiler --lex -g ${PROJECT_SOURCE_DIR}/tests/rules.txt ${PROJECT_SOURCE_DIR}/tests/test_program.txt)
-add_test( test_0 ${CMAKE_COMMAND} -E compare_files ${PROJECT_SOURCE_DIR}/build/token-file.txt ${PROJECT_SOURCE_DIR}/tests/token-file.txt)
+add_test (lex_test_0_run compiler --lex -g 
+                ${PROJECT_SOURCE_DIR}/tests/lexical_analyzer/test_0/rules.txt 
+                ${PROJECT_SOURCE_DIR}/tests/lexical_analyzer/test_0/test_0.txt)
 
-macro(do_test test_num)
-        add_test( test_${test_num}_run compiler --lex ${PROJECT_SOURCE_DIR}/build/transition_table.txt ${PROJECT_SOURCE_DIR}/tests/test_${test_num}/test_${test_num}.txt)
+add_test (lex_test_0_compare_token_file ${CMAKE_COMMAND} -E compare_files 
+                ${PROJECT_SOURCE_DIR}/build/token-file.txt 
+                ${PROJECT_SOURCE_DIR}/tests/lexical_analyzer/test_0/token-file.txt)
+                
+add_test (lex_test_0_compare_symbol_table ${CMAKE_COMMAND} -E compare_files 
+                ${PROJECT_SOURCE_DIR}/build/symbol-table.txt 
+                ${PROJECT_SOURCE_DIR}/tests/lexical_analyzer/test_0/symbol-table.txt)
 
-        add_test( test_${test_num}_compare_token_file ${CMAKE_COMMAND} -E compare_files ${PROJECT_SOURCE_DIR}/build/token-file.txt ${PROJECT_SOURCE_DIR}/tests/test_${test_num}/token-file.txt)
+add_test (lex_test_0_compare_log ${CMAKE_COMMAND} -E compare_files 
+                ${PROJECT_SOURCE_DIR}/build/compiler.log 
+                ${PROJECT_SOURCE_DIR}/tests/lexical_analyzer/test_0/compiler.log)
 
-        add_test( test_${test_num}_compare_symbol_table ${CMAKE_COMMAND} -E compare_files ${PROJECT_SOURCE_DIR}/build/symbol-table.txt ${PROJECT_SOURCE_DIR}/tests/test_${test_num}/symbol-table.txt)
+macro (do_test test_num)
+        add_test (lex_test_${test_num}_run compiler --lex 
+                ${PROJECT_SOURCE_DIR}/build/transition_table.txt 
+                ${PROJECT_SOURCE_DIR}/tests/lexical_analyzer/test_${test_num}/test_${test_num}.txt)
 
-        add_test( test_${test_num}_compare_log ${CMAKE_COMMAND} -E compare_files ${PROJECT_SOURCE_DIR}/build/compiler.log ${PROJECT_SOURCE_DIR}/tests/test_${test_num}/compiler.log)
-endmacro(do_test)
+        add_test (lex_test_${test_num}_compare_token_file ${CMAKE_COMMAND} 
+                -E compare_files ${PROJECT_SOURCE_DIR}/build/token-file.txt 
+                ${PROJECT_SOURCE_DIR}/tests/lexical_analyzer/test_${test_num}/token-file.txt)
+
+        add_test (lex_test_${test_num}_compare_symbol_table ${CMAKE_COMMAND} 
+                -E compare_files ${PROJECT_SOURCE_DIR}/build/symbol-table.txt 
+                ${PROJECT_SOURCE_DIR}/tests/lexical_analyzer/test_${test_num}/symbol-table.txt)
+
+        add_test (lex_test_${test_num}_compare_log ${CMAKE_COMMAND} 
+                -E compare_files ${PROJECT_SOURCE_DIR}/build/compiler.log 
+                ${PROJECT_SOURCE_DIR}/tests/lexical_analyzer/test_${test_num}/compiler.log)
+endmacro (do_test)
 
  do_test(1)
  do_test(2)
  do_test(3)
  do_test(4)
  do_test(5)
+ do_test(6)

@@ -2,6 +2,7 @@
 #include "lexical_analyzer_generator/lexical_analyzer_generator.h"
 #include <iostream>
 #include <string.h>
+#include <iomanip>
 #include <fstream>
 #include <memory>
 
@@ -100,7 +101,6 @@ void lex_generate_tokenize (char *rules_file, char *code_file
     auto combined_nfa = gen.get_lexical_analyzer_file(std::string(rules_file));
     std::shared_ptr<dfa> dfa_ptr(new dfa(combined_nfa));
     auto minimized_dfa = dfa_ptr->minimize();
-    // minimized_dfa->visualize();
     minimized_dfa->draw_trans_table();
     char * transition_table_file = "transition_table.txt";
     std::shared_ptr<lexical_analyzer> lex = std::make_shared<lexical_analyzer>(
@@ -123,20 +123,6 @@ void lex_tokenize (char *transition_table_file, char *code_file
 
     std::shared_ptr<lexical_analyzer> lex = std::make_shared<lexical_analyzer>(
                                     lexical_analyzer (transition_table_file, code_file));
-
-//    std::vector<std::shared_ptr<dfa_state>> vec;
-//    vec = lex->get_dfa ()->get_dfa_states ();
-
-//    std::cout << "Number of states: " << vec.size () << std::endl;
-
-//    std::cout << "--------------------------" << std::endl;
-
-//     for (int i=0 ; i < vec.size () ; i++) {
-//        std::cout << "State ID: " <<vec[i]->get_id() << " State Type: "
-//                        << vec[i]->get_type() << " State Token Class: " << vec[i]->get_token_class () << std::endl;
-//     }
-
-    // lex->get_dfa ()->visualize ();
     token t;
     while (lex->get_next_token (t)) {
         token_vec.push_back (token (t));
@@ -144,15 +130,26 @@ void lex_tokenize (char *transition_table_file, char *code_file
 }
 
 void print_output (std::vector<token> &token_vec) {
+    std::map<std::string, bool> sym_tab_map;
+    log_file << std::left << std::setw (20) << "Match State" <<
+        std::left << std::setw (40) << "Lexeme" << std::left << std::setw (30) 
+            << "Token Class" << "Position" << '\n';
+    log_file << std::left << std::setw (20) << "-----------" <<
+        std::left << std::setw (40) << "------" << std::left << std::setw (30) 
+            << "-----------" << "--------" << '\n';
     for (auto t : token_vec) {
         if (t.token_class.empty ()) {
-            log_file << "[UNMATCHED]" << '\t' <<
-                t.lexeme << '\t' << t.str_pos << '\n';
+            log_file << std::left << std::setw(20) << "[UNMATCHED]" <<
+                std::left << std::setw(40) << t.lexeme << std::setw (30) 
+                << t.token_class << t.str_pos << '\n';
         } else {
-            log_file << "[MATCHED]" << '\t' <<
-                t.lexeme << '\t' << t.token_class << '\t'
-                    << t.str_pos << '\n';
-            sym_tab_file << t.lexeme << '\t' << t.token_class << '\n';
+            log_file << std::left << std::setw(20) << "[MATCHED]" <<
+                std::left << std::setw(40) << t.lexeme << std::setw (30) 
+                << t.token_class << t.str_pos << '\n';
+            if (!sym_tab_map[t.lexeme]) {
+                sym_tab_file << std::left << std::setw(40) << t.lexeme << t.token_class << '\n';
+                sym_tab_map[t.lexeme] = true;
+            }
             token_file << t.token_class << '\n';
         }
     }
