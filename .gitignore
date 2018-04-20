@@ -10,7 +10,7 @@ cmake-build-debug
 
 #compiler output files
 symbol-table.txt
-token-file.txt
+./token-file.txt
 transition_table.txt
 test_program.txt
 
