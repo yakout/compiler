@@ -3,6 +3,7 @@ project(compiler)
 
 set(CMAKE_CXX_STANDARD 11)
 
+
 # ------------------------------------------------------------------------------
 # Build
 # ------------------------------------------------------------------------------
@@ -23,7 +24,7 @@ set(HEADER_FILES
         lexical_analyzer_generator/finite_automata/util/util.h
         )
 
-set(SOURCE_FILES main.cpp
+set(SOURCE_FILES
         lexical_analyzer_generator/finite_automata/finite_automata.cpp
         lexical_analyzer_generator/finite_automata/state.cpp
         lexical_analyzer_generator/finite_automata/nfa_state.cpp
@@ -36,11 +37,11 @@ set(SOURCE_FILES main.cpp
         lexical_analyzer_generator/nfa_tools/regex_processor.cpp
         lexical_analyzer_generator/lexical_analyzer_generator.cpp
         lexical_analyzer/lexical_analyzer.cpp
-        tests/lexical_analyzer/test.cpp
-        lexical_analyzer_generator/finite_automata/util/util.cpp)
+        lexical_analyzer_generator/finite_automata/util/util.cpp
+        )
 
-
-add_executable(compiler ${SOURCE_FILES} ${HEADER_FILES})
+add_library(lexical STATIC ${SOURCE_FILES})
+add_executable(compiler main.cpp ${SOURCE_FILES} ${HEADER_FILES})
 
 
 # ------------------------------------------------------------------------------
@@ -61,6 +62,8 @@ include (CTest)
 
 enable_testing()
 
+# Regression Tests
+
 add_test( test_0_run compiler --lex -g ${PROJECT_SOURCE_DIR}/tests/rules.txt ${PROJECT_SOURCE_DIR}/tests/test_program.txt)
 add_test( test_0 ${CMAKE_COMMAND} -E compare_files ${PROJECT_SOURCE_DIR}/build/token-file.txt ${PROJECT_SOURCE_DIR}/tests/token-file.txt)
 
@@ -79,3 +82,21 @@ endmacro(do_test)
  do_test(3)
  do_test(4)
  do_test(5)
+
+# Unit Tests
+
+add_library(Catch INTERFACE)
+target_include_directories(Catch INTERFACE ${PROJECT_SOURCE_DIR}/tests/lib/)
+
+add_library(test_catch STATIC ${PROJECT_SOURCE_DIR}/tests/lexical/test.cpp)
+target_link_libraries(test_catch Catch)
+
+macro(do_test test_num)
+    add_executable(test_${test_num} ${PROJECT_SOURCE_DIR}/tests/lexical/test_${test_num}.cpp)
+    target_link_libraries(test_${test_num} test_catch)
+    target_link_libraries(test_${test_num} lexical)
+
+    add_test(test_${test_num} test_${test_num})
+endmacro(do_test)
+
+do_test(1)

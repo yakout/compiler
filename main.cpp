@@ -100,7 +100,7 @@ void lex_generate_tokenize (char *rules_file, char *code_file
     auto combined_nfa = gen.get_lexical_analyzer_file(std::string(rules_file));
     std::shared_ptr<dfa> dfa_ptr(new dfa(combined_nfa));
     auto minimized_dfa = dfa_ptr->minimize();
-    minimized_dfa->visualize();
+    // minimized_dfa->visualize();
     minimized_dfa->draw_trans_table();
     char * transition_table_file = "transition_table.txt";
     std::shared_ptr<lexical_analyzer> lex = std::make_shared<lexical_analyzer>(
