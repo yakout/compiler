@@ -8,6 +8,8 @@ set(CMAKE_CXX_STANDARD 11)
 # Build
 # ------------------------------------------------------------------------------
 
+add_subdirectory(syntax_analyzer)
+
 set(HEADER_FILES
         lexical_analyzer_generator/finite_automata/finite_automata.h
         lexical_analyzer_generator/finite_automata/state.h
@@ -40,8 +42,10 @@ set(SOURCE_FILES
         lexical_analyzer_generator/finite_automata/util/util.cpp
         )
 
-add_library(lexical STATIC ${SOURCE_FILES})
-add_executable(compiler main.cpp ${SOURCE_FILES} ${HEADER_FILES})
+add_library(lexical SHARED ${SOURCE_FILES} ${HEADER_FILES})
+add_executable(compiler main.cpp)
+target_link_libraries(compiler lexical syntax)
+
 
 
 # ------------------------------------------------------------------------------
