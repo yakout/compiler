@@ -99,7 +99,7 @@ macro(do_test test_num module)
     target_link_libraries(test_${test_num}_${module} test_catch)
     target_link_libraries(test_${test_num}_${module} ${module})
 
-    add_test(test_${test_num} test_${test_num})
+    add_test(test_${test_num}_${module} test_${test_num}_${module})
 endmacro(do_test)
 
 do_test(1 lexical)
