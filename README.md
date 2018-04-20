@@ -1,4 +1,6 @@
 # java-compiler
+[![Build Status](https://travis-ci.com/yakout/compiler.svg?token=8xdgMqps2fwk2PdRCgH7&branch=master)](https://travis-ci.com/yakout/compiler)
+
 Yet Another Dummy Java Compiler (YADJC)
 
 ![image](images/JavaArchitecture1.jpg)
