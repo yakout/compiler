@@ -3,8 +3,10 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 #include "cfg_production.h"
 #include "cfg.h"
+
 
 class cfg_production;
 class cfg;

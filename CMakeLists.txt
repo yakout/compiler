@@ -44,7 +44,7 @@ set(SOURCE_FILES
 
 add_library(lexical SHARED ${SOURCE_FILES} ${HEADER_FILES})
 add_executable(compiler main.cpp)
-target_link_libraries(compiler lexical syntax)
+target_link_libraries(compiler lexical)
 
 
 

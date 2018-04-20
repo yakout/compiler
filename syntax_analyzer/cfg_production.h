@@ -2,6 +2,7 @@
 #define COMPILER_CFG_PRODUCTION_H
 
 #include <vector>
+#include <memory>
 #include "cfg_symbol.h"
 #include "cfg_rule.h"
 

@@ -3,6 +3,7 @@
 
 #include "cfg_production.h"
 #include <string>
+#include <memory>
 
 enum cfg_symbol_type
 {
