@@ -9,7 +9,8 @@ enum cfg_symbol_type
 {
     TERMINAL,
     NON_TERMINAL,
-    END_MARKER
+    END_MARKER,
+    SYNCH
 };
 
 class cfg_production;
