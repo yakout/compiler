@@ -3,6 +3,7 @@ project (compiler)
 
 set (CMAKE_CXX_STANDARD 11)
 
+
 # ------------------------------------------------------------------------------
 # Build
 # ------------------------------------------------------------------------------
@@ -22,7 +23,7 @@ set (HEADER_FILES
         lexical_analyzer/lexical_analyzer.h
         lexical_analyzer_generator/finite_automata/util/util.h)
 
-set (SOURCE_FILES main.cpp
+set(SOURCE_FILES
         lexical_analyzer_generator/finite_automata/finite_automata.cpp
         lexical_analyzer_generator/finite_automata/state.cpp
         lexical_analyzer_generator/finite_automata/nfa_state.cpp
@@ -37,8 +38,9 @@ set (SOURCE_FILES main.cpp
         lexical_analyzer/lexical_analyzer.cpp
         lexical_analyzer_generator/finite_automata/util/util.cpp)
 
+add_library(lexical STATIC ${SOURCE_FILES})
+add_executable(compiler main.cpp ${SOURCE_FILES} ${HEADER_FILES})
 
-add_executable (compiler ${SOURCE_FILES} ${HEADER_FILES})
 
 # ------------------------------------------------------------------------------
 # Valgrind
@@ -56,6 +58,8 @@ set (MEMORYCHECK_COMMAND_OPTIONS "${MEMORYCHECK_COMMAND_OPTIONS} --error-exitcod
 include (CTest)
 
 enable_testing ()
+
+# Regression Tests
 
 add_test (lex_test_0_run compiler --lex -g 
                 ${PROJECT_SOURCE_DIR}/tests/lexical_analyzer/test_0/rules.txt 
@@ -97,3 +101,22 @@ endmacro (do_test)
  do_test(4)
  do_test(5)
  do_test(6)
+
+
+# Unit Tests
+
+add_library(Catch INTERFACE)
+target_include_directories(Catch INTERFACE ${PROJECT_SOURCE_DIR}/tests/lib/)
+
+add_library(test_catch STATIC ${PROJECT_SOURCE_DIR}/tests/lexical/test.cpp)
+target_link_libraries(test_catch Catch)
+
+macro(do_test test_num)
+    add_executable(test_${test_num} ${PROJECT_SOURCE_DIR}/tests/lexical/test_${test_num}.cpp)
+    target_link_libraries(test_${test_num} test_catch)
+    target_link_libraries(test_${test_num} lexical)
+
+    add_test(test_${test_num} test_${test_num})
+endmacro(do_test)
+
+do_test(1)

@@ -1,0 +1,7 @@
+int #_sum , 111count , pass , mnt;
+while (pass !@ 10)
+{
+    while ( !#@abc_1!--= ) {
+        int boolean float gloat r->d<\z;;;;
+    }
+}
