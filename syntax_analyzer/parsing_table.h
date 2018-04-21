@@ -3,6 +3,7 @@
 
 #include "cfg.h"
 #include "first_follow.h"
+#include "cfg_symbol.h"
 
 #include <map>
 
@@ -18,7 +19,7 @@ private:
     first_follow_sets first_follow;
     /** Parsing Table accessed by rule (NON_TERMINAL) and string (TOKEN) to
        get cfg_production used or error.*/
-    std::map <std::pair<cfg_rule, std::string>, cfg_production> table;
+    std::map <std::pair<std::shared_ptr<cfg_rule>, std::string>, cfg_production> table;
 
     /**
         This function builds the parsing table for the previously defined grammar.
@@ -37,6 +38,11 @@ public:
         Default Contructor for parsing table.
     */
     parsing_table ();
+    /**
+        This function returns the production corresponding to the given cfg_rule.
+        (NON_TERMINAL) and given string (TOKEN) from the parsing table.
+    */
+    cfg_production get_production (std::shared_ptr<cfg_rule>, std::string);
 };
 
 

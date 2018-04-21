@@ -1,11 +1,12 @@
 #ifndef COMPILER_CFG_RULE_H
 #define COMPILER_CFG_RULE_H
 
+#include "cfg_production.h"
+#include "cfg.h"
+
 #include <string>
 #include <vector>
 #include <memory>
-#include "cfg_production.h"
-#include "cfg.h"
 
 
 class cfg_production;
@@ -22,6 +23,8 @@ public:
     void eliminate_left_recursion();
     void left_factor();
 
+    /// getters
+    std::vector<cfg_production> get_productions();
 };
 
 #endif //COMPILER_CFG_RULE_H

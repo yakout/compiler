@@ -16,7 +16,11 @@ private:
     std::vector<cfg_symbol> prod;
     std::shared_ptr<cfg_rule> rule; // parent rule
 public:
+    /// getters
     std::string get_name();
+    std::vector<cfg_symbol> get_symbols();
+
+
 };
 
 #endif //COMPILER_CFG_PRODUCTION_H
