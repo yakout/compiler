@@ -7,6 +7,15 @@ parsing_table::parsing_table(cfg grammar, first_follow_sets first_follow) {
 
 parsing_table::parsing_table() {}
 
+bool parsing_table::fill_entries (cfg_production production, std::shared_ptr<cfg_rule> rule,
+                    std::vector<std::string> tokens)
+{
+    for (std::string token : tokens)
+    {
+        table[{rule, token}] = production;
+    }
+}
+
 
 void parsing_table::build() {
     for (cfg_rule rule_obj : grammar.get_rules())
@@ -14,34 +23,24 @@ void parsing_table::build() {
         std::shared_ptr<cfg_rule> rule = std::make_shared<cfg_rule> (rule_obj); // TODO :: WRONG
         first first_set = first_follow.get_first (*rule);
         follow follow_set = first_follow.get_follow (*rule);
-        bool eps_found = false;
-
+        bool eps_found = false; // to check whether this rule has epsilon production.
         for (cfg_production production : rule->get_productions())
         {
             std::vector<cfg_symbol> symbols = production.get_symbols();
             if (symbols.size() == 1 and symbols[0].get_type() == END_MARKER)
             {
                 eps_found = true;
-                for (std::string token : follow_set.get_follow_tokens())
-                {
-                    table[{rule, token}] = production;
-                }
+                fill_entries (production, rule, follow_set.get_follow_tokens());
             }
             else
             {
-              for (std::string token : first_set.get_first_tokens(production))
-              {
-                  table[{rule, token}] = production;
-              }
+              fill_entries (production, rule, first_set.get_first_tokens(production));
             }
         }
-        cfg_production sync_prod;
+        cfg_production sync_prod;     // TODO : initialize sync_prod correctly
         if (!eps_found)
         {
-            for (std::string token : follow_set.get_follow_tokens())
-            {
-                table[{rule, token}] = sync_prod;
-            }
+            fill_entries (sync_prod, rule, follow_set.get_follow_tokens());
         }
     }
 }
