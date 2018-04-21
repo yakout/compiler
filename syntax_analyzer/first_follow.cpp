@@ -1,11 +1,11 @@
 #include "first_follow.h"
 
-std::vector <char> first::get_first_tokens (cfg_production production)
+std::vector <std::string> first::get_first_tokens (cfg_production production)
 {
 
 }
 
-std::vector <char> follow::get_follow_tokens ()
+std::vector <std::string> follow::get_follow_tokens ()
 {
 
 }
