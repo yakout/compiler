@@ -46,7 +46,7 @@ matrix:
           - gcc-5
           - g++-5
     script:
-      - cmake -DCMAKE_CXX_COMPILER="g++-5" ..
+      - cmake -DCMAKE_CXX_COMPILER="g++-5" -DBUILD_REG_TEST=ON ..
       - make
       - make test
 

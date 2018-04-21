@@ -2,6 +2,8 @@ cmake_minimum_required (VERSION 3.5)
 
 set (CMAKE_CXX_STANDARD 11)
 
+option (BUILD_UNIT_TEST "Determines whether to build unit tests or not" OFF)
+
 # ------------------------------------------------------------------------------
 # Build
 # ------------------------------------------------------------------------------
@@ -44,20 +46,20 @@ add_library (liblex SHARED ${SOURCE_FILES} ${HEADER_FILES})
 
 # Unit Tests
 
-enable_testing ()
+if (BUILD_UNIT_TEST)
+    enable_testing ()
+    add_library (catch_lex INTERFACE)
+    target_include_directories (catch_lex INTERFACE ../tests/lib/)  
+    add_library (unit_test_catch_lexical STATIC ../tests/catch_main.cpp)
+    target_link_libraries (unit_test_catch_lexical catch_lex)
+    target_link_libraries (unit_test_catch_lexical liblex)
 
-add_library (catch_lex INTERFACE)
-target_include_directories (catch_lex INTERFACE ../tests/lib/)  
-add_library (unit_test_catch_lex STATIC ../tests/catch_main.cpp)
-target_link_libraries (unit_test_catch_lex catch_lex)
+    macro (do_test test_num)
+        add_executable (unit_test_${test_num}_lexical 
+            ../tests/lexical_analyzer/unit/test_${test_num}.cpp)
+        target_link_libraries (unit_test_${test_num}_lexical unit_test_catch_lexical)
+        add_test (unit_test_${test_num}_lexical_analyzer unit_test_${test_num}_lexical)
+    endmacro (do_test)
 
-macro (do_test test_num)
-    add_executable (unit_test_${test_num}_lexical 
-        ../tests/lexical_analyzer/unit/test_${test_num}.cpp)
-    target_link_libraries (unit_test_${test_num}_lexical unit_test_catch_lex)
-    target_link_libraries (unit_test_${test_num}_lexical liblex)
-    
-    add_test (unit_test_${test_num}_lexical_analyzer unit_test_${test_num}_lexical)
-endmacro (do_test)
-
-do_test (1)
+    do_test (1)
+endif (BUILD_UNIT_TEST)
