@@ -1,5 +1,6 @@
 # java-compiler
 [![Build Status](https://travis-ci.com/yakout/compiler.svg?token=8xdgMqps2fwk2PdRCgH7&branch=master)](https://travis-ci.com/yakout/compiler)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/a896f3db6bde4fdfaa30ed9e4d20cd1c)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=yakout/compiler&amp;utm_campaign=Badge_Grade)
 
 Yet Another Dummy Java Compiler (YADJC)
 
