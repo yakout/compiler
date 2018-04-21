@@ -1,5 +1,5 @@
-#include "../lib/catch.hpp"
-#include "../../lexical_analyzer_generator/nfa_tools/regex_processor.h"
+#include "../../lib/catch.hpp"
+#include "../../../lexical_analyzer/lexical_analyzer_generator/nfa_tools/regex_processor.h"
 
 TEST_CASE("test regex_processor")
 {

@@ -1,4 +1,4 @@
-#include "../lib/catch.hpp"
+#include "../../lib/catch.hpp"
 
 TEST_CASE("test FIRST")
 {

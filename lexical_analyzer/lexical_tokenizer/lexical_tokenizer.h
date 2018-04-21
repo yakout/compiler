@@ -1,5 +1,5 @@
-#ifndef LEXICAL_ANALYZER_H
-#define LEXICAL_ANALYZER_H
+#ifndef LEXICAL_TOKENIZER_H
+#define LEXICAL_TOKENIZER_H
 
 #include "../lexical_analyzer_generator/finite_automata/dfa_state.h"
 #include "../lexical_analyzer_generator/finite_automata/dfa.h"
@@ -17,7 +17,7 @@ struct token {
   int str_pos;
 };
 
-class lexical_analyzer {
+class lexical_tokenizer {
 private:
   int start_state_id;
   int total_states;
@@ -29,8 +29,8 @@ private:
   std::vector<std::string> transition_table_inputs;
   std::shared_ptr<dfa> parse_lexical_analyzer_machine (char *);
 public:
-  lexical_analyzer (char *, char *);
-  lexical_analyzer (std::shared_ptr<dfa> &, char *);
+  lexical_tokenizer (char *, char *);
+  lexical_tokenizer (std::shared_ptr<dfa> &, char *);
   int get_next_token (token &);
   const std::shared_ptr<dfa> get_dfa() const;
 };

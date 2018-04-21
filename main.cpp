@@ -1,5 +1,5 @@
-#include "lexical_analyzer/lexical_analyzer.h"
-#include "lexical_analyzer_generator/lexical_analyzer_generator.h"
+#include "lexical_analyzer/lexical_tokenizer/lexical_tokenizer.h"
+#include "lexical_analyzer/lexical_analyzer_generator/lexical_analyzer_generator.h"
 #include <iostream>
 #include <string.h>
 #include <iomanip>
@@ -103,8 +103,8 @@ void lex_generate_tokenize (char *rules_file, char *code_file
     auto minimized_dfa = dfa_ptr->minimize();
     minimized_dfa->draw_trans_table();
     char * transition_table_file = "transition_table.txt";
-    std::shared_ptr<lexical_analyzer> lex = std::make_shared<lexical_analyzer>(
-                                lexical_analyzer (transition_table_file, code_file));
+    std::shared_ptr<lexical_tokenizer> lex = std::make_shared<lexical_tokenizer>(
+                                lexical_tokenizer (transition_table_file, code_file));
     token t;
     while (lex->get_next_token (t)) {
         token_vec.push_back (token (t));
@@ -121,8 +121,8 @@ void lex_tokenize (char *transition_table_file, char *code_file
         err_no_file_exists (code_file);
     }
 
-    std::shared_ptr<lexical_analyzer> lex = std::make_shared<lexical_analyzer>(
-                                    lexical_analyzer (transition_table_file, code_file));
+    std::shared_ptr<lexical_tokenizer> lex = std::make_shared<lexical_tokenizer>(
+                                    lexical_tokenizer (transition_table_file, code_file));
     token t;
     while (lex->get_next_token (t)) {
         token_vec.push_back (token (t));

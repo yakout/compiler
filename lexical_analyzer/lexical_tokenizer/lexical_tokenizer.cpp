@@ -1,4 +1,4 @@
-#include "lexical_analyzer.h"
+#include "lexical_tokenizer.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -84,24 +84,24 @@ std::string get_code_file_contents (char *);
 token create_token (int, int, std::shared_ptr<dfa_state>
                                             , std::string);
 
-lexical_analyzer::lexical_analyzer (char *transition_table_file
+lexical_tokenizer::lexical_tokenizer (char *transition_table_file
                                                 , char *code_file) {
-    dfa_ptr = lexical_analyzer::parse_lexical_analyzer_machine (
+    dfa_ptr = lexical_tokenizer::parse_lexical_analyzer_machine (
                                                         transition_table_file);
     input_str = get_code_file_contents (code_file);
     matcher_pos = 0;
     prev_matcher_pos = 0;
 }
 
-lexical_analyzer::lexical_analyzer (std::shared_ptr<dfa> &dfa_ptr
+lexical_tokenizer::lexical_tokenizer (std::shared_ptr<dfa> &dfa_ptr
                             , char *code_file) {
-    lexical_analyzer::dfa_ptr = dfa_ptr;
+    lexical_tokenizer::dfa_ptr = dfa_ptr;
     input_str = get_code_file_contents (code_file);
     matcher_pos = 0;
     prev_matcher_pos = 0;
 }
 
-int lexical_analyzer::get_next_token (token &t) {
+int lexical_tokenizer::get_next_token (token &t) {
     int acceptance_state_id = -1;
     int accepted_pos;
     int curr_state = start_state_id;
@@ -146,11 +146,11 @@ int lexical_analyzer::get_next_token (token &t) {
     return 1;
 }
 
-const std::shared_ptr<dfa> lexical_analyzer::get_dfa() const {
+const std::shared_ptr<dfa> lexical_tokenizer::get_dfa() const {
     return dfa_ptr;
 }
 
-std::shared_ptr<dfa> lexical_analyzer::parse_lexical_analyzer_machine (
+std::shared_ptr<dfa> lexical_tokenizer::parse_lexical_analyzer_machine (
                                 char *transition_table_file) {
     std::ifstream input_file (transition_table_file);
     std::string line;
