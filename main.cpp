@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <fstream>
 #include <memory>
+#include <cstdlib>
 
 void err_argc ();
 void err_option ();
@@ -132,19 +133,19 @@ void lex_tokenize (char *transition_table_file, char *code_file
 void print_output (std::vector<token> &token_vec) {
     std::map<std::string, bool> sym_tab_map;
     log_file << std::left << std::setw (20) << "Match State" <<
-        std::left << std::setw (40) << "Lexeme" << std::left << std::setw (30) 
+        std::left << std::setw (40) << "Lexeme" << std::left << std::setw (30)
             << "Token Class" << "Position" << '\n';
     log_file << std::left << std::setw (20) << "-----------" <<
-        std::left << std::setw (40) << "------" << std::left << std::setw (30) 
+        std::left << std::setw (40) << "------" << std::left << std::setw (30)
             << "-----------" << "--------" << '\n';
     for (auto t : token_vec) {
         if (t.token_class.empty ()) {
             log_file << std::left << std::setw(20) << "[UNMATCHED]" <<
-                std::left << std::setw(40) << t.lexeme << std::setw (30) 
+                std::left << std::setw(40) << t.lexeme << std::setw (30)
                 << t.token_class << t.str_pos << '\n';
         } else {
             log_file << std::left << std::setw(20) << "[MATCHED]" <<
-                std::left << std::setw(40) << t.lexeme << std::setw (30) 
+                std::left << std::setw(40) << t.lexeme << std::setw (30)
                 << t.token_class << t.str_pos << '\n';
             if (!sym_tab_map[t.lexeme]) {
                 sym_tab_file << std::left << std::setw(40) << t.lexeme << t.token_class << '\n';

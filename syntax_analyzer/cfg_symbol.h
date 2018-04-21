@@ -9,7 +9,8 @@ enum cfg_symbol_type
 {
     TERMINAL,
     NON_TERMINAL,
-    END_MARKER
+    END_MARKER,
+    SYNCH
 };
 
 class cfg_production;
@@ -18,8 +19,10 @@ class cfg_symbol
 {
     std::string name;
     std::shared_ptr<cfg_production> prod;
+    cfg_symbol_type type;
 public:
     std::string get_name();
+    cfg_symbol_type get_type();
 };
 
 #endif //COMPILER_CFG_SYMBOL_H

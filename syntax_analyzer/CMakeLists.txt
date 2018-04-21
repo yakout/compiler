@@ -12,7 +12,8 @@ set (HEADER_FILES
         cfg_symbol.h
         cfg.h
         parsing_table.h
-        predictive_parser.h)
+        predictive_parser.h
+        first_follow.h)
 
 set (SOURCE_FILES
         cfg_production.cpp
@@ -20,7 +21,8 @@ set (SOURCE_FILES
         cfg_symbol.cpp
         cfg.cpp
         parsing_table.cpp
-        predictive_parser.cpp)
+        predictive_parser.cpp
+        first_follow.cpp)
 
 add_library (libsyntax SHARED ${SOURCE_FILES} ${HEADER_FILES})
 
