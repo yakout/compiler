@@ -8,7 +8,9 @@ set (CMAKE_CXX_STANDARD 11)
 # Build
 # ------------------------------------------------------------------------------
 
-set (HEADER_FILES
+add_subdirectory(syntax_analyzer)
+
+set(HEADER_FILES
         lexical_analyzer_generator/finite_automata/finite_automata.h
         lexical_analyzer_generator/finite_automata/state.h
         lexical_analyzer_generator/finite_automata/nfa.h
@@ -38,8 +40,10 @@ set(SOURCE_FILES
         lexical_analyzer/lexical_analyzer.cpp
         lexical_analyzer_generator/finite_automata/util/util.cpp)
 
-add_library(lexical STATIC ${SOURCE_FILES})
-add_executable(compiler main.cpp ${SOURCE_FILES} ${HEADER_FILES})
+add_library(lexical SHARED ${SOURCE_FILES} ${HEADER_FILES})
+add_executable(compiler main.cpp)
+target_link_libraries(compiler lexical)
+
 
 
 # ------------------------------------------------------------------------------
@@ -108,15 +112,16 @@ endmacro (do_test)
 add_library(Catch INTERFACE)
 target_include_directories(Catch INTERFACE ${PROJECT_SOURCE_DIR}/tests/lib/)
 
-add_library(test_catch STATIC ${PROJECT_SOURCE_DIR}/tests/lexical/test.cpp)
+add_library(test_catch STATIC tests/test.cpp)
 target_link_libraries(test_catch Catch)
 
-macro(do_test test_num)
-    add_executable(test_${test_num} ${PROJECT_SOURCE_DIR}/tests/lexical/test_${test_num}.cpp)
-    target_link_libraries(test_${test_num} test_catch)
-    target_link_libraries(test_${test_num} lexical)
+macro(do_test test_num module)
+    add_executable(test_${test_num}_${module} ${PROJECT_SOURCE_DIR}/tests/${module}/test_${test_num}.cpp)
+    target_link_libraries(test_${test_num}_${module} test_catch)
+    target_link_libraries(test_${test_num}_${module} ${module})
 
-    add_test(test_${test_num} test_${test_num})
+    add_test(test_${test_num}_${module} test_${test_num}_${module})
 endmacro(do_test)
 
-do_test(1)
+do_test(1 lexical)
+do_test(1 syntax)
