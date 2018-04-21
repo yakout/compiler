@@ -9,7 +9,7 @@ cfg_symbol::cfg_symbol ()
 cfg_symbol::cfg_symbol (cfg_symbol_type t)
 	: type(t), name("$")
 {
-	prod == nullptr;
+	prod = nullptr;
 }
 
 std::string cfg_symbol::get_name()
