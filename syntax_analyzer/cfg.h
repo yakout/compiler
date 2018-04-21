@@ -8,6 +8,7 @@
 
 class cfg_rule;
 
+
 class cfg {
 private:
     std::vector <std::string> non_terminals;

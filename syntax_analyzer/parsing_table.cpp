@@ -1,11 +1,15 @@
 #include "parsing_table.h"
 
-parsing_table::parsing_table(cfg grammar, first_follow_sets first_follow) {
-    this->grammar = grammar;
-    this->first_follow = first_follow;
+parsing_table::parsing_table(cfg g, first_follow_sets ff)
+        : grammar(g), first_follow(ff), table()
+{
+
 }
 
-parsing_table::parsing_table() {}
+parsing_table::parsing_table()
+{
+
+}
 
 bool parsing_table::fill_entries (cfg_production production, std::shared_ptr<cfg_rule> rule,
                     std::vector<std::string> tokens)
@@ -17,7 +21,8 @@ bool parsing_table::fill_entries (cfg_production production, std::shared_ptr<cfg
 }
 
 
-void parsing_table::build() {
+void parsing_table::build() 
+{
     for (cfg_rule rule_obj : grammar.get_rules())
     {
         std::shared_ptr<cfg_rule> rule = std::make_shared<cfg_rule> (rule_obj); // TODO :: WRONG

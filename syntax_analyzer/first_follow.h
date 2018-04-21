@@ -1,5 +1,6 @@
 #ifndef FIRST_FOLLOW_H
 #define FIRST_FOLLOW_H
+
 #include "cfg_production.h"
 #include "cfg_rule.h"
 #include <vector>
@@ -13,7 +14,7 @@ class first {
 private:
     /** A map containing the tokens corresponding to the
     cfg_production that defined it for a cfg_rule.*/
-    std::map <cfg_production, std::vector <std::string>> tokens;
+//    std::map <cfg_production, std::vector <std::string>> tokens;
 public:
     /** This function returns vector of all tokens in the first
     of this cfg_production.
@@ -44,7 +45,7 @@ public:
 class first_follow_sets {
 private:
     /** A map containing pair of first and follow for every cfg_rule in a cfg.*/
-    std::map <cfg_rule, std::pair <first, follow>> first_follow_table;
+//    std::map <cfg_rule, std::pair <first, follow>> first_follow_table;
 public:
     /** This function returns first of a cfg_rule.
     @returns first of the cfg_rule
