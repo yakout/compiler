@@ -116,7 +116,7 @@ num
 id
 assign
 id
-+
+addop
 num
 ;
 }
