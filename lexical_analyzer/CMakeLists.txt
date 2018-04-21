@@ -2,8 +2,6 @@ cmake_minimum_required (VERSION 3.5)
 
 set (CMAKE_CXX_STANDARD 11)
 
-option(BUILD_TESTS OFF)
-
 # ------------------------------------------------------------------------------
 # Build
 # ------------------------------------------------------------------------------
@@ -45,6 +43,8 @@ add_library (liblex SHARED ${SOURCE_FILES} ${HEADER_FILES})
 # ------------------------------------------------------------------------------
 
 # Unit Tests
+
+enable_testing ()
 
 add_library (catch_lex INTERFACE)
 target_include_directories (catch_lex INTERFACE ../tests/lib/)  

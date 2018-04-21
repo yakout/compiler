@@ -27,8 +27,6 @@ set (MEMORYCHECK_COMMAND_OPTIONS "${MEMORYCHECK_COMMAND_OPTIONS} --error-exitcod
 # Tests
 # ------------------------------------------------------------------------------
 
-include (CTest)
-
 enable_testing ()
 
 # Regression Tests

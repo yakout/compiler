@@ -32,6 +32,8 @@ add_library (libsyntax SHARED ${SOURCE_FILES} ${HEADER_FILES})
 
 # Unit Tests
 
+enable_testing ()
+
 add_library (catch_syntax INTERFACE)
 target_include_directories (catch_syntax INTERFACE ../tests/lib/)
 add_library (unit_test_catch_syntax STATIC ../tests/catch_main.cpp)
