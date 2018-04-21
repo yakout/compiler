@@ -4,6 +4,7 @@
 #include "cfg.h"
 #include "first_follow.h"
 #include "cfg_symbol.h"
+#include "cfg_rule.h"
 
 #include <map>
 

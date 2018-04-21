@@ -1,15 +1,19 @@
 #include "cfg.h"
 
 
-cfg::cfg() {
+cfg::cfg()
+ : non_terminals (), terminals (), rules ()
+{
 
 }
 
-void cfg::parse(std::string grammer_file) {
+void cfg::parse(std::string grammer_file)
+{
 
 }
 
-void cfg::add_rule() {
+void cfg::add_rule()
+{
 
 }
 

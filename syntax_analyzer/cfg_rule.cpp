@@ -1,16 +1,30 @@
-
 #include "cfg_rule.h"
 
-void cfg_rule::eliminate_left_recursion() {
+cfg_rule::cfg_rule()
+        : productions()
+{
 
 }
 
-void cfg_rule::left_factor() {
+cfg_rule::cfg_rule(std::shared_ptr<cfg> g)
+        : productions(), grammer(g)
+{
 
 }
 
+void cfg_rule::eliminate_left_recursion()
+{
+
+}
+
+void cfg_rule::left_factor()
+{
+
+}
 
 std::vector<cfg_production> cfg_rule::get_productions()
 {
-    return this->productions;
+    return productions;
 }
+
+

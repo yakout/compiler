@@ -8,9 +8,8 @@
 #include <vector>
 #include <memory>
 
-
-class cfg_production;
 class cfg;
+class cfg_production;
 
 class cfg_rule
 {
@@ -20,6 +19,8 @@ private:
     std::shared_ptr<cfg> grammer; // parent grammer
 
 public:
+    cfg_rule();
+    explicit cfg_rule(std::shared_ptr<cfg>);
     void eliminate_left_recursion();
     void left_factor();
 

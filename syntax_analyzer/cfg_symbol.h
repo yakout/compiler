@@ -17,12 +17,15 @@ class cfg_production;
 
 class cfg_symbol
 {
+private:
     std::string name;
     std::shared_ptr<cfg_production> prod;
     cfg_symbol_type type;
 public:
-    std::string get_name();
-    cfg_symbol_type get_type();
+	cfg_symbol ();
+	explicit cfg_symbol (cfg_symbol_type);
+    std::string get_name ();
+    cfg_symbol_type get_type ();
 };
 
 #endif //COMPILER_CFG_SYMBOL_H
