@@ -14,7 +14,7 @@ cd build/
 #    rm CMakeCache.txt
 #fi
 
-# Running cmake on the CMakeLists.txt in the "syntax_analyzer" (parent) directory.
+# Running cmake on the CMakeLists.txt in the "syntax_analyzer" (Parent) directory.
 
 # 1- With the option of building unit tests turned ON.
 #cmake -DBUILD_UNIT_TEST=ON ..
