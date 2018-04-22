@@ -17,10 +17,10 @@ cd build/
 # Running cmake on the CMakeLists.txt in the "syntax_analyzer" (Parent) directory.
 
 # 1- With the option of building unit tests turned ON.
-#cmake -DBUILD_UNIT_TEST=ON ..
+cmake -DBUILD_UNIT_TEST=ON ..
 
 # 2- With the option of building unit tests turned OFF explicitly.
-cmake -DBUILD_UNIT_TEST=ON ..
+#cmake -DBUILD_UNIT_TEST=OFF ..
 
 # 3- With the option of building unit tests turned OFF implicitly.
 #    NOTING that this option will work correctly as long as we remove CMakeCache.txt
