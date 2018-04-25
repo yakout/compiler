@@ -1,6 +1,7 @@
 #include "predictive_parser.h"
 
-predictive_parser::predictive_parser (cfg_symbol start_symbol, std::shared_ptr<parsing_table> ll1_table, std::vector<std::string> lex_tokens)
+predictive_parser::predictive_parser (cfg_symbol start_symbol, std::shared_ptr<parsing_table> ll1_table,
+									  std::vector<std::string> lex_tokens)
 	: input_buffer(lex_tokens), p_table(ll1_table), debug_stack(), output(), parser_stack()
 {
 	init_stack(start_symbol);

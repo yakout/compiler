@@ -6,6 +6,12 @@ parsing_table::parsing_table(cfg g)
     build ();
 }
 
+parsing_table::parsing_table(std::map<std::pair<std::string, std::string>, cfg_production> t)
+    : table(t)
+{
+
+}
+
 parsing_table::parsing_table() {}
 
 std::shared_ptr<cfg_production> get_synch_prod ()
