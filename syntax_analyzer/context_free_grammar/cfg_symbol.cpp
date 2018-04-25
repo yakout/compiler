@@ -2,7 +2,8 @@
 #include <string>
 
 cfg_symbol::cfg_symbol ()
-	: name (), type () {
+	: name (), type ()
+{
 
 }
 
@@ -11,7 +12,7 @@ cfg_symbol::cfg_symbol (cfg_symbol_type symbol_type)
 
 }
 
-cfg_symbol::cfg_symbol (std::string & symbol_name, cfg_symbol_type symbol_type)
+cfg_symbol::cfg_symbol (const std::string & symbol_name, cfg_symbol_type symbol_type)
 	: name (symbol_name), type (symbol_type) {
 
 }

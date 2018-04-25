@@ -27,10 +27,10 @@ private:
   std::shared_ptr<dfa> dfa_ptr;
   std::vector<acceptance_state> acceptance_states_info;
   std::vector<std::string> transition_table_inputs;
-  std::shared_ptr<dfa> parse_lexical_analyzer_machine (char *);
+  std::shared_ptr<dfa> parse_lexical_analyzer_machine (char *transition_table_file);
 public:
-  lexical_tokenizer (char *, char *);
-  lexical_tokenizer (std::shared_ptr<dfa> &, char *);
+  lexical_tokenizer (char *transition_table_file, char *code_file);
+  lexical_tokenizer (std::shared_ptr<dfa> &, char *code_file);
   int get_next_token (token &);
   const std::shared_ptr<dfa> get_dfa() const;
 };

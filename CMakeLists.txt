@@ -14,6 +14,7 @@ add_subdirectory (syntax_analyzer)
 
 include_directories(lexical_analyzer)
 include_directories(syntax_analyzer)
+include_directories(tests/lib)
 
 add_executable(compiler main.cpp)
 target_link_libraries(compiler liblex libsyntax)

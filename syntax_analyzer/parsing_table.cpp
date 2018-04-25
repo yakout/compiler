@@ -1,18 +1,24 @@
 #include "parsing_table.h"
 
+#include "context_free_grammar/synch_production.h"
+
 parsing_table::parsing_table(cfg g)
+ : grammar(g)
 {
-    this->grammar = g;
     build ();
+}
+
+parsing_table::parsing_table(std::map<std::pair<std::string, std::string>, cfg_production> t)
+    : table(t)
+{
+
 }
 
 parsing_table::parsing_table() {}
 
 std::shared_ptr<cfg_production> get_synch_prod ()
 {
-    cfg_symbol synch_symbol = cfg_symbol (SYNCH);
-    std::vector <cfg_symbol> symbols; symbols.push_back(synch_symbol);
-    cfg_production synch_prod = cfg_production (synch_symbol, symbols);
+    synch_production synch_prod = synch_production ();
     std::shared_ptr<cfg_production> prod =
                     std::make_shared<cfg_production> (synch_prod);
     return prod;
@@ -72,5 +78,5 @@ void parsing_table::build()
 
 cfg_production parsing_table::get_production (std::string rule, std::string token)
 {
-    return this->table[make_pair(rule, token)];
+    return table[make_pair(rule, token)];
 }

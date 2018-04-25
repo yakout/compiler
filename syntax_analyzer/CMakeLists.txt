@@ -8,14 +8,17 @@ option (BUILD_UNIT_TEST "Determines whether to build unit tests or not" OFF)
 # Build
 # ------------------------------------------------------------------------------
 
+
 set (HEADER_FILES
         context_free_grammar/cfg_production.h
         context_free_grammar/cfg_rule.h
         context_free_grammar/cfg_symbol.h
         context_free_grammar/cfg.h
         context_free_grammar/util/cfg_set.h
+        context_free_grammar/synch_production.h
         parsing_table.h
-        predictive_parser.h)
+        predictive_parser.h
+        )
 
 set (SOURCE_FILES
         context_free_grammar/cfg_production.cpp
@@ -23,10 +26,15 @@ set (SOURCE_FILES
         context_free_grammar/cfg_symbol.cpp
         context_free_grammar/cfg.cpp
         context_free_grammar/util/cfg_set.cpp
+        context_free_grammar/synch_production.cpp
         parsing_table.cpp
-        predictive_parser.cpp)
+        predictive_parser.cpp
+        main.cpp)
 
 add_library (libsyntax SHARED ${SOURCE_FILES} ${HEADER_FILES})
+
+add_executable(main main.cpp)
+target_link_libraries(main libsyntax)
 
 # ------------------------------------------------------------------------------
 # Tests

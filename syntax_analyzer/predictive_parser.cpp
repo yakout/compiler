@@ -1,6 +1,7 @@
 #include "predictive_parser.h"
 
-predictive_parser::predictive_parser (cfg_symbol start_symbol, std::shared_ptr<parsing_table> ll1_table, std::vector<std::string> lex_tokens)
+predictive_parser::predictive_parser (cfg_symbol start_symbol, std::shared_ptr<parsing_table> ll1_table,
+									  std::vector<std::string> lex_tokens)
 	: input_buffer(lex_tokens), p_table(ll1_table), debug_stack(), output(), parser_stack()
 {
 	init_stack(start_symbol);
@@ -78,14 +79,24 @@ void predictive_parser::parse()
 
 		if (stack_top.get_type() == NON_TERMINAL)
 		{
-			cfg_production prod ;//= p_table->get_production(stack_top, cur_token);
-			write_prod(prod);
-			std::vector<cfg_symbol> symbols = prod.get_symbols();
-			std::reverse(symbols.begin(), symbols.end());
-			for (cfg_symbol sym : symbols)
-			{
-                parser_stack.push(sym);
-			}
+			cfg_production prod = p_table->get_production(stack_top.get_name(), cur_token);
+            if (prod.get_lhs_symbol().get_type() == SYNCH)
+            {
+                // TODO::SYNCH production
+            }
+            else if (prod.get_symbols().empty())
+            {
+                // TODO::ERROR!
+            }
+            else
+            {
+                write_prod(prod);
+                std::vector<cfg_symbol> symbols = prod.get_symbols();
+                std::reverse(symbols.begin(), symbols.end());
+                for (cfg_symbol sym : symbols) {
+                    parser_stack.push(sym);
+                }
+            }
 		}
 		else if (stack_top.get_type() == TERMINAL)
 		{
@@ -96,7 +107,7 @@ void predictive_parser::parse()
 			}
 			else
 			{
-				// TODO: ERROR!
+				// TODO::ERROR!
 			}
 		}
 		else if (stack_top.get_type() == END_MARKER)
