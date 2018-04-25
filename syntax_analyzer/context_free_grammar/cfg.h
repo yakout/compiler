@@ -8,6 +8,8 @@
 #include <memory>
 #include <map>
 
+#define EPS "\L"
+
 class cfg {
 private:
     std::vector <cfg_symbol> non_terminals;
