@@ -12,6 +12,9 @@ option (BUILD_REG_TEST "Determines whether to build regression tests or not" OFF
 add_subdirectory (lexical_analyzer)
 add_subdirectory (syntax_analyzer)
 
+include_directories(lexical_analyzer)
+include_directories(syntax_analyzer)
+
 add_executable(compiler main.cpp)
 target_link_libraries(compiler liblex libsyntax)
 
