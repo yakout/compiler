@@ -46,7 +46,8 @@ public:
      * @param p_table The parsing table constructed from the context free grammer production rules.
      * 
      */ 
-    predictive_parser (cfg_symbol start_symbol, std::shared_ptr<parsing_table> p_table, std::vector<std::string> input_buffer);
+    predictive_parser (cfg_symbol start_symbol, std::shared_ptr<parsing_table> p_table,
+                       std::vector<std::string> input_buffer);
     /**
      * print the debug stack contents into consol for debugging.
      */

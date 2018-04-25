@@ -30,7 +30,7 @@ public:
 public:
     cfg_symbol ();
     explicit cfg_symbol (cfg_symbol_type);
-	explicit cfg_symbol (std::string &, cfg_symbol_type);
+	explicit cfg_symbol (const std::string &, cfg_symbol_type);
     
     struct comparator {
         bool operator () (const cfg_symbol & sym_a, const cfg_symbol & sym_b) const {

@@ -79,14 +79,24 @@ void predictive_parser::parse()
 
 		if (stack_top.get_type() == NON_TERMINAL)
 		{
-			cfg_production prod ;//= p_table->get_production(stack_top, cur_token);
-			write_prod(prod);
-			std::vector<cfg_symbol> symbols = prod.get_symbols();
-			std::reverse(symbols.begin(), symbols.end());
-			for (cfg_symbol sym : symbols)
-			{
-                parser_stack.push(sym);
-			}
+			cfg_production prod = p_table->get_production(stack_top.get_name(), cur_token);
+            if (prod.get_lhs_symbol().get_type() == SYNCH)
+            {
+                // TODO::SYNCH production
+            }
+            else if (prod.get_symbols().empty())
+            {
+                // TODO::ERROR!
+            }
+            else
+            {
+                write_prod(prod);
+                std::vector<cfg_symbol> symbols = prod.get_symbols();
+                std::reverse(symbols.begin(), symbols.end());
+                for (cfg_symbol sym : symbols) {
+                    parser_stack.push(sym);
+                }
+            }
 		}
 		else if (stack_top.get_type() == TERMINAL)
 		{
@@ -97,7 +107,7 @@ void predictive_parser::parse()
 			}
 			else
 			{
-				// TODO: ERROR!
+				// TODO::ERROR!
 			}
 		}
 		else if (stack_top.get_type() == END_MARKER)
