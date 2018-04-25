@@ -42,11 +42,11 @@ if (BUILD_UNIT_TEST)
     target_link_libraries (unit_test_catch_syntax catch_syntax)
     target_link_libraries (unit_test_catch_syntax libsyntax)
 
-    macro (do_test test_num)
-        add_executable (unit_test_${test_num}_syntax 
-            ../tests/syntax_analyzer/unit/test_${test_num}.cpp)
-        target_link_libraries (unit_test_${test_num}_syntax unit_test_catch_syntax)
-        add_test (unit_test_${test_num}_syntax_analyzer unit_test_${test_num}_syntax)
+    macro (do_test test_name)
+        add_executable (unit_test_${test_name}_syntax 
+            ../tests/syntax_analyzer/unit/test_${test_name}.cpp)
+        target_link_libraries (unit_test_${test_name}_syntax unit_test_catch_syntax)
+        add_test (unit_test_${test_name}_syntax_analyzer unit_test_${test_name}_syntax)
     endmacro (do_test)
 
     do_test (1)

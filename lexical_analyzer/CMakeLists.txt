@@ -54,11 +54,11 @@ if (BUILD_UNIT_TEST)
     target_link_libraries (unit_test_catch_lexical catch_lex)
     target_link_libraries (unit_test_catch_lexical liblex)
 
-    macro (do_test test_num)
-        add_executable (unit_test_${test_num}_lexical 
-            ../tests/lexical_analyzer/unit/test_${test_num}.cpp)
-        target_link_libraries (unit_test_${test_num}_lexical unit_test_catch_lexical)
-        add_test (unit_test_${test_num}_lexical_analyzer unit_test_${test_num}_lexical)
+    macro (do_test test_name)
+        add_executable (unit_test_${test_name}_lexical 
+            ../tests/lexical_analyzer/unit/test_${test_name}.cpp)
+        target_link_libraries (unit_test_${test_name}_lexical unit_test_catch_lexical)
+        add_test (unit_test_${test_name}_lexical_analyzer unit_test_${test_name}_lexical)
     endmacro (do_test)
 
     do_test (1)
