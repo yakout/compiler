@@ -18,12 +18,10 @@ public:
 
     void add_symbol(std::string, cfg_symbol symbol);
     const std::unordered_map<std::string, std::vector<cfg_symbol>> &get_set_map() const;
-    bool has_eps();
-    void set_eps(bool);
+    bool has_eps(std::string);
 
 private:
     std::unordered_map<std::string, std::vector<cfg_symbol>> my_set;
-    bool eps;
 };
 
 

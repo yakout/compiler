@@ -3,9 +3,9 @@
 //
 
 #include "cfg_set.h"
+#include "../cfg.h"
 
 cfg_set::cfg_set() {
-    cfg_set::eps = false;
 }
 
 const std::unordered_map<std::string, std::vector<cfg_symbol>> &cfg_set::get_set_map() const {
@@ -16,10 +16,12 @@ void cfg_set::add_symbol(std::string, cfg_symbol symbol) {
 
 }
 
-bool cfg_set::has_eps() {
-    return eps;
+bool cfg_set::has_eps(std::string symbol) {
+    for(auto sym : cfg_set::my_set[symbol]) {
+        if (sym.get_name() == EPS) {
+            return true;
+        }
+    }
+    return false;
 }
 
-void cfg_set::set_eps(bool eps) {
-    cfg_set::eps = eps;
-}
