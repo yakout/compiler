@@ -2,26 +2,23 @@
 #define COMPILER_CFG_PRODUCTION_H
 
 #include "cfg_symbol.h"
-#include "cfg_rule.h"
-#include <memory>
 #include <vector>
 
-class cfg_rule;
-class cfg_symbol;
-
-class cfg_production
-{
+class cfg_production {
 private:
-    std::string name;
-    std::vector<cfg_symbol> prod; // A -> BaeA
-    std::shared_ptr<cfg_rule> rule; // parent rule
+    /** Example: A -> B a e A
+     *  lhs_symbol: A
+     *  production_symbols: {B, a, e, A}
+     */
+    cfg_symbol lhs_symbol;
+    std::vector <cfg_symbol> production_symbols;
 public:
-    cfg_production();
-    explicit cfg_production(std::shared_ptr<cfg_rule>);
-
-    /// getters
-    std::string get_name();
-    std::vector<cfg_symbol> get_symbols();
+    cfg_production ();
+    explicit cfg_production (cfg_symbol &, std::vector <cfg_symbol> &);
+    
+    /** Getters **/
+    cfg_symbol get_lhs_symbol ();
+    std::vector <cfg_symbol> get_symbols ();
 };
 
 #endif //COMPILER_CFG_PRODUCTION_H

@@ -1,25 +1,20 @@
 #include "cfg_production.h"
 
-cfg_production::cfg_production()
-        : prod()
-{
+cfg_production::cfg_production () {
 
 }
 
-cfg_production::cfg_production(std::shared_ptr<cfg_rule> r)
-        : rule(r)
-{
-
+cfg_production::cfg_production (cfg_symbol & symbol
+            , std::vector <cfg_symbol> & symbols) 
+            : lhs_symbol (symbol), production_symbols (symbols) {   
 }
 
-std::string cfg_production::get_name()
-{
-    return name;
+cfg_symbol cfg_production::get_lhs_symbol () {
+    return lhs_symbol;
 }
 
-std::vector<cfg_symbol> cfg_production::get_symbols ()
-{
-    return prod;
+std::vector <cfg_symbol> cfg_production::get_symbols () {
+    return production_symbols;
 }
 
 

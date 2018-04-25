@@ -1,49 +1,41 @@
 #include "cfg.h"
 
 
-cfg::cfg()
- : non_terminals (), terminals (), rules ()
-{
+cfg::cfg ()
+ : non_terminals (), terminals (), rules () {
 
 }
 
-void cfg::parse(std::string grammar_file)
-{
+void cfg::parse (std::string grammar_file) {
 
 }
 
-void cfg::add_rule()
-{
+void cfg::add_rule () {
 
 }
 
-std::vector <std::string> cfg::get_non_terminals ()
-{
-    return this->non_terminals;
+std::vector <cfg_symbol> cfg::get_non_terminals () {
+    return non_terminals;
 }
 
-std::vector <std::string> cfg::get_terminals ()
-{
-    return this->terminals;
+std::vector <cfg_symbol> cfg::get_terminals () {
+    return terminals;
 }
 
-std::vector <cfg_rule> cfg::get_rules ()
-{
-    return this->rules;
+std::vector <cfg_rule> cfg::get_rules () {
+    return rules;
 }
 
-std::string cfg::get_start_symbol ()
-{
-    return this->start_symbol;
+cfg_symbol cfg::get_start_symbol () {
+    return start_symbol;
 }
 
-bool cfg::is_ll_1() {
+bool cfg::is_ll_1 () {
     return true;
 }
 
-std::shared_ptr<cfg_set> cfg::get_first_set() {
+std::shared_ptr <cfg_set> cfg::get_first_set () {
     std::shared_ptr<cfg_set> first_set = std::make_shared<cfg_set>();
-
     /// Build first set
     for (auto symbol : cfg_symbols) {
         if (symbol.get_type() == TERMINAL) {
@@ -57,10 +49,10 @@ std::shared_ptr<cfg_set> cfg::get_first_set() {
     return first_set;
 }
 
-const std::vector<cfg_symbol> &cfg::get_cfg_symbols() const {
+const std::vector <cfg_symbol> &cfg::get_cfg_symbols () const {
     return cfg_symbols;
 }
 
-void cfg::set_cfg_symbols(const std::vector<cfg_symbol> &cfg_symbols) {
+void cfg::set_cfg_symbols (const std::vector<cfg_symbol> &cfg_symbols) {
     cfg::cfg_symbols = cfg_symbols;
 }

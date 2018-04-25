@@ -49,7 +49,7 @@ std::vector<std::string> predictive_parser::get_debug_stack ()
 
 void predictive_parser::write_prod (cfg_production prod)
 {
-	output.push_back(prod.get_name());
+	output.push_back (prod.get_lhs_symbol ().get_name ());
 }
 
 void predictive_parser::write_derivations(std::string)
