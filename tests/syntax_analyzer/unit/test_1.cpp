@@ -4,14 +4,6 @@
 
 TEST_CASE("test FIRST")
 {
-    // cfg_symbol;
-    // parsing_table
-    // input_buffer (from lexical)
-
-//    cfg grammer();
-//    parsing_table table();
-
-
     std::vector<cfg_symbol> eps_vector;
 
     std::vector<cfg_symbol> E_prod_vector;
@@ -22,7 +14,6 @@ TEST_CASE("test FIRST")
 
     std::vector<cfg_symbol> F_prod_vector1;
     std::vector<cfg_symbol> F_prod_vector2;
-
 
 
     // SPECIAL SYMBOLS
@@ -89,45 +80,28 @@ TEST_CASE("test FIRST")
     std::map <std::pair<std::string, std::string>, cfg_production> table;
 
     table.put({"E", "id"}, prod_E);
-    table.put({"E", "+"}, nullptr);
-    table.put({"E", "*"}, nullptr);
     table.put({"E", "("}, prod_E);
-    table.put({"E", ")"}, nullptr);
-    table.put({"E", "$"}, nullptr);
 
-    table.put({"E'", "id"}, nullptr);
     table.put({"E'", "+"}, prod_E_dash);
-    table.put({"E'", "*"}, nullptr);
-    table.put({"E'", "("}, nullptr);
     table.put({"E'", ")"}, prod_E_dash_eps);
     table.put({"E'", "$"}, prod_E_dash_eps);
 
     table.put({"T", "id"}, prod_T);
-    table.put({"T", "+"}, nullptr);
-    table.put({"T", "*"}, nullptr);
     table.put({"T", "("}, prod_T);
-    table.put({"T", ")"}, nullptr);
-    table.put({"T", "$"}, nullptr);
 
-    table.put({"T'", "id"}, nullptr);
     table.put({"T'", "+"}, prod_T_dash_eps);
     table.put({"T'", "*"}, prod_T_dash);
-    table.put({"T'", "("}, nullptr);
     table.put({"T'", ")"}, prod_T_dash_eps);
     table.put({"T'", "$"}, prod_T_dash_eps);
 
     table.put({"F", "id"}, prod_F1);
-    table.put({"F", "+"}, nullptr);
-    table.put({"F", "*"}, nullptr);
     table.put({"F", "("}, prod_F2);
-    table.put({"F", ")"}, nullptr);
-    table.put({"F", "$"}, nullptr);
-
 
     parsing_table p_table(table);
     predictive_parser parser(table);
     parser.parse();
 
+    std::vector<std::string> derivations = parser.get_derivations();
 
     // TODO
 

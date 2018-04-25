@@ -24,7 +24,7 @@ set (SOURCE_FILES
         context_free_grammar/cfg.cpp
         context_free_grammar/util/cfg_set.cpp
         parsing_table.cpp
-        predictive_parser.cpp)
+        predictive_parser.cpp context_free_grammar/synch_production.h context_free_grammar/synch_production.cpp)
 
 add_library (libsyntax SHARED ${SOURCE_FILES} ${HEADER_FILES})
 
