@@ -5,6 +5,7 @@
 #include "util/cfg_set.h"
 #include <string>
 #include <vector>
+#include <unordered_set>
 #include <memory>
 #include <map>
 
@@ -14,7 +15,8 @@ private:
     std::vector <cfg_symbol> terminals;
     std::vector <cfg_rule> rules;
     cfg_symbol start_symbol;
-    std::vector <cfg_symbol> cfg_symbols;
+    std::unordered_set <cfg_symbol, cfg_symbol::hasher
+            , cfg_symbol::comparator> cfg_symbols;
     std::map <std::string, cfg_rule> grammar;
 
 public:
@@ -27,8 +29,11 @@ public:
     std::shared_ptr <cfg_set> get_follow_set ();
     bool is_ll_1 ();
 
-    const std::vector<cfg_symbol> &get_cfg_symbols () const;
-    void set_cfg_symbols (const std::vector<cfg_symbol> &cfg_symbols);
+    const std::unordered_set <cfg_symbol, cfg_symbol::hasher, cfg_symbol::comparator>
+                                 & get_cfg_symbols () const;
+    void set_cfg_symbols (
+        const std::unordered_set <cfg_symbol, cfg_symbol::hasher
+            , cfg_symbol::comparator> & cfg_symbols);
 
     /** Getters **/
     std::vector <cfg_symbol> get_non_terminals ();

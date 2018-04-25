@@ -1,15 +1,28 @@
 #include "cfg.h"
+#include <fstream>
 
 
 cfg::cfg ()
- : non_terminals (), terminals (), rules () {
+    : non_terminals (), terminals (), rules () {
+
+}
+
+cfg::cfg (std::string grammar_file) 
+    : non_terminals (), terminals (), rules () {
 
 }
 
 void cfg::parse (std::string grammar_file) {
+    std::ifstream grammar_in_file (grammar_file.c_str ());
+    // Checks if grammar file exists or not.
+    if (!grammar_in_file.good ()) {
+        //TODO: - Report "File doesn't exist!" error.
+    }
+    std::string line;
+    while (std::getline (grammar_in_file, line)) {
 
+    }
 }
-
 void cfg::add_rule () {
 
 }
@@ -49,10 +62,13 @@ std::shared_ptr <cfg_set> cfg::get_first_set () {
     return first_set;
 }
 
-const std::vector <cfg_symbol> &cfg::get_cfg_symbols () const {
+const std::unordered_set <cfg_symbol, cfg_symbol::hasher, cfg_symbol::comparator> 
+                        & cfg::get_cfg_symbols () const {
     return cfg_symbols;
 }
 
-void cfg::set_cfg_symbols (const std::vector<cfg_symbol> &cfg_symbols) {
+void cfg::set_cfg_symbols (
+        const std::unordered_set <cfg_symbol, cfg_symbol::hasher
+            , cfg_symbol::comparator> & cfg_symbols) {
     cfg::cfg_symbols = cfg_symbols;
 }

@@ -23,9 +23,22 @@ public:
     explicit cfg_symbol (cfg_symbol_type);
 	explicit cfg_symbol (std::string &, cfg_symbol_type);
     
+    struct comparator {
+        bool operator () (const cfg_symbol & sym_a, const cfg_symbol & sym_b) const {
+            if (!sym_a.get_name ().compare (sym_b.get_name ())) 
+                return false;
+            return true;
+        }
+    };
+
+    struct hasher {
+        size_t operator () (const cfg_symbol & sym_a) const {
+            return std::hash <std::string> () (sym_a.get_name ());
+        }
+    };
     /** Getters **/
-    std::string get_name ();
-    cfg_symbol_type get_type ();
+    std::string get_name () const;
+    cfg_symbol_type get_type () const;
 };
 
 #endif //COMPILER_CFG_SYMBOL_H

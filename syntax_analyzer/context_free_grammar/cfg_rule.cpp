@@ -1,7 +1,8 @@
 #include "cfg_rule.h"
 
-cfg_rule::cfg_rule () {
-
+cfg_rule::cfg_rule () 
+            : lhs_symbol (), productions () {
+    
 }
 
 cfg_rule::cfg_rule (cfg_symbol & symbol
