@@ -3,8 +3,8 @@
 #include "context_free_grammar/synch_production.h"
 
 parsing_table::parsing_table(cfg g)
+ : grammar(g)
 {
-    this->grammar = g;
     build ();
 }
 
@@ -78,5 +78,5 @@ void parsing_table::build()
 
 cfg_production parsing_table::get_production (std::string rule, std::string token)
 {
-    return this->table[make_pair(rule, token)];
+    return table[make_pair(rule, token)];
 }
