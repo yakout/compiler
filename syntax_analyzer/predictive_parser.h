@@ -1,14 +1,14 @@
 #ifndef COMPILER_PREDICTIVE_PARSER_H
 #define COMPILER_PREDICTIVE_PARSER_H
 
+#include "context_free_grammar/cfg_production.h"
+#include "parsing_table.h"
 #include <stack>
 #include <string>
 #include <vector>
 #include <iostream>
 #include <memory>
 #include <algorithm>
-#include "context_free_grammar/parsing_table.h"
-#include "context_free_grammar/cfg_production.h"
 
 class predictive_parser
 {

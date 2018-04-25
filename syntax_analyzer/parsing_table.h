@@ -1,9 +1,9 @@
 #ifndef COMPILER_PARSING_TABLE_H
 #define COMPILER_PARSING_TABLE_H
 
-#include "cfg.h"
-#include "cfg_symbol.h"
-#include "cfg_rule.h"
+#include "context_free_grammar/cfg.h"
+#include "context_free_grammar/cfg_symbol.h"
+#include "context_free_grammar/cfg_rule.h"
 
 #include <map>
 

@@ -13,8 +13,8 @@ set (HEADER_FILES
         context_free_grammar/cfg_rule.h
         context_free_grammar/cfg_symbol.h
         context_free_grammar/cfg.h
-        context_free_grammar/parsing_table.h
         context_free_grammar/util/cfg_set.h
+        parsing_table.h
         predictive_parser.h)
 
 set (SOURCE_FILES
@@ -22,8 +22,8 @@ set (SOURCE_FILES
         context_free_grammar/cfg_rule.cpp
         context_free_grammar/cfg_symbol.cpp
         context_free_grammar/cfg.cpp
-        context_free_grammar/parsing_table.cpp
         context_free_grammar/util/cfg_set.cpp
+        parsing_table.cpp
         predictive_parser.cpp)
 
 add_library (libsyntax SHARED ${SOURCE_FILES} ${HEADER_FILES})
