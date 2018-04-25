@@ -63,7 +63,7 @@ TEST_CASE("test predictive parser")
     F_prod_vector1.push_back(right_paren);
 
     // F -> id
-    F_prod_vector1.push_back(id);
+    F_prod_vector2.push_back(id);
     // ****************************************************************
 
     // CONSTRUCT PRODUCTION
@@ -95,8 +95,8 @@ TEST_CASE("test predictive parser")
     table[{"T'", ")"}] = prod_T_dash_eps;
     table[{"T'", "$"}] = prod_T_dash_eps;
 
-    table[{"F", "id"}] = prod_F1;
-    table[{"F", "("}] = prod_F2;
+    table[{"F", "("}] = prod_F1;
+    table[{"F", "id"}] = prod_F2;
 
     std::shared_ptr<parsing_table> p_table = std::make_shared<parsing_table>(table);
 
@@ -107,8 +107,25 @@ TEST_CASE("test predictive parser")
 
     std::vector<std::string> derivations = parser.get_derivations();
 
+    std::vector<std::string> derivations_test
+            {"E -> TE'",
+             "T -> FT'",
+             "F -> id",
+             "match: id",
+             "T' -> \\E",
+             "E' -> +TE'",
+             "match: +",
+             "T -> FT'",
+             "F -> id",
+             "match: id",
+             "T' -> \\E",
+             "E' -> \\E",
+             "accept"};
 
-    REQUIRE(true);
+    for (int i = 0; i < derivations.size(); ++i)
+    {
+        REQUIRE(derivations[i] == derivations_test[i]);
+    }
 }
 
 

@@ -7,9 +7,9 @@
 #include <vector>
 #include <unordered_set>
 #include <memory>
-#include <map>
+#include <unordered_map>
 
-#define EPS "\L"
+#define EPS "\\L"
 
 class cfg {
 private:
@@ -19,7 +19,10 @@ private:
     cfg_symbol start_symbol;
     std::unordered_set <cfg_symbol, cfg_symbol::hasher
             , cfg_symbol::comparator> cfg_symbols;
-    std::map <std::string, cfg_rule> grammar;
+    std::unordered_map <cfg_symbol, cfg_rule
+                        , cfg_symbol::hasher, cfg_symbol::comparator> grammar;
+    std::unordered_map <cfg_symbol, std::vector <cfg_production>, cfg_symbol::hasher
+                            , cfg_symbol::comparator> cfg_symbol_productions;
 
 public:
     cfg ();

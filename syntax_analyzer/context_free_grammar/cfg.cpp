@@ -1,7 +1,6 @@
 #include "cfg.h"
 #include <fstream>
 
-
 cfg::cfg ()
     : non_terminals (), terminals (), rules () {
 
@@ -55,7 +54,7 @@ std::shared_ptr<cfg_set> cfg::get_first_set() {
         if (symbol.get_type() == TERMINAL) {
             first_set->add_symbol(symbol.get_name(), symbol, nullptr);
         } else if (symbol.get_type() == NON_TERMINAL) {
-            for (auto production : cfg::grammar[symbol.get_name()].get_productions()) { // Iterate over all productions from this non-terminal
+            for (auto production : cfg::grammar[symbol].get_productions ()) { // Iterate over all productions from this non-terminal
                 bool found_eps = true;
                 for (auto symbol : production.get_symbols()) {
 //                    if (found_eps && )
