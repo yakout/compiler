@@ -6,6 +6,9 @@
 #include "context_free_grammar/cfg_rule.h"
 
 #include <map>
+#include <set>
+#include <iomanip>
+#include <iostream>
 
 /**
     Parsing table that contains state machine to parse input program.
@@ -34,18 +37,15 @@ public:
      *  @param first_follow_sets to be used in building parsing table
      */
     parsing_table (cfg);
-
     /**
      * Constructor for parsing table, that takes the map with the productions entries in it.
      * used for testing.
      */
     parsing_table (std::map <std::pair<std::string, std::string>, cfg_production> table);
-
     /**
      * Default Contructor for parsing table.
      */
     parsing_table ();
-
     /**
      *
      * This function returns the production corresponding to the given cfg_rule.
@@ -54,6 +54,10 @@ public:
      *
      */
     cfg_production get_production (std::string, std::string);
+    /**
+     * draw the parsing table into given file name.
+     */
+    void draw(std::string file_name);
 };
 
 
