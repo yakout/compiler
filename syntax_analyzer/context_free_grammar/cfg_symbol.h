@@ -21,11 +21,6 @@ private:
      */
     std::string name;
     cfg_symbol_type type;
-    std::shared_ptr<cfg_production> parent_prod;
-public:
-    const std::shared_ptr<cfg_production> &get_parent_prod() const;
-
-    void set_parent_prod(const std::shared_ptr<cfg_production> &parent_prod);
 
 public:
     cfg_symbol ();
