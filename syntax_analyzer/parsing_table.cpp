@@ -1,56 +1,76 @@
 #include "parsing_table.h"
 
-//parsing_table::parsing_table(cfg g, first_follow_sets ff)
-//        : grammar(g), first_follow(ff), table()
-//{
-
-//}
-
-parsing_table::parsing_table()
+parsing_table::parsing_table(cfg g)
 {
-
+    this->grammar = g;
+    build ();
 }
 
-bool parsing_table::fill_entries (cfg_production production, std::shared_ptr<cfg_rule> rule,
-                    std::vector<std::string> tokens)
+parsing_table::parsing_table() {}
+
+std::shared_ptr<cfg_production> get_synch_prod ()
 {
-    for (std::string token : tokens)
-    {
-        table[make_pair(rule, token)] = production;
-    }
+    cfg_symbol synch_symbol = cfg_symbol (SYNCH);
+    std::vector <cfg_symbol> symbols; symbols.push_back(synch_symbol);
+    cfg_production synch_prod = cfg_production (synch_symbol, symbols);
+    std::shared_ptr<cfg_production> prod =
+                    std::make_shared<cfg_production> (synch_prod);
+    return prod;
 }
 
 
-void parsing_table::build() 
+
+void parsing_table::build()
 {
-    for (cfg_rule rule_obj : grammar.get_rules())
+    /// list of non-terminals in the CFG.
+    std::vector <cfg_symbol> non_terminals = grammar.get_non_terminals ();
+    /// First and follow cfg_sets
+    std::shared_ptr <cfg_set> first_cfg_set = grammar.get_first_set();
+    std::shared_ptr <cfg_set> follow_cfg_set = grammar.get_follow_set();
+    /// First and Follow maps.
+    std::unordered_map<std::string, std::vector<cfg_symbol>> first_set =
+              first_cfg_set->get_set_map();
+    std::unordered_map<std::string, std::vector<cfg_symbol>> follow_set =
+              follow_cfg_set->get_set_map();
+    for (auto non_terminal : non_terminals)
     {
-        std::shared_ptr<cfg_rule> rule = std::make_shared<cfg_rule> (rule_obj); // TODO :: WRONG
-//        first first_set = first_follow.get_first (*rule);
-//        follow follow_set = first_follow.get_follow (*rule);
-        bool eps_found = false; // to check whether this rule has epsilon production.
-        for (cfg_production production : rule->get_productions())
+        std::vector <cfg_symbol> first = first_set[non_terminal.get_name()];
+        std::vector <cfg_symbol> follow = follow_set[non_terminal.get_name()];
+        bool has_eps = false;
+        cfg_symbol eps_terminal;
+        // filling table with first symbols except for EPS case.
+        for (auto first_terminal : first)
         {
-            std::vector<cfg_symbol> symbols = production.get_symbols();
-            if (symbols.size() == 1 and symbols[0].get_type() == END_MARKER)
-            {
-                eps_found = true;
-//                fill_entries (production, rule, follow_set.get_follow_tokens());
-            }
+            if (first_terminal.get_name() != EPS)
+                table[make_pair(non_terminal.get_name(),first_terminal.get_name())]
+                      = *first_terminal.get_parent_prod();
             else
             {
-//              fill_entries (production, rule, first_set.get_first_tokens(production));
+                eps_terminal = first_terminal;
+                has_eps = true;
             }
         }
-        cfg_production sync_prod;     // TODO : initialize sync_prod correctly
-        if (!eps_found)
+        if (has_eps)
         {
-//            fill_entries (sync_prod, rule, follow_set.get_follow_tokens());
+            for (auto follow_terminal : follow)
+            {
+                table[make_pair(non_terminal.get_name(), follow_terminal.get_name())]
+                      = *eps_terminal.get_parent_prod();
+            }
+        }
+        else
+        {
+          cfg_production synch_prod = *get_synch_prod();
+          for (auto follow_terminal : follow)
+          {
+              table[make_pair(non_terminal.get_name(), follow_terminal.get_name())]
+                    = synch_prod;
+          }
         }
     }
 }
 
-cfg_production parsing_table::get_production (std::shared_ptr<cfg_rule> rule, std::string token)
+cfg_production parsing_table::get_production (std::string rule, std::string token)
 {
     return this->table[make_pair(rule, token)];
 }
