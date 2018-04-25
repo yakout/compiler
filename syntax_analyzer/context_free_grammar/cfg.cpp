@@ -47,16 +47,20 @@ bool cfg::is_ll_1 () {
     return true;
 }
 
-std::shared_ptr <cfg_set> cfg::get_first_set () {
+std::shared_ptr<cfg_set> cfg::get_first_set() {
     std::shared_ptr<cfg_set> first_set = std::make_shared<cfg_set>();
+
     /// Build first set
     for (auto symbol : cfg_symbols) {
         if (symbol.get_type() == TERMINAL) {
             first_set->add_symbol(symbol.get_name(), symbol);
         } else if (symbol.get_type() == NON_TERMINAL) {
-//            if (symbol.has_eps_prod()) {
-
-//            }
+            for (auto production : cfg::grammar[symbol.get_name()].get_productions()) { // Iterate over all productions from this non-terminal
+                bool found_eps = true;
+                for (auto symbol : production.get_symbols()) {
+//                    if (found_eps && )
+                }
+            }
         }
     }
     return first_set;
@@ -71,4 +75,9 @@ void cfg::set_cfg_symbols (
         const std::unordered_set <cfg_symbol, cfg_symbol::hasher
             , cfg_symbol::comparator> & cfg_symbols) {
     cfg::cfg_symbols = cfg_symbols;
+}
+
+std::shared_ptr<cfg_set> cfg::get_follow_set() {
+    std::shared_ptr<cfg_set> follow_set = std::make_shared<cfg_set>();
+    return follow_set;
 }
