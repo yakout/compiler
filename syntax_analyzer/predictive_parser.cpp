@@ -50,7 +50,7 @@ std::vector<std::string> predictive_parser::get_debug_stack ()
 
 void predictive_parser::write_prod (cfg_production prod)
 {
-	output.push_back (prod.get_lhs_symbol ().get_name ());
+	output.push_back (prod.get_name ());
 }
 
 void predictive_parser::write_derivations(std::string)
@@ -95,8 +95,12 @@ void predictive_parser::parse()
                 write_prod(prod);
                 std::vector<cfg_symbol> symbols = prod.get_symbols();
                 std::reverse(symbols.begin(), symbols.end());
-                for (cfg_symbol sym : symbols) {
-                    parser_stack.push(sym);
+                parser_stack.pop();
+                if (prod.get_symbols().front().get_name() != EPS)
+                {
+                    for (cfg_symbol sym : symbols) {
+                        parser_stack.push(sym);
+                    }
                 }
             }
 		}
@@ -105,6 +109,7 @@ void predictive_parser::parse()
 			if (cur_token == stack_top.get_name())
 			{
                 parser_stack.pop();
+                output.push_back("match: " + cur_token);
 				i++;
 			}
 			else
@@ -118,7 +123,7 @@ void predictive_parser::parse()
 			if (cur_token == stack_top.get_name())
 			{
                 parser_stack.pop();
-				i++;
+				output.push_back("accept");
 				break;
 			}
 		}
