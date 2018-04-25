@@ -9,7 +9,7 @@ predictive_parser::predictive_parser (cfg_symbol start_symbol, std::shared_ptr<p
 
 void predictive_parser::init_stack (cfg_symbol start_sym) 
 {
-    cfg_symbol end_marker(END_MARKER);
+    cfg_symbol end_marker("$", END_MARKER);
     parser_stack.push(end_marker);
     parser_stack.push(start_sym);
 }
@@ -83,10 +83,12 @@ void predictive_parser::parse()
             if (prod.get_lhs_symbol().get_type() == SYNCH)
             {
                 // TODO::SYNCH production
+                break;
             }
             else if (prod.get_symbols().empty())
             {
                 // TODO::ERROR!
+                break;
             }
             else
             {
@@ -108,6 +110,7 @@ void predictive_parser::parse()
 			else
 			{
 				// TODO::ERROR!
+                break;
 			}
 		}
 		else if (stack_top.get_type() == END_MARKER)

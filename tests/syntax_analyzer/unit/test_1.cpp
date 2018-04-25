@@ -1,8 +1,9 @@
-#include "catch.hpp"
-#include "predictive_parser.h"
+#include "../../lib/catch.hpp"
+#include "../../../syntax_analyzer/predictive_parser.h"
+#include <memory>
 
 
-TEST_CASE("test FIRST")
+TEST_CASE("test predictive parser")
 {
     std::vector<cfg_symbol> eps_vector;
 
@@ -21,18 +22,18 @@ TEST_CASE("test FIRST")
     cfg_symbol s_$(END_MARKER);
 
     // LHS NON_TERMINALS SYMBOLS
-    cfg_symbol E      ("E",  NON_TERMINAL);
-    cfg_symbol E_dash ("E'", NON_TERMINAL);
-    cfg_symbol T      ("T",  NON_TERMINAL);
-    cfg_symbol T_dash ("T'", NON_TERMINAL);
-    cfg_symbol F      ("F",  NON_TERMINAL);
+    cfg_symbol E("E", NON_TERMINAL);
+    cfg_symbol E_dash("E'", NON_TERMINAL);
+    cfg_symbol T("T", NON_TERMINAL);
+    cfg_symbol T_dash("T'", NON_TERMINAL);
+    cfg_symbol F("F", NON_TERMINAL);
 
     // TERMINALS SYMBOLS
-    cfg_symbol plus           ("+", TERMINAL);
-    cfg_symbol multiplication ("*", TERMINAL);
-    cfg_symbol left_paren     ("(", TERMINAL);
-    cfg_symbol right_paren    (")", TERMINAL);
-    cfg_symbol id             ("id", TERMINAL);
+    cfg_symbol plus("+", TERMINAL);
+    cfg_symbol multiplication("*", TERMINAL);
+    cfg_symbol left_paren("(", TERMINAL);
+    cfg_symbol right_paren(")", TERMINAL);
+    cfg_symbol id("id", TERMINAL);
 
 
     // FILL THE PRODUCTIONS VECTORS **********************************
@@ -66,45 +67,55 @@ TEST_CASE("test FIRST")
     // ****************************************************************
 
     // CONSTRUCT PRODUCTION
-    cfg_production prod_E          (E, E_prod_vector);
-    cfg_production prod_E_dash     (E_dash, E_dash_prod_vector);
-    cfg_production prod_E_dash_eps (E_dash, eps_vector);
+    cfg_production prod_E(E, E_prod_vector);
+    cfg_production prod_E_dash(E_dash, E_dash_prod_vector);
+    cfg_production prod_E_dash_eps(E_dash, eps_vector);
 
-    cfg_production prod_T          (T, T_prod_vector);
-    cfg_production prod_T_dash     (T_dash, T_dash_prod_vector);
-    cfg_production prod_T_dash_eps (T_dash, eps_vector);
+    cfg_production prod_T(T, T_prod_vector);
+    cfg_production prod_T_dash(T_dash, T_dash_prod_vector);
+    cfg_production prod_T_dash_eps(T_dash, eps_vector);
 
-    cfg_production prod_F1         (F, F_prod_vector1);
-    cfg_production prod_F2         (F, F_prod_vector2);
+    cfg_production prod_F1(F, F_prod_vector1);
+    cfg_production prod_F2(F, F_prod_vector2);
 
-    std::map <std::pair<std::string, std::string>, cfg_production> table;
+    std::map<std::pair<std::string, std::string>, cfg_production> table;
 
-    table.put({"E", "id"}, prod_E);
-    table.put({"E", "("}, prod_E);
+    table[{"E", "id"}] = prod_E;
+    table[{"E", "("}] = prod_E;
 
-    table.put({"E'", "+"}, prod_E_dash);
-    table.put({"E'", ")"}, prod_E_dash_eps);
-    table.put({"E'", "$"}, prod_E_dash_eps);
+    table[{"E'", "+"}] = prod_E_dash;
+    table[{"E'", ")"}] = prod_E_dash_eps;
+    table[{"E'", "$"}] = prod_E_dash_eps;
 
-    table.put({"T", "id"}, prod_T);
-    table.put({"T", "("}, prod_T);
+    table[{"T", "id"}] = prod_T;
+    table[{"T", "("}] = prod_T;
 
-    table.put({"T'", "+"}, prod_T_dash_eps);
-    table.put({"T'", "*"}, prod_T_dash);
-    table.put({"T'", ")"}, prod_T_dash_eps);
-    table.put({"T'", "$"}, prod_T_dash_eps);
+    table[{"T'", "+"}] = prod_T_dash_eps;
+    table[{"T'", "*"}] = prod_T_dash;
+    table[{"T'", ")"}] = prod_T_dash_eps;
+    table[{"T'", "$"}] = prod_T_dash_eps;
 
-    table.put({"F", "id"}, prod_F1);
-    table.put({"F", "("}, prod_F2);
+    table[{"F", "id"}] = prod_F1;
+    table[{"F", "("}] = prod_F2;
 
-    parsing_table p_table(table);
-    predictive_parser parser(table);
+    std::shared_ptr<parsing_table> p_table = std::make_shared<parsing_table>(table);
+
+    std::vector<std::string> input_buffer{"id", "+", "id", "$"};
+
+    predictive_parser parser(E, p_table, input_buffer);
     parser.parse();
 
     std::vector<std::string> derivations = parser.get_derivations();
 
-    // TODO
 
+    REQUIRE(true);
+}
+
+
+
+
+TEST_CASE("test FIRST")
+{
 //    E -> TE’
 //    E’ -> +TE’ | eps
 //    T -> FT’
@@ -126,7 +137,6 @@ TEST_CASE("test FIRST")
 //    FIRST((E)) = {(}
 //    FIRST(id) = {id}
 }
-
 
 TEST_CASE("test FOLLOW")
 {

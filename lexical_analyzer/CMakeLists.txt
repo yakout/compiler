@@ -8,6 +8,7 @@ option (BUILD_UNIT_TEST "Determines whether to build unit tests or not" OFF)
 # Build
 # ------------------------------------------------------------------------------
 
+
 set (HEADER_FILES
         lexical_analyzer_generator/finite_automata/finite_automata.h
         lexical_analyzer_generator/finite_automata/state.h
