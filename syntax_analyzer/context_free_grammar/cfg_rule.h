@@ -18,8 +18,8 @@ public:
     explicit cfg_rule (cfg_symbol &, std::vector <cfg_production> &);
     
     /** Getters **/
-    cfg_symbol get_lhs_symbol ();
-    std::vector <cfg_production> get_productions ();
+    const cfg_symbol & get_lhs_symbol () const;
+    const std::vector <cfg_production> & get_productions () const;
 };
 
 #endif //COMPILER_CFG_RULE_H
