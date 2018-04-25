@@ -99,5 +99,4 @@ int main (int argc, char *argv[]) {
     std::shared_ptr<parsing_table> p_table = std::make_shared<parsing_table>(table);
 
     p_table->draw("parsing_table.txt");
-
 }
