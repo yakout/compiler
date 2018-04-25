@@ -16,8 +16,7 @@ class cfg_rule
 private:
     std::string name;
     std::vector<cfg_production> productions;
-    std::shared_ptr<cfg> grammer; // parent grammer
-
+    std::shared_ptr<cfg> grammar; // parent grammar
 public:
     cfg_rule();
     explicit cfg_rule(std::shared_ptr<cfg>);

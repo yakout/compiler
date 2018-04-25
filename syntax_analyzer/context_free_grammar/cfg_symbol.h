@@ -19,7 +19,7 @@ class cfg_symbol
 {
 private:
     std::string name;
-    std::shared_ptr<cfg_production> prod;
+    std::shared_ptr<cfg_production> prod; // parent
     cfg_symbol_type type;
 public:
 	cfg_symbol ();

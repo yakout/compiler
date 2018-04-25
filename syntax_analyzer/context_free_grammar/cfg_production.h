@@ -13,7 +13,7 @@ class cfg_production
 {
 private:
     std::string name;
-    std::vector<cfg_symbol> prod;
+    std::vector<cfg_symbol> prod; // A -> BaeA
     std::shared_ptr<cfg_rule> rule; // parent rule
 public:
     cfg_production();

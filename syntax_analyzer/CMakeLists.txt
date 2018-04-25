@@ -9,22 +9,22 @@ option (BUILD_UNIT_TEST "Determines whether to build unit tests or not" OFF)
 # ------------------------------------------------------------------------------
 
 set (HEADER_FILES
-        cfg_production.h
-        cfg_rule.h
-        cfg_symbol.h
-        cfg.h
-        parsing_table.h
+        context_free_grammar/cfg_production.h
+        context_free_grammar/cfg_rule.h
+        context_free_grammar/cfg_symbol.h
+        context_free_grammar/cfg.h
+        context_free_grammar/parsing_table.h
         predictive_parser.h
-        first_follow.h)
+        )
 
 set (SOURCE_FILES
-        cfg_production.cpp
-        cfg_rule.cpp
-        cfg_symbol.cpp
-        cfg.cpp
-        parsing_table.cpp
+        context_free_grammar/cfg_production.cpp
+        context_free_grammar/cfg_rule.cpp
+        context_free_grammar/cfg_symbol.cpp
+        context_free_grammar/cfg.cpp
+        context_free_grammar/parsing_table.cpp
         predictive_parser.cpp
-        first_follow.cpp)
+        context_free_grammar/util/cfg_set.cpp context_free_grammar/util/cfg_set.h)
 
 add_library (libsyntax SHARED ${SOURCE_FILES} ${HEADER_FILES})
 

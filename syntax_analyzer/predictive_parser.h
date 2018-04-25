@@ -7,8 +7,8 @@
 #include <iostream>
 #include <memory>
 #include <algorithm>
-#include "parsing_table.h"
-#include "cfg_production.h"
+#include "context_free_grammar/parsing_table.h"
+#include "context_free_grammar/cfg_production.h"
 
 class predictive_parser
 {

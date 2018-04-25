@@ -2,7 +2,6 @@
 #define COMPILER_PARSING_TABLE_H
 
 #include "cfg.h"
-#include "first_follow.h"
 #include "cfg_symbol.h"
 #include "cfg_rule.h"
 
@@ -17,7 +16,7 @@ private:
     /** Grammar that the parsing table represents.*/
     cfg grammar;
     /** First and Follow sets for the grammar above.*/
-    first_follow_sets first_follow;
+//    first_follow_sets first_follow;
     /** Parsing Table accessed by rule (NON_TERMINAL) and string (TOKEN) to
        get cfg_production used or error.*/
     std::map <std::pair<std::shared_ptr<cfg_rule>, std::string>, cfg_production> table;
@@ -43,7 +42,7 @@ public:
         @param cfg grammar to build parsing table for
         @param first_follow_sets to be used in building parsing table
     */
-    parsing_table (cfg, first_follow_sets);
+//    parsing_table (cfg, first_follow_sets);
     /**
         Default Contructor for parsing table.
     */

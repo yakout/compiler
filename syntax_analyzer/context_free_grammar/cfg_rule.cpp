@@ -7,7 +7,7 @@ cfg_rule::cfg_rule()
 }
 
 cfg_rule::cfg_rule(std::shared_ptr<cfg> g)
-        : productions(), grammer(g)
+        : productions(), grammar(g)
 {
 
 }
