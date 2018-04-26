@@ -29,7 +29,8 @@ std::shared_ptr<cfg_production> get_synch_prod ()
 void parsing_table::build()
 {
    /// list of non-terminals in the CFG.
-   std::vector <cfg_symbol> non_terminals = grammar.get_non_terminals ();
+   std::unordered_set <cfg_symbol, cfg_symbol::hasher
+                , cfg_symbol::comparator> non_terminals = grammar.get_non_terminals ();
    /// First and follow cfg_sets
    std::shared_ptr <cfg_set> first_cfg_set = grammar.get_first_set();
    std::shared_ptr <cfg_set> follow_cfg_set = grammar.get_follow_set();

@@ -78,12 +78,13 @@ int main (int argc, char *argv[]) {
 
     // TESTING FIRST SETs
     std::shared_ptr<cfg> cfg_ptr = std::make_shared<cfg>(cfg ());
-    std::vector<cfg_symbol> non_terminals;
-    non_terminals.push_back(E);
-    non_terminals.push_back(E_dash);
-    non_terminals.push_back(T_dash);
-    non_terminals.push_back(T);
-    non_terminals.push_back(F);
+    std::unordered_set<cfg_symbol, cfg_symbol::hasher
+                                , cfg_symbol::comparator> non_terminals;
+    non_terminals.insert(E);
+    non_terminals.insert(E_dash);
+    non_terminals.insert(T_dash);
+    non_terminals.insert(T);
+    non_terminals.insert(F);
     cfg_ptr->set_non_terminals(non_terminals);
 
     std::unordered_map <cfg_symbol, cfg_rule

@@ -13,12 +13,12 @@
 
 class cfg {
 private:
-    std::vector <cfg_symbol> non_terminals;
-    std::vector <cfg_symbol> terminals;
+    std::unordered_set <cfg_symbol, cfg_symbol::hasher
+                                , cfg_symbol::comparator> non_terminals;
+    std::unordered_set <cfg_symbol, cfg_symbol::hasher
+                                , cfg_symbol::comparator> terminals;
     std::vector <cfg_rule> rules;
     cfg_symbol start_symbol;
-    std::unordered_set <cfg_symbol, cfg_symbol::hasher
-            , cfg_symbol::comparator> cfg_symbols;
     std::unordered_map <cfg_symbol, cfg_rule
             , cfg_symbol::hasher, cfg_symbol::comparator> grammar;
     std::unordered_map <cfg_symbol, std::vector <cfg_production>, cfg_symbol::hasher
@@ -31,25 +31,22 @@ private:
 public:
     cfg ();
     explicit cfg (std::string);
-
-    void set_non_terminals(const std::vector<cfg_symbol> &non_terminals);
-    const std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::comparator> &get_grammar() const;
+    void set_non_terminals(const std::unordered_set<cfg_symbol
+                                , cfg_symbol::hasher, cfg_symbol::comparator> &);
+    const std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::comparator> & get_grammar() const;
     void
-    set_grammar(const std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::comparator> &grammar);
+    set_grammar(const std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::comparator> &);
     void parse (std::string);
-    void add_rule ();
+    void add_rule (cfg_symbol &, std::vector<cfg_production> &);
     std::shared_ptr <cfg_set> get_first_set ();
     std::shared_ptr <cfg_set> get_follow_set ();
     bool is_ll_1 ();
-    const std::unordered_set <cfg_symbol, cfg_symbol::hasher, cfg_symbol::comparator>
-                                 & get_cfg_symbols () const;
-    void set_cfg_symbols (
-        const std::unordered_set <cfg_symbol, cfg_symbol::hasher
-            , cfg_symbol::comparator> & cfg_symbols);
 
     /** Getters **/
-    std::vector <cfg_symbol> get_non_terminals ();
-    std::vector <cfg_symbol> get_terminals ();
+    std::unordered_set <cfg_symbol, cfg_symbol::hasher
+                                , cfg_symbol::comparator> get_non_terminals ();
+    std::unordered_set <cfg_symbol, cfg_symbol::hasher
+                                        , cfg_symbol::comparator> get_terminals ();
     std::vector <cfg_rule> get_rules ();
     cfg_symbol get_start_symbol ();
 };

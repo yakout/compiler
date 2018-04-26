@@ -2,6 +2,26 @@
 #include <fstream>
 #include <utility>
 #include <iostream>
+#include <sstream>
+#include <algorithm>
+
+struct rule_holder {
+    std::string lhs_symbol_name;
+    std::vector <std::vector <std::string>> productions;
+};
+
+/**
+ *  Splits a string on a given delimiter passed as a char.
+ */
+void split_str (std::vector <std::string> &, std::string &, char);
+
+/**
+ *  Removes single quotes from string.
+ *  TODO: Re-check this.
+ */
+bool remove_single_quotes (std::string &);
+
+rule_holder process_cfg_rule (std::string &);
 
 cfg::cfg ()
     : non_terminals (), terminals (), rules () {
@@ -17,22 +37,60 @@ void cfg::parse (std::string grammar_file) {
     std::ifstream grammar_in_file (grammar_file.c_str ());
     // Checks if grammar file exists or not.
     if (!grammar_in_file.good ()) {
-        //TODO: - Report "File doesn't exist!" error.
+        //TODO: Report "File doesn't exist!" error.
     }
-    std::string line;
-    while (std::getline (grammar_in_file, line)) {
-
+    std::string current_line, previous_line;
+    bool first_line = true;
+    rule_holder r_h;
+    while (std::getline (grammar_in_file, current_line)) {
+        if (first_line) {
+            previous_line += current_line;
+            first_line = false;
+        } else {
+            if (current_line[0] == '#') {
+                std::cout << previous_line << std::endl;
+                //TODO: Process the rule line.
+                r_h = process_cfg_rule (previous_line);
+                std::vector <cfg_production> productions;
+                cfg_production prod;
+                cfg_symbol lhs_symbol = cfg_symbol (r_h.lhs_symbol_name, cfg_symbol_type::NON_TERMINAL);
+                for (std::size_t i = 0 ; i < r_h.productions.size () ; i++) {
+                    cfg_production prod;
+                    for (std::size_t j = 0 ; j < r_h.productions[i].size () ; i++) {
+                        cfg_symbol symbol;
+                        if (!remove_single_quotes (r_h.productions[i][j])) {
+                            symbol = cfg_symbol (r_h.productions[i][j], cfg_symbol_type::NON_TERMINAL);
+                            non_terminals.insert (symbol);
+                        } else {
+                            symbol = cfg_symbol (r_h.productions[i][j], cfg_symbol_type::TERMINAL);
+                            terminals.insert (symbol);
+                        }   
+                    }
+                }
+                add_rule (lhs_symbol, productions);
+                // TODO: Add rule to rules vector. 
+                previous_line.clear ();
+                previous_line += current_line;
+            } else {
+                previous_line += " " + current_line;
+            }
+        }
     }
 }
-void cfg::add_rule () {
 
+void cfg::add_rule (cfg_symbol & lhs_symbol
+                        , std::vector <cfg_production> & vec) {
+    cfg_rule c_rule = cfg_rule (lhs_symbol, vec);
+    grammar[lhs_symbol] = c_rule;
 }
 
-std::vector <cfg_symbol> cfg::get_non_terminals () {
+std::unordered_set <cfg_symbol, cfg_symbol::hasher
+                    , cfg_symbol::comparator> cfg::get_non_terminals () {
     return non_terminals;
 }
 
-std::vector <cfg_symbol> cfg::get_terminals () {
+std::unordered_set <cfg_symbol, cfg_symbol::hasher
+                    , cfg_symbol::comparator> cfg::get_terminals () {
     return terminals;
 }
 
@@ -109,17 +167,6 @@ std::shared_ptr<cfg_set> cfg::get_first_set() {
     return first_set;
 }
 
-const std::unordered_set <cfg_symbol, cfg_symbol::hasher, cfg_symbol::comparator> 
-                        & cfg::get_cfg_symbols () const {
-    return cfg::cfg_symbols;
-}
-
-void cfg::set_cfg_symbols (
-        const std::unordered_set <cfg_symbol, cfg_symbol::hasher
-            , cfg_symbol::comparator> & cfg_symbols) {
-    cfg::cfg_symbols = cfg_symbols;
-}
-
 void cfg::process_follow_set(cfg_symbol non_terminal, std::shared_ptr<cfg_set> follow_set) {
     if (non_terminal.get_name() == cfg::start_symbol.get_name()) {
         cfg_symbol s_$(END_MARKER);
@@ -193,16 +240,64 @@ std::shared_ptr<cfg_set> cfg::get_follow_set() {
     return follow_set;
 }
 
-void cfg::set_non_terminals(const std::vector<cfg_symbol> &non_terminals) {
+void cfg::set_non_terminals(const std::unordered_set<cfg_symbol
+                    , cfg_symbol::hasher, cfg_symbol::comparator> & non_terminals) {
     cfg::non_terminals = non_terminals;
 }
 
-const std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::comparator> &cfg::get_grammar() const {
+const std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher
+                    , cfg_symbol::comparator> &cfg::get_grammar() const {
     return grammar;
 }
 
 void
-cfg::set_grammar(const std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::comparator> &grammar) {
+cfg::set_grammar(const std::unordered_map<cfg_symbol, cfg_rule
+                    , cfg_symbol::hasher, cfg_symbol::comparator> &grammar) {
     cfg::grammar = grammar;
 }
 
+void split_str (std::vector <std::string> & vec
+                        , std::string & str, char delimiter) {
+    std::stringstream ss_str (str);
+    std::string token;
+    while (getline (ss_str, token, delimiter))
+        vec.push_back (token);
+    return;
+}
+
+bool remove_single_quotes (std::string & str) {
+    if (str.length () > 2) {
+        str.erase (remove (str.begin (), str.end (), '\''), str.end ());
+        str.erase (remove (str.begin (), str.end (), '\''), str.end ());
+        return true;
+    }
+    return false;
+}
+
+rule_holder process_cfg_rule (std::string & str) {
+    rule_holder r_h;
+    std::vector <std::string> vec;
+    
+    // Gets the position of the first equal sign to split the rule to LHS and RHS.
+    std::size_t equal_sign_pos = str.find_first_of ("=");
+
+    if (equal_sign_pos == std::string::npos) {
+        //TODO: Report "Invalid rule so invalid grammar" error.
+    }
+
+    std::string lhs_symbol_name = str.substr (0, equal_sign_pos - 1);
+    std::string rhs_productions = str.substr (equal_sign_pos + 1, str.length ());
+
+    r_h.lhs_symbol_name = lhs_symbol_name;
+
+    split_str (vec, rhs_productions, '|');
+
+    std::vector <std::string> prod;
+
+    for (std::size_t i = 0 ; i < vec.size (); i++) {
+        split_str (prod, vec[i], ' ');
+        r_h.productions[i] = prod;
+        prod.clear ();
+    }
+    return r_h;
+}
