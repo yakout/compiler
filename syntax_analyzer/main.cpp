@@ -98,30 +98,5 @@ int main (int argc, char *argv[]) {
 
     std::shared_ptr<parsing_table> p_table = std::make_shared<parsing_table>(table);
 
-    std::vector<std::string> input_buffer{"id", "+", "id", "$"};
-
-    predictive_parser parser(E, p_table, input_buffer);
-    parser.parse();
-
-    std::vector<std::string> derivations = parser.get_derivations();
-    std::vector<std::string> derivations_test
-            {"E -> TE'",
-             "T -> FT'",
-             "F -> id",
-             "match: id",
-             "T' -> \\E",
-             "E' -> +TE'",
-             "match: +",
-             "T -> FT'",
-             "F -> id",
-             "match: id",
-             "T' -> \\E",
-             "E' -> \\E",
-             "accept"};
-
-    for (std::string const& d : derivations)
-    {
-        std::cout << d << std::endl;
-    }
-
+    p_table->draw("parsing_table.txt");
 }

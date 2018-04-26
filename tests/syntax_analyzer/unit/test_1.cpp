@@ -3,7 +3,7 @@
 #include <memory>
 
 
-TEST_CASE("test predictive parser")
+TEST_CASE("PREDICTIVE PARSER TEST 1")
 {
     std::vector<cfg_symbol> eps_vector;
 
@@ -127,7 +127,6 @@ TEST_CASE("test predictive parser")
         REQUIRE(derivations[i] == derivations_test[i]);
     }
 }
-
 
 
 

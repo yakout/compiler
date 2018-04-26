@@ -25,6 +25,8 @@ std::vector <cfg_symbol> cfg_production::get_symbols ()
 
 std::string cfg_production::get_name()
 {
+    if (production_symbols.empty())
+        return "";
     std::string name(lhs_symbol.get_name());
     name += " -> ";
     for (cfg_symbol &s : production_symbols)
