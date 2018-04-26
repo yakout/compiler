@@ -55,6 +55,12 @@ cfg::process_first_set(int prod_symbol_index, std::shared_ptr<cfg_set> first_set
         return;
     }
     auto curr_prod_symbol = prod->get_symbols()[prod_symbol_index];
+
+    // Cycle case
+    if (curr_prod_symbol.get_name() == prod->get_lhs_symbol().get_name()) {
+        return;
+    }
+    
     if (curr_prod_symbol.get_type() == TERMINAL) {
         first_set->add_symbol(curr_prod_symbol.get_name(), curr_prod_symbol, prod);
         first_set->add_symbol(prod->get_lhs_symbol().get_name(), curr_prod_symbol, prod);
@@ -130,6 +136,7 @@ void cfg::process_follow_set(cfg_symbol non_terminal, std::shared_ptr<cfg_set> f
                         process_follow_set(production.get_lhs_symbol(), follow_set);
                     }
                     // Add everything in Follow(lhs) to Follow(non_terminal)
+                    /// TODO: Make this a function in the cfg_set class.    
                     auto follow_set_map = follow_set->get_set_map();
                     for (auto symbol : follow_set_map[production.get_lhs_symbol().get_name()]) {
                         follow_set->add_symbol(non_terminal.get_name(), symbol.first, nullptr);
@@ -137,31 +144,39 @@ void cfg::process_follow_set(cfg_symbol non_terminal, std::shared_ptr<cfg_set> f
                 } else {
                     // There is a symbol after this non_terminal in the production.
 
-                    // Put everything in first of the next symbol in the follow of non_terminal
-                    auto cfg_first_set_map = cfg::get_first_set()->get_set_map();
-                    auto next_first_set = cfg_first_set_map[production.get_symbols()[i + 1].get_name()];
-                    bool has_eps = false;
-                    for (auto symbol : next_first_set) {
-                        if (symbol.first.get_name() != EPS) {
-                            follow_set->add_symbol(non_terminal.get_name(), symbol.first, nullptr);
-                        } else {
-                            has_eps = true;
+                    bool has_eps = true;
+                    int curr_pos = i + 1;
+                    while (has_eps) {
+                        if (curr_pos == production.get_symbols().size()) {
+                            break;
                         }
+                        has_eps = false;
+                        // Put everything in first of the next symbol in the follow of non_terminal
+                        auto cfg_first_set_map = cfg::get_first_set()->get_set_map();
+                        auto next_first_set = cfg_first_set_map[production.get_symbols()[curr_pos++].get_name()];
+                        for (auto symbol : next_first_set) {
+                            if (symbol.first.get_name() != EPS) {
+                                follow_set->add_symbol(non_terminal.get_name(), symbol.first, nullptr);
+                            } else {
+                                has_eps = true;
+                            }
+                        }    
                     }
-
                     if (has_eps) {
-                        // If eps is in first of next symbol, add everything in Follow(lhs) to Follow(non_terminal)
+                        // If eps is in first of last symbol, add everything in Follow(lhs) to Follow(non_terminal)
                         if (follow_set->empty(production.get_lhs_symbol().get_name())) {
                             // Calc Follow(lhs) if not calculated
                             process_follow_set(production.get_lhs_symbol(), follow_set);
                         }
                         // Add everything in Follow(lhs) to Follow(non_terminal)
+                        // TODO: Make this a function in cfg_set
                         auto follow_set_map = follow_set->get_set_map();
                         for (auto symbol : follow_set_map[production.get_lhs_symbol().get_name()]) {
                             follow_set->add_symbol(non_terminal.get_name(), symbol.first, nullptr);
                         }
                     }
                 }
+                break;
             }
         }
     }
