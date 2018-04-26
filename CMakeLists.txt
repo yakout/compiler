@@ -3,8 +3,11 @@ project (compiler)
 
 set (CMAKE_CXX_STANDARD 11)
 
-# Raising the compiler warnings level.
-set (GCC_COMPILE_FLAGS "-Wall -Wextra")
+# ------------------------------------------------------------------------------
+# Compiler flags
+# ------------------------------------------------------------------------------
+
+set (GCC_COMPILE_FLAGS "-Wall -Wextra -g")
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_COMPILE_FLAGS}")
 
