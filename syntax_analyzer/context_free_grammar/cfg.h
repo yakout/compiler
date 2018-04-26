@@ -15,14 +15,30 @@ class cfg {
 private:
     std::vector <cfg_symbol> non_terminals;
     std::vector <cfg_symbol> terminals;
+public:
+    void set_terminals(const std::vector<cfg_symbol> &terminals);
+
+private:
     std::vector <cfg_rule> rules;
     cfg_symbol start_symbol;
+public:
+    void set_start_symbol(const cfg_symbol &start_symbol);
+
+private:
     std::unordered_set <cfg_symbol, cfg_symbol::hasher
             , cfg_symbol::comparator> cfg_symbols;
     std::unordered_map <cfg_symbol, cfg_rule
             , cfg_symbol::hasher, cfg_symbol::comparator> grammar;
     std::unordered_map <cfg_symbol, std::vector <cfg_production>, cfg_symbol::hasher
             , cfg_symbol::comparator> cfg_symbol_productions;
+public:
+    const std::unordered_map<cfg_symbol, std::vector<cfg_production>, cfg_symbol::hasher, cfg_symbol::comparator> &
+    get_cfg_symbol_productions() const;
+
+    void set_cfg_symbol_productions(
+            const std::unordered_map<cfg_symbol, std::vector<cfg_production>, cfg_symbol::hasher, cfg_symbol::comparator> &cfg_symbol_productions);
+
+private:
 
     void process_first_set(int prod_symbol_index, std::shared_ptr<cfg_set> first_set,
                            std::shared_ptr<cfg_production> prod);

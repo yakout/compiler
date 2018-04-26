@@ -95,15 +95,21 @@ std::shared_ptr<cfg_set> cfg::get_first_set() {
 
     /// Build first set
     for (auto non_terminal : cfg::non_terminals) {
-        std::cout << "Current non_terminal = " << non_terminal.get_name() << "\n";
+        //std::cout << "Current non_terminal = " << non_terminal.get_name() << "\n";
         if (!first_set->empty(non_terminal.get_name())) {
             continue;
         }
         auto rule = cfg::grammar[non_terminal];
-        std::cout << "Current rule has lhs = " << rule.get_lhs_symbol().get_name() << "\n";
+        //std::cout << "Current rule has lhs = " << rule.get_lhs_symbol().get_name() << "\n";
         for (auto production : cfg::grammar[non_terminal].get_productions()) { // Iterate over all productions from this non-terminal
-            std::cout << "Current production's lhs = " << production.get_lhs_symbol().get_name() << "\n";
+            //std::cout << "Current production's lhs = " << production.get_lhs_symbol().get_name() << "\n";
             process_first_set(0, first_set, std::shared_ptr<cfg_production>(&production));
+        }
+    }
+    for (auto terminal : cfg::terminals) {
+        auto set_map = first_set->get_set_map();
+        if (set_map[terminal.get_name()].size() == 0) {
+            first_set->add_symbol(terminal.get_name(), terminal, nullptr);
         }
     }
     return first_set;
@@ -122,7 +128,7 @@ void cfg::set_cfg_symbols (
 
 void cfg::process_follow_set(cfg_symbol non_terminal, std::shared_ptr<cfg_set> follow_set) {
     if (non_terminal.get_name() == cfg::start_symbol.get_name()) {
-        cfg_symbol s_$(END_MARKER);
+        cfg_symbol s_$("$", END_MARKER);
         follow_set->add_symbol(non_terminal.get_name(), s_$, nullptr);
     }
     for (auto production : cfg::cfg_symbol_productions[non_terminal]) {
@@ -153,6 +159,9 @@ void cfg::process_follow_set(cfg_symbol non_terminal, std::shared_ptr<cfg_set> f
                         has_eps = false;
                         // Put everything in first of the next symbol in the follow of non_terminal
                         auto cfg_first_set_map = cfg::get_first_set()->get_set_map();
+//                        for (auto elem : cfg_first_set_map) {
+//                            std::cout << elem.first << "\n";
+//                        }
                         auto next_first_set = cfg_first_set_map[production.get_symbols()[curr_pos++].get_name()];
                         for (auto symbol : next_first_set) {
                             if (symbol.first.get_name() != EPS) {
@@ -188,6 +197,7 @@ std::shared_ptr<cfg_set> cfg::get_follow_set() {
         if (!follow_set->empty(non_terminal.get_name())) {
             continue;
         }
+        std::cout << "Calculating follow of non_terminal = " << non_terminal.get_name() << "\n";
         process_follow_set(non_terminal, follow_set);
     }
     return follow_set;
@@ -204,5 +214,23 @@ const std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::c
 void
 cfg::set_grammar(const std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::comparator> &grammar) {
     cfg::grammar = grammar;
+}
+
+void cfg::set_start_symbol(const cfg_symbol &start_symbol) {
+    cfg::start_symbol = start_symbol;
+}
+
+const std::unordered_map<cfg_symbol, std::vector<cfg_production>, cfg_symbol::hasher, cfg_symbol::comparator> &
+cfg::get_cfg_symbol_productions() const {
+    return cfg_symbol_productions;
+}
+
+void cfg::set_cfg_symbol_productions(
+        const std::unordered_map<cfg_symbol, std::vector<cfg_production>, cfg_symbol::hasher, cfg_symbol::comparator> &cfg_symbol_productions) {
+    cfg::cfg_symbol_productions = cfg_symbol_productions;
+}
+
+void cfg::set_terminals(const std::vector<cfg_symbol> &terminals) {
+    cfg::terminals = terminals;
 }
 

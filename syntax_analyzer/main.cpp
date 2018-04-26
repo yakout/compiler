@@ -114,21 +114,22 @@ int main (int argc, char *argv[]) {
     grammar[T_dash] = rule_T_dash;
     grammar[F] = rule_F;
     cfg_ptr->set_grammar(grammar);
+    cfg_ptr->set_start_symbol(E);
 
-    auto gram = cfg_ptr->get_grammar();
-    for (auto entry : gram) {
-        std::cout << entry.first.get_name() << "\n";
-        auto rule = entry.second;
-        std::cout << "Current rule's lhs = " << rule.get_lhs_symbol().get_name() << "\n";
-        auto productions = rule.get_productions();
-        for (auto pro : productions) {
-            for (auto sym : pro.get_symbols()) {
-                std::cout << sym.get_name() << "\n";
-            }
-        }
-        std::cout << "\n\n";
-    }
-    std::cout << "hi\t\t\t" << gram[E].get_lhs_symbol().get_name() << "\n\n\n\n\n\n";
+//    auto gram = cfg_ptr->get_grammar();
+//    for (auto entry : gram) {
+//        std::cout << entry.first.get_name() << "\n";
+//        auto rule = entry.second;
+//        std::cout << "Current rule's lhs = " << rule.get_lhs_symbol().get_name() << "\n";
+//        auto productions = rule.get_productions();
+//        for (auto pro : productions) {
+//            for (auto sym : pro.get_symbols()) {
+//                std::cout << sym.get_name() << "\n";
+//            }
+//        }
+//        std::cout << "\n\n";
+//    }
+//    std::cout << "hi\t\t\t" << gram[E].get_lhs_symbol().get_name() << "\n\n\n\n\n\n";
     auto first_set_map = cfg_ptr->get_first_set()->get_set_map();
     for (auto non_terminal : non_terminals) {
         auto curr_set = first_set_map[non_terminal.get_name()];
@@ -137,7 +138,45 @@ int main (int argc, char *argv[]) {
             std::cout << symbol.first.get_name() << ",";
         }
         std::cout << "}\n";
+//        std::cout << curr_set.size() << "\n";
     }
+    std::cout << "\n\n";
+
+    // Building map of symbols and their corresponding productions.
+    std::unordered_map <cfg_symbol, std::vector <cfg_production>, cfg_symbol::hasher
+            , cfg_symbol::comparator> sym_productions;
+    sym_productions[E].push_back(prod_F1);
+    sym_productions[E_dash].push_back(prod_E);
+    sym_productions[E_dash].push_back(prod_E_dash);
+    sym_productions[T].push_back(prod_E);
+    sym_productions[T].push_back(prod_E_dash);
+    sym_productions[T_dash].push_back(prod_T);
+    sym_productions[T_dash].push_back(prod_T_dash);
+    sym_productions[F].push_back(prod_T);
+    sym_productions[F].push_back(prod_T_dash);
+
+    cfg_ptr->set_cfg_symbol_productions(sym_productions);
+    std::vector <cfg_symbol> terminals;
+    terminals.push_back(eps);
+    terminals.push_back(plus);
+    terminals.push_back(multiplication);
+    terminals.push_back(left_paren);
+    terminals.push_back(right_paren);
+    terminals.push_back(id);
+    cfg_ptr->set_terminals(terminals);
+
+    auto follow_set_map = cfg_ptr->get_follow_set()->get_set_map();
+    for (auto non_terminal : non_terminals) {
+        auto curr_set = follow_set_map[non_terminal.get_name()];
+        std::cout << "FOLLOW(" << non_terminal.get_name() << ") = {";
+        for (auto symbol : curr_set) {
+            std::cout << symbol.first.get_name() << ",";
+        }
+        std::cout << "}\n";
+        std::cout << "size = " << curr_set.size() << "\n";
+    }
+    std::cout << "\n\n";
+
 }
 
 
