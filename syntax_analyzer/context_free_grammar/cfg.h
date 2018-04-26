@@ -14,6 +14,10 @@
 class cfg {
 private:
     std::vector <cfg_symbol> non_terminals;
+public:
+    void set_non_terminals(const std::vector<cfg_symbol> &non_terminals);
+
+private:
     std::vector <cfg_symbol> terminals;
     std::vector <cfg_rule> rules;
     cfg_symbol start_symbol;
@@ -21,6 +25,13 @@ private:
             , cfg_symbol::comparator> cfg_symbols;
     std::unordered_map <cfg_symbol, cfg_rule
                         , cfg_symbol::hasher, cfg_symbol::comparator> grammar;
+public:
+    const std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::comparator> &get_grammar() const;
+
+    void
+    set_grammar(const std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::comparator> &grammar);
+
+private:
     std::unordered_map <cfg_symbol, std::vector <cfg_production>, cfg_symbol::hasher
                             , cfg_symbol::comparator> cfg_symbol_productions;
 

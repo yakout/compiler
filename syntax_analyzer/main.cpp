@@ -1,7 +1,6 @@
 #include <iostream>
 #include "predictive_parser.h"
 
-
 int main (int argc, char *argv[]) {
     std::vector<cfg_symbol> eps_vector;
 
@@ -76,27 +75,89 @@ int main (int argc, char *argv[]) {
     cfg_production prod_F1(F, F_prod_vector1);
     cfg_production prod_F2(F, F_prod_vector2);
 
-    std::map<std::pair<std::string, std::string>, cfg_production> table;
 
-    table[{"E", "id"}] = prod_E;
-    table[{"E", "("}] = prod_E;
+    // TESTING FIRST SETs
+    std::shared_ptr<cfg> cfg_ptr = std::make_shared<cfg>(cfg ());
+    std::vector<cfg_symbol> non_terminals;
+    non_terminals.push_back(E);
+    non_terminals.push_back(E_dash);
+    non_terminals.push_back(T_dash);
+    non_terminals.push_back(T);
+    non_terminals.push_back(F);
+    cfg_ptr->set_non_terminals(non_terminals);
 
-    table[{"E'", "+"}] = prod_E_dash;
-    table[{"E'", ")"}] = prod_E_dash_eps;
-    table[{"E'", "$"}] = prod_E_dash_eps;
+    std::unordered_map <cfg_symbol, cfg_rule
+            , cfg_symbol::hasher, cfg_symbol::comparator> grammar;
+    std::vector<cfg_production> E_productions;
+    std::vector<cfg_production> T_productions;
+    std::vector<cfg_production> F_productions;
+    std::vector<cfg_production> E_dash_productions;
+    std::vector<cfg_production> T_dash_productions;
+    E_productions.push_back(prod_E);
+    E_dash_productions.push_back(prod_E_dash);
+    E_dash_productions.push_back(prod_E_dash_eps);
+    T_productions.push_back(prod_T);
+    T_dash_productions.push_back(prod_T_dash);
+    T_dash_productions.push_back(prod_T_dash_eps);
+    F_productions.push_back(prod_F1);
+    F_productions.push_back(prod_F2);
 
-    table[{"T", "id"}] = prod_T;
-    table[{"T", "("}] = prod_T;
+    cfg_rule rule_E(E, E_productions);
+    cfg_rule rule_E_dash(E_dash, E_dash_productions);
+    cfg_rule rule_T_dash(T_dash, T_dash_productions);
+    cfg_rule rule_T(T, T_productions);
+    cfg_rule rule_F(F, F_productions);
 
-    table[{"T'", "+"}] = prod_T_dash_eps;
-    table[{"T'", "*"}] = prod_T_dash;
-    table[{"T'", ")"}] = prod_T_dash_eps;
-    table[{"T'", "$"}] = prod_T_dash_eps;
+    grammar[E] = rule_E;
+    grammar[T] = rule_T;
+    grammar[E_dash] = rule_E_dash;
+    grammar[T_dash] = rule_T_dash;
+    grammar[F] = rule_F;
+    cfg_ptr->set_grammar(grammar);
 
-    table[{"F", "("}] = prod_F1;
-    table[{"F", "id"}] = prod_F2;
-
-    std::shared_ptr<parsing_table> p_table = std::make_shared<parsing_table>(table);
-
-    p_table->draw("parsing_table.txt");
+    auto gram = cfg_ptr->get_grammar();
+    for (auto entry : gram) {
+        std::cout << entry.first.get_name() << "\n";
+        auto rule = entry.second;
+        std::cout << "Current rule's lhs = " << rule.get_lhs_symbol().get_name() << "\n";
+        auto productions = rule.get_productions();
+        for (auto pro : productions) {
+            for (auto sym : pro.get_symbols()) {
+                std::cout << sym.get_name() << "\n";
+            }
+        }
+        std::cout << "\n\n";
+    }
+    std::cout << "hi\t\t\t" << gram[E].get_lhs_symbol().get_name() << "\n\n\n\n\n\n";
+    auto first_set_map = cfg_ptr->get_first_set()->get_set_map();
+    for (auto non_terminal : non_terminals) {
+        auto curr_set = first_set_map[non_terminal.get_name()];
+        std::cout << "FIRST(" << non_terminal.get_name() << ") = {";
+        for (auto symbol : curr_set) {
+            std::cout << symbol.first.get_name() << ",";
+        }
+        std::cout << "}\n";
+    }
 }
+
+
+//    E -> TE’
+//    E’ -> +TE’ | eps
+//    T -> FT’
+//    T’ -> *FT’ | eps
+//    F -> (E) | id
+
+//    FIRST(F) = {(,id}
+//    FIRST(T’) = {*, eps}
+//    FIRST(T) = {(,id}
+//    FIRST(E’) = {+, eps}
+//    FIRST(E) = {(,id}
+
+//    FIRST(TE’) = {(,id}
+//    FIRST(+TE’ ) = {+}
+//    FIRST(eps) = {eps}
+//    FIRST(FT’) = {(,id}
+//    FIRST(*FT’) = {*}
+//    FIRST(eps) = {eps}
+//    FIRST((E)) = {(}
+//    FIRST(id) = {id}

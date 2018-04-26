@@ -1,6 +1,7 @@
 #include "cfg.h"
 #include <fstream>
 #include <utility>
+#include <iostream>
 
 cfg::cfg ()
     : non_terminals (), terminals (), rules () {
@@ -86,10 +87,14 @@ std::shared_ptr<cfg_set> cfg::get_first_set() {
 
     /// Build first set
     for (auto non_terminal : cfg::non_terminals) {
+        std::cout << "Current non_terminal = " << non_terminal.get_name() << "\n";
         if (!first_set->empty(non_terminal.get_name())) {
             continue;
         }
-        for (auto production : cfg::grammar[non_terminal].get_productions ()) { // Iterate over all productions from this non-terminal
+        auto rule = cfg::grammar[non_terminal];
+        std::cout << "Current rule has lhs = " << rule.get_lhs_symbol().get_name() << "\n";
+        for (auto production : cfg::grammar[non_terminal].get_productions()) { // Iterate over all productions from this non-terminal
+            std::cout << "Current production's lhs = " << production.get_lhs_symbol().get_name() << "\n";
             process_first_set(0, first_set, std::shared_ptr<cfg_production>(&production));
         }
     }
@@ -110,5 +115,18 @@ void cfg::set_cfg_symbols (
 std::shared_ptr<cfg_set> cfg::get_follow_set() {
     std::shared_ptr<cfg_set> follow_set = std::make_shared<cfg_set>();
     return follow_set;
+}
+
+void cfg::set_non_terminals(const std::vector<cfg_symbol> &non_terminals) {
+    cfg::non_terminals = non_terminals;
+}
+
+const std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::comparator> &cfg::get_grammar() const {
+    return grammar;
+}
+
+void
+cfg::set_grammar(const std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::comparator> &grammar) {
+    cfg::grammar = grammar;
 }
 
