@@ -16,7 +16,7 @@ int main (int argc, char *argv[]) {
 
     // SPECIAL SYMBOLS
     cfg_symbol eps(EPS, TERMINAL);
-    cfg_symbol s_$(END_MARKER);
+    cfg_symbol s_$("$", END_MARKER);
 
     // LHS NON_TERMINALS SYMBOLS
     cfg_symbol E("E", NON_TERMINAL);

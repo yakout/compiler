@@ -78,6 +78,8 @@ cfg::process_first_set(int prod_symbol_index, std::shared_ptr<cfg_set> first_set
 
     // If curr_prod_symbol has eps in its first set, then continue processing this production.
     if (first_set->has_eps(curr_prod_symbol.get_name())) {
+        cfg_symbol eps(EPS, TERMINAL); // TODO: Make this a constant.
+        first_set->add_symbol(prod->get_lhs_symbol().get_name(), eps, prod);
         process_first_set(prod_symbol_index + 1, first_set, prod);
     }
 }
@@ -112,8 +114,67 @@ void cfg::set_cfg_symbols (
     cfg::cfg_symbols = cfg_symbols;
 }
 
+void cfg::process_follow_set(cfg_symbol non_terminal, std::shared_ptr<cfg_set> follow_set) {
+    if (non_terminal.get_name() == cfg::start_symbol.get_name()) {
+        cfg_symbol s_$(END_MARKER);
+        follow_set->add_symbol(non_terminal.get_name(), s_$, nullptr);
+    }
+    for (auto production : cfg::cfg_symbol_productions[non_terminal]) {
+        for (int i = 0; i < production.get_symbols().size(); i++) {
+            auto symbol = production.get_symbols()[i];
+            if (symbol.get_name() == non_terminal.get_name()) {
+                if (i + 1 == production.get_symbols().size()) {
+                    // This non_terminal is the last symbol in the production.
+                    if (follow_set->empty(production.get_lhs_symbol().get_name())) {
+                        // Calc Follow(lhs) if not calculated
+                        process_follow_set(production.get_lhs_symbol(), follow_set);
+                    }
+                    // Add everything in Follow(lhs) to Follow(non_terminal)
+                    auto follow_set_map = follow_set->get_set_map();
+                    for (auto symbol : follow_set_map[production.get_lhs_symbol().get_name()]) {
+                        follow_set->add_symbol(non_terminal.get_name(), symbol.first, nullptr);
+                    }
+                } else {
+                    // There is a symbol after this non_terminal in the production.
+
+                    // Put everything in first of the next symbol in the follow of non_terminal
+                    auto cfg_first_set_map = cfg::get_first_set()->get_set_map();
+                    auto next_first_set = cfg_first_set_map[production.get_symbols()[i + 1].get_name()];
+                    bool has_eps = false;
+                    for (auto symbol : next_first_set) {
+                        if (symbol.first.get_name() != EPS) {
+                            follow_set->add_symbol(non_terminal.get_name(), symbol.first, nullptr);
+                        } else {
+                            has_eps = true;
+                        }
+                    }
+
+                    if (has_eps) {
+                        // If eps is in first of next symbol, add everything in Follow(lhs) to Follow(non_terminal)
+                        if (follow_set->empty(production.get_lhs_symbol().get_name())) {
+                            // Calc Follow(lhs) if not calculated
+                            process_follow_set(production.get_lhs_symbol(), follow_set);
+                        }
+                        // Add everything in Follow(lhs) to Follow(non_terminal)
+                        auto follow_set_map = follow_set->get_set_map();
+                        for (auto symbol : follow_set_map[production.get_lhs_symbol().get_name()]) {
+                            follow_set->add_symbol(non_terminal.get_name(), symbol.first, nullptr);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 std::shared_ptr<cfg_set> cfg::get_follow_set() {
     std::shared_ptr<cfg_set> follow_set = std::make_shared<cfg_set>();
+    for (auto non_terminal : cfg::non_terminals) {
+        if (!follow_set->empty(non_terminal.get_name())) {
+            continue;
+        }
+        process_follow_set(non_terminal, follow_set);
+    }
     return follow_set;
 }
 
