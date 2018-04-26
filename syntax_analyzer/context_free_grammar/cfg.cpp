@@ -5,6 +5,7 @@
 #include <sstream>
 #include <algorithm>
 #include <string>
+#include <map>
 
 struct rule_holder {
     std::string lhs_symbol_name;
@@ -105,44 +106,46 @@ void cfg::add_rule (cfg_rule & rule) {
 
 void cfg::left_factor ()
 {
-    // for (auto rule : rules)
-    // {
-    //     std::map <std::vector<std::string>, std::vector <cfg_production>> common_factors;
-    //     for (auto prod : rule.get_productions())
-    //     {
-    //         std::std::vector<std::string> v;
-    //         v.push_back(prod.get_symbols()[0].get_name());
-    //         common_factors[v].push_back (prod);
-    //     }
-    //     rule.empty_productions ();
-    //     size_t counter = 1;
-    //     std::vector <cfg_production> new_productions;
-    //     for (auto entry : common_factors)
-    //     {
-    //         if (entry.second.size() == 1)
-    //         {
-    //             new_productions.push_back (entry.second.front());
-    //         }
-    //         else
-    //         {
-    //             std::vector<cfg_symbol> v;
-    //             int i;
-    //             for (i = 0; i < entry.first.size(); i++)
-    //             {
-    //                v.push_back(entry.second.front()[i]);
-    //             }
-    //             cfg_symbol new_sym(rule.get_lhs_symbol().get_name()
-    //                 + std::to_string(counter), rule.get_lhs_symbol().get_type())
-    //             v.push_back(new_sym);
-    //             cfg_production new_prod(rule.get_lhs_symbol(), v);
-    //             new_productions.push_back (new_prod);
-    //
-    //             std::vector<cfg_symbol> rest_symbols;
-    //             add_rule(new_sym, )
-    //
-    //         }
-    //     }
-    // }
+     for (auto rule : rules)
+     {
+         std::map <std::vector<std::string>, std::vector <cfg_production>> common_factors;
+         for (auto prod : rule.get_productions())
+         {
+             std::vector<std::string> v;
+
+             v.push_back(prod.get_symbols()[0].get_name()); // TODO
+
+             common_factors[v].push_back (prod);
+         }
+         rule.empty_productions ();
+         size_t counter = 1;
+         std::vector <cfg_production> new_productions;
+         for (auto entry : common_factors)
+         {
+             if (entry.second.size() == 1)
+             {
+                 new_productions.push_back (entry.second.front());
+             }
+             else
+             {
+                 std::vector<cfg_symbol> v;
+                 int i;
+                 for (i = 0; i < entry.first.size(); i++)
+                 {
+//                    v.push_back(entry.second.front()[i]);
+                 }
+//                 cfg_symbol new_sym(rule.get_lhs_symbol().get_name()
+//                     + std::to_string(counter), rule.get_lhs_symbol().get_type())
+//                 v.push_back(new_sym);
+//                 cfg_production new_prod(rule.get_lhs_symbol(), v);
+//                 new_productions.push_back (new_prod);
+
+                 std::vector<cfg_symbol> rest_symbols;
+//                 add_rule(new_sym, )
+
+             }
+         }
+     }
 }
 
 void cfg::remove_left_recursion ()
