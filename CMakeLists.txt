@@ -3,6 +3,11 @@ project (compiler)
 
 set (CMAKE_CXX_STANDARD 11)
 
+# Raising the compiler warnings level.
+set (GCC_COMPILE_FLAGS "-Wall -Wextra")
+
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_COMPILE_FLAGS}")
+
 option (BUILD_REG_TEST "Determines whether to build regression tests or not" OFF)
 
 # ------------------------------------------------------------------------------

@@ -2,6 +2,11 @@ cmake_minimum_required (VERSION 3.5)
 
 set (CMAKE_CXX_STANDARD 11)
 
+# Raising the compiler warnings level.
+set (GCC_COMPILE_FLAGS "-Wall -Wextra")
+
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_COMPILE_FLAGS}")
+
 option (BUILD_UNIT_TEST "Determines whether to build unit tests or not" OFF)
 
 # ------------------------------------------------------------------------------
