@@ -107,7 +107,6 @@ int main (int argc, char *argv[]) {
     cfg_rule rule_T_dash(T_dash, T_dash_productions);
     cfg_rule rule_T(T, T_productions);
     cfg_rule rule_F(F, F_productions);
-
     grammar[E] = rule_E;
     grammar[T] = rule_T;
     grammar[E_dash] = rule_E_dash;
@@ -116,28 +115,30 @@ int main (int argc, char *argv[]) {
     cfg_ptr->set_grammar(grammar);
 
     auto gram = cfg_ptr->get_grammar();
-    for (auto entry : gram) {
-        std::cout << entry.first.get_name() << "\n";
-        auto rule = entry.second;
-        std::cout << "Current rule's lhs = " << rule.get_lhs_symbol().get_name() << "\n";
-        auto productions = rule.get_productions();
-        for (auto pro : productions) {
-            for (auto sym : pro.get_symbols()) {
-                std::cout << sym.get_name() << "\n";
-            }
-        }
-        std::cout << "\n\n";
-    }
-    std::cout << "hi\t\t\t" << gram[E].get_lhs_symbol().get_name() << "\n\n\n\n\n\n";
-    auto first_set_map = cfg_ptr->get_first_set()->get_set_map();
-    for (auto non_terminal : non_terminals) {
-        auto curr_set = first_set_map[non_terminal.get_name()];
-        std::cout << "FIRST(" << non_terminal.get_name() << ") = {";
-        for (auto symbol : curr_set) {
-            std::cout << symbol.first.get_name() << ",";
-        }
-        std::cout << "}\n";
-    }
+    parsing_table table = parsing_table (*cfg_ptr);
+    // table.draw ("parsing_table.txt");
+    // for (auto entry : gram) {
+    //     std::cout << entry.first.get_name() << "\n";
+    //     auto rule = entry.second;
+    //     std::cout << "Current rule's lhs = " << rule.get_lhs_symbol().get_name() << "\n";
+    //     auto productions = rule.get_productions();
+    //     for (auto pro : productions) {
+    //         for (auto sym : pro.get_symbols()) {
+    //             std::cout << sym.get_name() << "\n";
+    //         }
+    //     }
+    //     std::cout << "\n\n";
+    // }
+    // std::cout << "hi\t\t\t" << gram[E].get_lhs_symbol().get_name() << "\n\n\n\n\n\n";
+    // auto first_set_map = cfg_ptr->get_first_set()->get_set_map();
+    // for (auto non_terminal : non_terminals) {
+    //     auto curr_set = first_set_map[non_terminal.get_name()];
+    //     std::cout << "FIRST(" << non_terminal.get_name() << ") = {";
+    //     for (auto symbol : curr_set) {
+    //         std::cout << symbol.first.get_name() << ",";
+    //     }
+    //     std::cout << "}\n";
+    // }
 }
 
 

@@ -2,6 +2,10 @@
 
 #include "context_free_grammar/synch_production.h"
 
+#include <stdexcept>
+
+#define INVALID_LL1_GRAMMAR "This is NOT LL1 Grammar"
+
 parsing_table::parsing_table(cfg g)
  : grammar(g)
 {
@@ -46,9 +50,15 @@ void parsing_table::build()
        // filling table with first symbols except for EPS case.
        for (auto first_terminal : first)
        {
-           if (first_terminal.first.get_name() != EPS)
+           auto it = table.find(make_pair(non_terminal.get_name(),
+                                          first_terminal.first.get_name()));
+           if (first_terminal.first.get_name() != EPS && it != table.end())
                table[make_pair(non_terminal.get_name(), first_terminal.first.get_name())]
                      = *first_terminal.second;
+           else if (it == table.end())
+           {
+                throw std::runtime_error(INVALID_LL1_GRAMMAR);
+           }
            else
            {
                eps_terminal = first_terminal.first;

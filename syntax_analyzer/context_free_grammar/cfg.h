@@ -46,7 +46,9 @@ public:
     void set_cfg_symbols (
         const std::unordered_set <cfg_symbol, cfg_symbol::hasher
             , cfg_symbol::comparator> & cfg_symbols);
-
+    /** Grammar Correction **/
+    void left_factor ();
+    void remove_left_recursion ();
     /** Getters **/
     std::vector <cfg_symbol> get_non_terminals ();
     std::vector <cfg_symbol> get_terminals ();
