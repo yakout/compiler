@@ -22,7 +22,8 @@ set (HEADER_FILES
         context_free_grammar/cfg_rule.h
         context_free_grammar/cfg_symbol.h
         context_free_grammar/cfg.h
-        context_free_grammar/util/cfg_set.h
+        context_free_grammar/utility/cfg_set.h
+        context_free_grammar/utility/util.h
         context_free_grammar/synch_production.h
         parsing_table.h
         predictive_parser.h
@@ -33,7 +34,8 @@ set (SOURCE_FILES
         context_free_grammar/cfg_rule.cpp
         context_free_grammar/cfg_symbol.cpp
         context_free_grammar/cfg.cpp
-        context_free_grammar/util/cfg_set.cpp
+        context_free_grammar/utility/cfg_set.cpp
+        context_free_grammar/utility/util.cpp
         context_free_grammar/synch_production.cpp
         parsing_table.cpp
         predictive_parser.cpp

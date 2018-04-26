@@ -13,6 +13,8 @@ cfg::cfg (std::string grammar_file)
 
 }
 
+
+
 void cfg::parse (std::string grammar_file) {
     std::ifstream grammar_in_file (grammar_file.c_str ());
     // Checks if grammar file exists or not.
@@ -203,4 +205,3 @@ void
 cfg::set_grammar(const std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::comparator> &grammar) {
     cfg::grammar = grammar;
 }
-

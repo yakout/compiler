@@ -2,7 +2,7 @@
 #define COMPILER_CFG_H
 
 #include "cfg_rule.h"
-#include "util/cfg_set.h"
+#include "utility/cfg_set.h"
 #include <string>
 #include <vector>
 #include <unordered_set>
