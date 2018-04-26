@@ -8,7 +8,8 @@
 cfg_set::cfg_set() {
 }
 
-const std::unordered_map<std::string, std::unordered_set<std::pair<cfg_symbol, std::shared_ptr<cfg_production>>>> &cfg_set::get_set_map() const {
+const std::unordered_map<std::string, std::set<std::pair<cfg_symbol, std::shared_ptr<cfg_production>>,
+        cfg_symbol::pair_comparator>> &cfg_set::get_set_map() const {
     return cfg_set::my_set;
 }
 

@@ -34,18 +34,12 @@ void parsing_table::build()
    std::shared_ptr <cfg_set> first_cfg_set = grammar.get_first_set();
    std::shared_ptr <cfg_set> follow_cfg_set = grammar.get_follow_set();
    /// First and Follow maps.
-   std::unordered_map<std::string, std::vector<std::pair<cfg_symbol,
-                      std::shared_ptr<cfg_production>>>> first_set =
-             first_cfg_set->get_set_map();
-   std::unordered_map<std::string, std::vector<std::pair<cfg_symbol,
-                      std::shared_ptr<cfg_production>>>> follow_set =
-             follow_cfg_set->get_set_map();
+   auto first_set = first_cfg_set->get_set_map();
+   auto follow_set = follow_cfg_set->get_set_map();
    for (auto non_terminal : non_terminals)
    {
-      std::vector<std::pair<cfg_symbol,
-                  std::shared_ptr<cfg_production>>> first = first_set[non_terminal.get_name()];
-      std::vector<std::pair<cfg_symbol,
-                  std::shared_ptr<cfg_production>>> follow = follow_set[non_terminal.get_name()];
+      auto first = first_set[non_terminal.get_name()];
+      auto follow = follow_set[non_terminal.get_name()];
        bool has_eps = false;
        cfg_symbol eps_terminal;
        std::shared_ptr <cfg_production> eps_prod;

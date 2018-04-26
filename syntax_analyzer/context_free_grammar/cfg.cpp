@@ -64,7 +64,7 @@ cfg::process_first_set(int prod_symbol_index, std::shared_ptr<cfg_set> first_set
     if (first_set->empty(curr_prod_symbol.get_name())) {
         // Go to curr_prod_symbol rule and iterate over all its prods and calc its first set.
         for (auto production : cfg::grammar[curr_prod_symbol].get_productions()) {
-            process_first_set(0, first_set, std::make_shared<cfg_production>(&production));
+            process_first_set(0, first_set, std::shared_ptr<cfg_production>(&production));
         }
     }
 
@@ -90,7 +90,7 @@ std::shared_ptr<cfg_set> cfg::get_first_set() {
             continue;
         }
         for (auto production : cfg::grammar[non_terminal].get_productions ()) { // Iterate over all productions from this non-terminal
-            process_first_set(0, first_set, std::make_shared<cfg_production>(&production));
+            process_first_set(0, first_set, std::shared_ptr<cfg_production>(&production));
         }
     }
     return first_set;
