@@ -1,5 +1,6 @@
 #include "cfg.h"
 #include <fstream>
+#include <utility>
 
 cfg::cfg ()
     : non_terminals (), terminals (), rules () {
@@ -46,20 +47,50 @@ bool cfg::is_ll_1 () {
     return true;
 }
 
+void
+cfg::process_first_set(int prod_symbol_index, std::shared_ptr<cfg_set> first_set,
+                       std::shared_ptr<cfg_production> prod) {
+    if (prod_symbol_index == prod->get_symbols().size()) {
+        return;
+    }
+    auto curr_prod_symbol = prod->get_symbols()[prod_symbol_index];
+    if (curr_prod_symbol.get_type() == TERMINAL) {
+        first_set->add_symbol(curr_prod_symbol.get_name(), curr_prod_symbol, prod);
+        first_set->add_symbol(prod->get_lhs_symbol().get_name(), curr_prod_symbol, prod);
+        return;
+    }
+
+    // If current prod symbol isn't processed yet, process it.
+    if (first_set->empty(curr_prod_symbol.get_name())) {
+        // Go to curr_prod_symbol rule and iterate over all its prods and calc its first set.
+        for (auto production : cfg::grammar[curr_prod_symbol].get_productions()) {
+            process_first_set(0, first_set, std::make_shared<cfg_production>(&production));
+        }
+    }
+
+    // Here curr_proc_symbol's first_set should be already processed.
+    auto symbols_map = first_set->get_set_map();
+    for (auto symbol : symbols_map[curr_prod_symbol.get_name()]) {
+        // Add all symbols of curr_prod_symbol to lhs symbol's first set
+        first_set->add_symbol(prod->get_lhs_symbol().get_name(), symbol.first, prod);
+    }
+
+    // If curr_prod_symbol has eps in its first set, then continue processing this production.
+    if (first_set->has_eps(curr_prod_symbol.get_name())) {
+        process_first_set(prod_symbol_index + 1, first_set, prod);
+    }
+}
+
 std::shared_ptr<cfg_set> cfg::get_first_set() {
     std::shared_ptr<cfg_set> first_set = std::make_shared<cfg_set>();
 
     /// Build first set
-    for (auto symbol : cfg_symbols) {
-        if (symbol.get_type() == TERMINAL) {
-            first_set->add_symbol(symbol.get_name(), symbol, nullptr);
-        } else if (symbol.get_type() == NON_TERMINAL) {
-            for (auto production : cfg::grammar[symbol].get_productions ()) { // Iterate over all productions from this non-terminal
-                bool found_eps = true;
-                for (auto symbol : production.get_symbols()) {
-//                    if (found_eps && )
-                }
-            }
+    for (auto non_terminal : cfg::non_terminals) {
+        if (!first_set->empty(non_terminal.get_name())) {
+            continue;
+        }
+        for (auto production : cfg::grammar[non_terminal].get_productions ()) { // Iterate over all productions from this non-terminal
+            process_first_set(0, first_set, std::make_shared<cfg_production>(&production));
         }
     }
     return first_set;
@@ -67,7 +98,7 @@ std::shared_ptr<cfg_set> cfg::get_first_set() {
 
 const std::unordered_set <cfg_symbol, cfg_symbol::hasher, cfg_symbol::comparator> 
                         & cfg::get_cfg_symbols () const {
-    return cfg_symbols;
+    return cfg::cfg_symbols;
 }
 
 void cfg::set_cfg_symbols (
@@ -80,3 +111,4 @@ std::shared_ptr<cfg_set> cfg::get_follow_set() {
     std::shared_ptr<cfg_set> follow_set = std::make_shared<cfg_set>();
     return follow_set;
 }
+

@@ -8,6 +8,7 @@
 
 #include <unordered_map>
 #include <vector>
+#include <unordered_set>
 #include "../cfg_symbol.h"
 
 class cfg_symbol;
@@ -17,11 +18,12 @@ public:
     cfg_set();
 
     void add_symbol(std::string, cfg_symbol symbol, std::shared_ptr<cfg_production> parent_prod);
-    const std::unordered_map<std::string, std::vector<std::pair<cfg_symbol, std::shared_ptr<cfg_production>>>> &get_set_map() const;
+    const std::unordered_map<std::string, std::unordered_set<std::pair<cfg_symbol,
+            std::shared_ptr<cfg_production>>>> &get_set_map() const;
     bool has_eps(std::string);
-
+    bool empty(std::string);
 private:
-    std::unordered_map<std::string, std::vector<std::pair<cfg_symbol, std::shared_ptr<cfg_production>>>> my_set;
+    std::unordered_map<std::string, std::unordered_set<std::pair<cfg_symbol, std::shared_ptr<cfg_production>>>> my_set;
 };
 
 
