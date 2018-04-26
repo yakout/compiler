@@ -65,5 +65,9 @@ if (BUILD_UNIT_TEST)
         add_test (unit_${test_name}_syntax_analyzer unit_${test_name}_syntax)
     endmacro (do_test)
 
-    do_test (test_1)
+    do_test (predictive_parser_tests)
+#    do_test (parsing_table_tests)
+#    do_test (first_follow_tests)
+#    do_test (cfg_parser_tests)
+
 endif (BUILD_UNIT_TEST)
