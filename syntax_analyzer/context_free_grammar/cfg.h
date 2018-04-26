@@ -28,6 +28,8 @@ private:
                            std::shared_ptr<cfg_production> prod);
     void process_follow_set(cfg_symbol non_terminal, std::shared_ptr<cfg_set> follow_set);
 
+    void parse_rule (std::string &, bool);
+
 public:
     cfg ();
     explicit cfg (std::string);
@@ -38,6 +40,7 @@ public:
     set_grammar(const std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::comparator> &);
     void parse (std::string);
     void add_rule (cfg_symbol &, std::vector<cfg_production> &);
+    void add_rule (cfg_rule &);
     std::shared_ptr <cfg_set> get_first_set ();
     std::shared_ptr <cfg_set> get_follow_set ();
     bool is_ll_1 ();

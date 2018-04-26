@@ -16,7 +16,6 @@ TEST_CASE("PREDICTIVE PARSER TEST 1")
     std::vector<cfg_symbol> F_prod_vector1;
     std::vector<cfg_symbol> F_prod_vector2;
 
-
     // SPECIAL SYMBOLS
     cfg_symbol eps(EPS, TERMINAL);
     cfg_symbol s_$(END_MARKER);
@@ -34,7 +33,6 @@ TEST_CASE("PREDICTIVE PARSER TEST 1")
     cfg_symbol left_paren("(", TERMINAL);
     cfg_symbol right_paren(")", TERMINAL);
     cfg_symbol id("id", TERMINAL);
-
 
     // FILL THE PRODUCTIONS VECTORS **********************************
     eps_vector.push_back(eps);
@@ -99,7 +97,7 @@ TEST_CASE("PREDICTIVE PARSER TEST 1")
     table[{"F", "id"}] = prod_F2;
 
     std::shared_ptr<parsing_table> p_table = std::make_shared<parsing_table>(table);
-    p_table.draw();
+    // p_table->draw();
 
     std::vector<std::string> input_buffer{"id", "+", "id", "$"};
 

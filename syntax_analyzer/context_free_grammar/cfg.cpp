@@ -22,7 +22,7 @@ void split_str (std::vector <std::string> &, std::string &, char);
  */
 bool remove_single_quotes (std::string &);
 
-rule_holder process_cfg_rule (std::string &);
+rule_holder tokenize_rule (std::string &);
 
 cfg::cfg ()
     : non_terminals (), terminals (), rules () {
@@ -34,8 +34,6 @@ cfg::cfg (std::string grammar_file)
 
 }
 
-
-
 void cfg::parse (std::string grammar_file) {
     std::ifstream grammar_in_file (grammar_file.c_str ());
     // Checks if grammar file exists or not.
@@ -43,35 +41,18 @@ void cfg::parse (std::string grammar_file) {
         //TODO: Report "File doesn't exist!" error.
     }
     std::string current_line, previous_line;
-    bool first_line = true;
-    rule_holder r_h;
+    bool first_line = true, first_rule = true;
+    
     while (std::getline (grammar_in_file, current_line)) {
         if (first_line) {
             previous_line += current_line;
             first_line = false;
         } else {
             if (current_line[0] == '#') {
-                std::cout << previous_line << std::endl;
-                //TODO: Process the rule line.
-                r_h = process_cfg_rule (previous_line);
-                std::vector <cfg_production> productions;
-                cfg_production prod;
-                cfg_symbol lhs_symbol = cfg_symbol (r_h.lhs_symbol_name, cfg_symbol_type::NON_TERMINAL);
-                for (std::size_t i = 0 ; i < r_h.productions.size () ; i++) {
-                    cfg_production prod;
-                    for (std::size_t j = 0 ; j < r_h.productions[i].size () ; i++) {
-                        cfg_symbol symbol;
-                        if (!remove_single_quotes (r_h.productions[i][j])) {
-                            symbol = cfg_symbol (r_h.productions[i][j], cfg_symbol_type::NON_TERMINAL);
-                            non_terminals.insert (symbol);
-                        } else {
-                            symbol = cfg_symbol (r_h.productions[i][j], cfg_symbol_type::TERMINAL);
-                            terminals.insert (symbol);
-                        }   
-                    }
-                }
-                add_rule (lhs_symbol, productions);
-                // TODO: Add rule to rules vector. 
+                std::cout << previous_line << std::endl;    // DEBUGGING
+                parse_rule (previous_line, first_rule);
+                if (first_rule)
+                    first_rule = false;
                 previous_line.clear ();
                 previous_line += current_line;
             } else {
@@ -81,10 +62,45 @@ void cfg::parse (std::string grammar_file) {
     }
 }
 
+void cfg::parse_rule (std::string & rule_str, bool first_rule) {
+    rule_holder r_h;
+    r_h = tokenize_rule (rule_str);
+    std::vector <cfg_production> productions;
+    cfg_production prod;
+    cfg_symbol lhs_symbol = cfg_symbol (r_h.lhs_symbol_name, cfg_symbol_type::NON_TERMINAL);
+    for (std::size_t i = 0 ; i < r_h.productions.size () ; i++) {
+        cfg_production prod;
+        for (std::size_t j = 0 ; j < r_h.productions[i].size () ; i++) {
+            cfg_symbol symbol;
+            if (!remove_single_quotes (r_h.productions[i][j])) {
+                symbol = cfg_symbol (r_h.productions[i][j], cfg_symbol_type::NON_TERMINAL);
+                non_terminals.insert (symbol);
+            } else {
+                symbol = cfg_symbol (r_h.productions[i][j], cfg_symbol_type::TERMINAL);
+                terminals.insert (symbol);
+            }
+            prod.add_symbol (symbol);
+        }
+        // Builds the cfg_symbol_productions map.
+        for (auto symbol : prod.get_symbols ())
+            cfg_symbol_productions[symbol].push_back (prod);
+        productions.push_back (prod);
+    }
+    if (first_rule)
+        start_symbol = lhs_symbol;
+    add_rule (lhs_symbol, productions);
+}
+
 void cfg::add_rule (cfg_symbol & lhs_symbol
                         , std::vector <cfg_production> & vec) {
-    cfg_rule c_rule = cfg_rule (lhs_symbol, vec);
-    grammar[lhs_symbol] = c_rule;
+    cfg_rule rule = cfg_rule (lhs_symbol, vec);
+    grammar[lhs_symbol] = rule;
+    rules.push_back (rule);
+}
+
+void cfg::add_rule (cfg_rule & rule) {
+    grammar[rule.get_lhs_symbol ()] = rule;
+    rules.push_back (rule);
 }
 
 void cfg::left_factor ()
@@ -324,10 +340,10 @@ bool remove_single_quotes (std::string & str) {
     return false;
 }
 
-rule_holder process_cfg_rule (std::string & str) {
+rule_holder tokenize_rule (std::string & str) {
     rule_holder r_h;
     std::vector <std::string> vec;
-    
+    str.erase (str.begin ());
     // Gets the position of the first equal sign to split the rule to LHS and RHS.
     std::size_t equal_sign_pos = str.find_first_of ("=");
 
