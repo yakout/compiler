@@ -8,12 +8,12 @@
 cfg_set::cfg_set() {
 }
 
-const std::unordered_map<std::string, std::set<std::pair<cfg_symbol, std::shared_ptr<cfg_production>>,
+const std::unordered_map<std::string, std::set<std::pair<cfg_symbol, cfg_production&>,
         cfg_symbol::pair_comparator>> &cfg_set::get_set_map() const {
     return cfg_set::my_set;
 }
 
-void cfg_set::add_symbol(std::string key, cfg_symbol symbol, std::shared_ptr<cfg_production> parent_prod) {
+void cfg_set::add_symbol(std::string key, cfg_symbol symbol, cfg_production &parent_prod) {
     cfg_set::my_set[key].insert(std::make_pair(symbol, parent_prod));
 }
 

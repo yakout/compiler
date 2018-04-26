@@ -25,7 +25,7 @@ private:
             , cfg_symbol::comparator> cfg_symbol_productions;
 
     void process_first_set(int prod_symbol_index, std::shared_ptr<cfg_set> first_set,
-                           std::shared_ptr<cfg_production> prod);
+                           cfg_production prod);
     void process_follow_set(cfg_symbol non_terminal, std::shared_ptr<cfg_set> follow_set);
 
 public:
