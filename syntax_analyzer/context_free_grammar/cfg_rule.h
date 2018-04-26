@@ -16,10 +16,13 @@ private:
 public:
     cfg_rule ();
     explicit cfg_rule (cfg_symbol &, std::vector <cfg_production> &);
-    
+
     /** Getters **/
     const cfg_symbol & get_lhs_symbol () const;
     const std::vector <cfg_production> & get_productions () const;
+
+    void empty_productions ();
+    void set_productions (std::vector <cfg_production> &);
 };
 
 #endif //COMPILER_CFG_RULE_H

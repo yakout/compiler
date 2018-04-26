@@ -2,7 +2,7 @@
 #define COMPILER_CFG_H
 
 #include "cfg_rule.h"
-#include "util/cfg_set.h"
+#include "utility/cfg_set.h"
 #include <string>
 #include <vector>
 #include <unordered_set>
@@ -42,6 +42,10 @@ public:
     std::shared_ptr <cfg_set> get_follow_set ();
     bool is_ll_1 ();
 
+    /** Grammar Correction **/
+    void left_factor ();
+    void remove_left_recursion ();
+    
     /** Getters **/
     std::unordered_set <cfg_symbol, cfg_symbol::hasher
                                 , cfg_symbol::comparator> get_non_terminals ();
