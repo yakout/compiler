@@ -30,13 +30,22 @@ public:
     struct comparator {
         bool operator () (const cfg_symbol & sym_a, const cfg_symbol & sym_b) const {
             if (!sym_a.get_name ().compare (sym_b.get_name ())) 
-                return false;
-            return true;
+                return true;
+            return false;
+        }
+    };
+
+    struct pair_comparator {
+        bool operator () (const std::pair<cfg_symbol, std::shared_ptr<cfg_production>> & p1,
+                          const std::pair<cfg_symbol, std::shared_ptr<cfg_production>> & p2) const {
+            if (!p1.first.get_name ().compare (p2.first.get_name ()))
+                return true;
+            return false;
         }
     };
 
     struct hasher {
-        size_t operator () (const cfg_symbol & sym_a) const {
+        std::size_t operator () (const cfg_symbol & sym_a) const {
             return std::hash <std::string> () (sym_a.get_name ());
         }
     };

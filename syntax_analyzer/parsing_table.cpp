@@ -34,18 +34,12 @@ void parsing_table::build()
    std::shared_ptr <cfg_set> first_cfg_set = grammar.get_first_set();
    std::shared_ptr <cfg_set> follow_cfg_set = grammar.get_follow_set();
    /// First and Follow maps.
-   std::unordered_map<std::string, std::vector<std::pair<cfg_symbol,
-                      std::shared_ptr<cfg_production>>>> first_set =
-             first_cfg_set->get_set_map();
-   std::unordered_map<std::string, std::vector<std::pair<cfg_symbol,
-                      std::shared_ptr<cfg_production>>>> follow_set =
-             follow_cfg_set->get_set_map();
+   auto first_set = first_cfg_set->get_set_map();
+   auto follow_set = follow_cfg_set->get_set_map();
    for (auto non_terminal : non_terminals)
    {
-      std::vector<std::pair<cfg_symbol,
-                  std::shared_ptr<cfg_production>>> first = first_set[non_terminal.get_name()];
-      std::vector<std::pair<cfg_symbol,
-                  std::shared_ptr<cfg_production>>> follow = follow_set[non_terminal.get_name()];
+      auto first = first_set[non_terminal.get_name()];
+      auto follow = follow_set[non_terminal.get_name()];
        bool has_eps = false;
        cfg_symbol eps_terminal;
        std::shared_ptr <cfg_production> eps_prod;
@@ -85,4 +79,58 @@ void parsing_table::build()
 cfg_production parsing_table::get_production (std::string rule, std::string token)
 {
     return table[make_pair(rule, token)];
+}
+
+void parsing_table::draw(std::string file_name)
+{
+    // TODO :: write in file
+    freopen(file_name.c_str(),"w", stdout);
+
+    int max_size = 0;
+
+    std::set<std::string> terminals_set;
+    std::set<std::string> non_terminals_set;
+
+    std::vector<std::string> terminals;
+    std::vector<std::string> non_terminals;
+
+    for (auto entry : table)
+    {
+        non_terminals_set.insert(entry.first.first);
+        terminals_set.insert(entry.first.second);
+        int length = entry.second.get_name().length();
+        if (length > max_size) {
+            max_size = length;
+        }
+    }
+
+    for (auto const &s : terminals_set)
+        terminals.push_back(s);
+
+    for (auto const &s : non_terminals_set)
+        non_terminals.push_back(s);
+
+
+    std::cout << '|' << std::setw(max_size) << "";
+    for (auto const &t : terminals)
+    {
+        std::cout << '|' << std::setw(max_size) << t ;
+    }
+    std::cout << '|' << std::endl;
+
+
+    for (int i = 0; i < max_size * (terminals.size() + 2); i++) std::cout << "_";
+    std::cout << std::endl;
+
+    for (int i = 0; i < non_terminals.size(); ++i)
+    {
+        std::cout << '|' << std::setw(max_size) << non_terminals[i];
+        for (int j = 0; j < terminals.size(); ++j)
+        {
+            std::cout << '|' << std::setw(max_size) << get_production(non_terminals[i], terminals[j]).get_name();
+        }
+        std::cout << '|' << std::endl;
+        for (int i = 0; i < max_size * (terminals.size() + 2); i++) std::cout << "_";
+        std::cout << std::endl;
+    }
 }

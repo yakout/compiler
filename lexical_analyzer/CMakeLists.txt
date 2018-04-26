@@ -2,6 +2,14 @@ cmake_minimum_required (VERSION 3.5)
 
 set (CMAKE_CXX_STANDARD 11)
 
+# ------------------------------------------------------------------------------
+# Compiler flags
+# ------------------------------------------------------------------------------
+
+set (GCC_COMPILE_FLAGS "-Wall -Wextra -g")
+
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_COMPILE_FLAGS}")
+
 option (BUILD_UNIT_TEST "Determines whether to build unit tests or not" OFF)
 
 # ------------------------------------------------------------------------------
@@ -56,11 +64,11 @@ if (BUILD_UNIT_TEST)
     target_link_libraries (unit_test_catch_lexical liblex)
 
     macro (do_test test_name)
-        add_executable (unit_test_${test_name}_lexical 
-            ../tests/lexical_analyzer/unit/test_${test_name}.cpp)
-        target_link_libraries (unit_test_${test_name}_lexical unit_test_catch_lexical)
-        add_test (unit_test_${test_name}_lexical_analyzer unit_test_${test_name}_lexical)
+        add_executable (unit_${test_name}_lexical
+            ../tests/lexical_analyzer/unit/${test_name}.cpp)
+        target_link_libraries (unit_${test_name}_lexical unit_test_catch_lexical)
+        add_test (unit_${test_name}_lexical_analyzer unit_${test_name}_lexical)
     endmacro (do_test)
 
-    do_test (1)
+    do_test (test_1)
 endif (BUILD_UNIT_TEST)
