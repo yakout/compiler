@@ -6,7 +6,7 @@ cfg::cfg ()
 
 }
 
-cfg::cfg (std::string grammar_file) 
+cfg::cfg (std::string grammar_file)
     : non_terminals (), terminals (), rules () {
 
 }
@@ -15,11 +15,24 @@ void cfg::parse (std::string grammar_file) {
     std::ifstream grammar_in_file (grammar_file.c_str ());
     // Checks if grammar file exists or not.
     if (!grammar_in_file.good ()) {
-        //TODO: - Report "File doesn't exist!" error.
+        //TODO: Report "File doesn't exist!" error.
     }
-    std::string line;
-    while (std::getline (grammar_in_file, line)) {
-
+    std::string current_line, previous_line;
+    bool first_line = true;
+    while (std::getline (grammar_in_file, current_line)) {
+        if (first_line) {
+            previous_line += current_line;
+            first_line = false;
+        } else {
+            if (current_line[0] == '#') {
+                std::cout << previous_line << std::endl;
+                //TODO: Process the rule line.
+                previous_line.clear ();
+                previous_line += current_line;
+            } else {
+                previous_line += " " + current_line;
+            }
+        }
     }
 }
 void cfg::add_rule () {
@@ -65,7 +78,7 @@ std::shared_ptr<cfg_set> cfg::get_first_set() {
     return first_set;
 }
 
-const std::unordered_set <cfg_symbol, cfg_symbol::hasher, cfg_symbol::comparator> 
+const std::unordered_set <cfg_symbol, cfg_symbol::hasher, cfg_symbol::comparator>
                         & cfg::get_cfg_symbols () const {
     return cfg_symbols;
 }
