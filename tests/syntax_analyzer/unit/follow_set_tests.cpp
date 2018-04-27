@@ -1,5 +1,6 @@
 #include "../../lib/catch.hpp"
 #include "../../../syntax_analyzer/predictive_parser.h"
+#include <map>
 #include <memory>
 
 TEST_CASE("TEST FOLLOW_SIMPLE")

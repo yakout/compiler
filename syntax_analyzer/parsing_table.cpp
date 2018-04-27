@@ -7,13 +7,14 @@
 #define INVALID_LL1_GRAMMAR "This is NOT LL1 Grammar"
 
 parsing_table::parsing_table(cfg g)
- : grammar(g)
+ : grammar(g), table()
 {
     build ();
 }
 
-parsing_table::parsing_table(std::map<std::pair<std::string, std::string>, cfg_production> t)
-    : table(t)
+parsing_table::parsing_table(std::unordered_map <std::pair<std::string, std::string>, cfg_production,
+        parsing_table_hasher, parsing_table_comparator> t)
+    : table(t), grammar()
 {
 
 }
@@ -51,7 +52,7 @@ void parsing_table::build()
        // filling table with first symbols except for EPS case.
        for (auto first_terminal : first)
        {
-           auto it = table.find(make_pair(non_terminal.get_name(),
+           auto it = table.find(std::make_pair(non_terminal.get_name(),
                                           first_terminal.first.get_name()));
 
            std::cout << "\tAttempting Adding Entry : {" <<
@@ -62,7 +63,7 @@ void parsing_table::build()
            {
               std::cout << "\tAdding to table" << std::endl;
               // table.insert (std::pair <std::pair<std::string, std::string>, cfg_production>(make_pair(non_terminal.get_name(), first_terminal.first.get_name()),synch_prod));
-              table[make_pair(non_terminal.get_name(), first_terminal.first.get_name())]
+              table[std::make_pair(non_terminal.get_name(), first_terminal.first.get_name())]
                   = *first_terminal.second;
            }
            else if (first_terminal.first.get_name() == EPS)

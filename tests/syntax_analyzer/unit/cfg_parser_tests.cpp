@@ -103,11 +103,11 @@ TEST_CASE ("longest common prefix test 1") {
     prods.push_back(prod2);
     prods.push_back(prod3);
 
-    REQUIRE(size == 2);
+    REQUIRE(longest_common_prefix(prods) == 2);
 }
 
 
-TEST_CASE ("longest common prefix test 1") {
+TEST_CASE ("longest common prefix test 2") {
 
     std::vector<cfg_symbol> prod1_vec;
     std::vector<cfg_symbol> prod2_vec;
@@ -152,11 +152,11 @@ TEST_CASE ("longest common prefix test 1") {
     prods.push_back(prod2);
     prods.push_back(prod3);
 
-    REQUIRE(size == 1);
+    REQUIRE(longest_common_prefix(prods) == 1);
 }
 
 
-TEST_CASE ("longest common prefix test 1") {
+TEST_CASE ("longest common prefix test 3") {
 
     std::vector<cfg_symbol> prod1_vec;
     std::vector<cfg_symbol> prod2_vec;
@@ -200,5 +200,5 @@ TEST_CASE ("longest common prefix test 1") {
     prods.push_back(prod2);
     prods.push_back(prod3);
 
-    REQUIRE(size == 0);
+    REQUIRE(longest_common_prefix(prods) == 0);
 }

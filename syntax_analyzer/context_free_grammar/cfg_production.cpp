@@ -39,7 +39,7 @@ std::string cfg_production::to_string()
     for (cfg_symbol &s : production_symbols)
     {
         if (s.get_name() == EPS)
-            name += "\\E";
+            name += "\\E ";
         else name += s.get_name() + " ";
     }
 
@@ -54,7 +54,7 @@ std::string cfg_production::get_rhs_as_string()
     for (cfg_symbol &s : production_symbols)
     {
         if (s.get_name() == EPS)
-            name += "\\E";
+            name += "\\E ";
         else name += s.get_name() + " ";
     }
 

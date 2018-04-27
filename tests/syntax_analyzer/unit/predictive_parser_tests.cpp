@@ -76,7 +76,7 @@ TEST_CASE("PREDICTIVE PARSER TEST 1")
     cfg_production prod_F1(F, F_prod_vector1);
     cfg_production prod_F2(F, F_prod_vector2);
 
-    std::map<std::pair<std::string, std::string>, cfg_production> table;
+    std::unordered_map<std::pair<std::string, std::string>, cfg_production, parsing_table_hasher, parsing_table_comparator> table;
 
     table[{"E", "id"}] = prod_E;
     table[{"E", "("}] = prod_E;
@@ -106,18 +106,18 @@ TEST_CASE("PREDICTIVE PARSER TEST 1")
     std::vector<std::string> derivations = parser.get_derivations();
 
     std::vector<std::string> derivations_test
-            {"E -> TE'",
-             "T -> FT'",
-             "F -> id",
+            {"E -> T E' ",
+             "T -> F T' ",
+             "F -> id ",
              "match: id",
-             "T' -> \\E",
-             "E' -> +TE'",
+             "T' -> \\E ",
+             "E' -> + T E' ",
              "match: +",
-             "T -> FT'",
-             "F -> id",
+             "T -> F T' ",
+             "F -> id ",
              "match: id",
-             "T' -> \\E",
-             "E' -> \\E",
+             "T' -> \\E ",
+             "E' -> \\E ",
              "accept"};
 
     for (int i = 0; i < derivations.size(); ++i)
