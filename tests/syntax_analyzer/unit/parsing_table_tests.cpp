@@ -1,7 +1,6 @@
 #include "../../lib/catch.hpp"
 #include "../../../syntax_analyzer/parsing_table.h"
 
-
 TEST_CASE("TEST 1")
 {
     std::vector<cfg_symbol> eps_vector;
@@ -75,7 +74,7 @@ TEST_CASE("TEST 1")
     cfg_production prod_F1(F, F_prod_vector1);
     cfg_production prod_F2(F, F_prod_vector2);
 
-    cfg cfg_ob = cfg ("./ready_ll1_cfg.bnf");
+    cfg cfg_ob = cfg ("../.././ready_ll1_cfg.bnf");
     std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::comparator> grammar;
     /** Grammar Checking. **/
     grammar = cfg_ob.get_grammar ();
@@ -121,26 +120,12 @@ TEST_CASE("TEST 1")
     follow.add_symbol("F", s_$);
     follow.add_symbol("F", right_paren);
 
-    for (auto it = grammar.begin(); it != grammar.end(); ++it) {
-//        std::cout << "RULE KEY SYMBOL >> " << it->first.get_name () << std::endl;
-//        std::cout << "RULE LHS SYMBOL AGAIN >> " << it->second.get_lhs_symbol ().get_name () << std::endl;
-//        std::cout << "RULE NUMBER OF PRODUCTIONS >> " << it->second.get_productions ().size () << std::endl;
-        for (std::size_t i = 0 ; i < it->second.get_productions ().size () ; i++) {
-//            std::cout << "PRODUCTION # " << i << std::endl;
-//            std::cout << "LHS SYMBOL >> " << it->second.get_productions ()[i].get_lhs_symbol ().get_name () << std::endl;
-//            std::cout << "PRODUCTION SYMBOLS" << std::endl;
-            for (std::size_t j = 0 ; j < it->second.get_productions ()[i].get_symbols ().size () ; j++) {
-//                std::cout << "SYMBOL #" << j << std::endl;
-//                std::cout << "SYMBOL NAME: " << it->second.get_productions ()[i].get_symbols ()[j].get_name () << std::endl;
-//                std::cout << "SYMBOL TYPE: " << it->second.get_productions ()[i].get_symbols ()[j].get_type () << std::endl;
-            }
-        }
-    }
-    /** Start Symbol Checking **/
-//    std::cout << "START SYMBOL NAME: " << cfg_ob.get_start_symbol ().get_name () << std::endl;
-//    std::cout << "START SYMBOL TYPE: " << cfg_ob.get_start_symbol ().get_type () << std::endl;
-
-
     parsing_table p_table = parsing_table (cfg_ob, first, follow);
+
+    REQUIRE (p_table.get_production("E'", "+").to_string() == prod_E_dash.to_string());
+    REQUIRE (p_table.get_production("T'", "*").to_string() == prod_T_dash.to_string());
+    REQUIRE (p_table.get_production("F", "(").to_string() == prod_F1.to_string());
+    REQUIRE (p_table.get_production("F", "id").to_string() == prod_F2.to_string());
+    REQUIRE (p_table.get_production("T", "id").to_string() == prod_T.to_string());
 
 }
