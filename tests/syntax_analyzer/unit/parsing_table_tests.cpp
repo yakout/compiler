@@ -74,11 +74,7 @@ TEST_CASE("TEST 1")
     cfg_production prod_F1(F, F_prod_vector1);
     cfg_production prod_F2(F, F_prod_vector2);
 
-<<<<<<< Updated upstream
-    cfg cfg_ob = cfg ("../.././ready_ll1_cfg.bnf");
-=======
     cfg cfg_ob = cfg ("../../tests/syntax_analyzer/unit/ready_ll1_cfg.bnf");
->>>>>>> Stashed changes
     std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::comparator> grammar;
     /** Grammar Checking. **/
     grammar = cfg_ob.get_grammar ();
