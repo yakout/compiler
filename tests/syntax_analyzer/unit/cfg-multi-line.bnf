@@ -10,6 +10,7 @@
 ';'
 # PRIMITIVE_TYPE = 'int' 
 | 'float'
+| \L
 # IF = 'if' '(' EXPRESSION ')' '{' STATEMENT '}' 'else' '{' STATEMENT '}'
 # WHILE = 'while'
 '('

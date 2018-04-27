@@ -89,12 +89,12 @@ void cfg::parse_rule (std::string & rule_str, bool first_rule) {
                 << " SYMBOL # " << j << std::endl;
             cfg_symbol symbol;
             trim_spaces (r_h.productions[i][j]);
-            if (!remove_single_quotes (r_h.productions[i][j])) {
-                symbol = cfg_symbol (r_h.productions[i][j], cfg_symbol_type::NON_TERMINAL);
-                non_terminals.insert (symbol);
-            } else {
+            if (r_h.productions[i][j] == "\\L" || remove_single_quotes (r_h.productions[i][j])) {
                 symbol = cfg_symbol (r_h.productions[i][j], cfg_symbol_type::TERMINAL);
                 terminals.insert (symbol);
+            } else {
+                symbol = cfg_symbol (r_h.productions[i][j], cfg_symbol_type::NON_TERMINAL);
+                non_terminals.insert (symbol);
             }
             prod.add_symbol (symbol);
         }
@@ -385,8 +385,7 @@ void split_str (std::vector <std::string> & vec
 
 bool remove_single_quotes (std::string & str) {
     if (str[0] == '\'' && str[str.length () - 1] == '\'') {
-        str.erase (0, 1);
-        str.erase (str.length () - 1, 1);
+        str.erase (remove ( str.begin(), str.end(), '\'' ), str.end ());
         return true;
     }
     return false;
