@@ -48,14 +48,14 @@ void cfg::parse (std::string & grammar_file) {
     }
     std::string current_line, previous_line;
     bool first_line = true, first_rule = true;
-    
+
     while (std::getline (grammar_in_file, current_line)) {
         if (first_line) {
             previous_line += current_line;
             first_line = false;
         } else {
             if (current_line[0] == '#') {
-                std::cout << "READ A WHOLE RULE." << std::endl;     // DEBUGGING 
+                std::cout << "READ A WHOLE RULE." << std::endl;     // DEBUGGING
                 std::cout << previous_line << std::endl;
                 parse_rule (previous_line, first_rule);
                 std::cout << "PARSED A WHOLE RULE." << std::endl;
@@ -85,7 +85,7 @@ void cfg::parse_rule (std::string & rule_str, bool first_rule) {
         cfg_production prod;
         prod.set_lhs_symbol (lhs_symbol);
         for (std::size_t j = 0 ; j < r_h.productions[i].size () ; j++) {
-            std::cout << "parse_rule (): BUILDING PRODUCTION # " << i 
+            std::cout << "parse_rule (): BUILDING PRODUCTION # " << i
                 << " SYMBOL # " << j << std::endl;
             cfg_symbol symbol;
             trim_spaces (r_h.productions[i][j]);
@@ -401,7 +401,7 @@ rule_holder tokenize_rule (std::string & str) {
     rule_holder r_h;
     std::vector <std::string> vec;
     std::cout << "ENTERED tokenize_rule () FUNCTION." << std::endl;
-    str.erase (str.begin ());
+    str.erase (0, 1);
     std::cout << "tokenize_rule (): ERASED FIRST HASH CHARACTER: " << str << std::endl;
     // Gets the position of the first equal sign to split the rule to LHS and RHS.
     std::size_t equal_sign_pos = str.find_first_of ("=");
@@ -412,7 +412,7 @@ rule_holder tokenize_rule (std::string & str) {
 
     std::string lhs_symbol_name = str.substr (0, equal_sign_pos - 1);
     trim_spaces (lhs_symbol_name);
-    std::cout << "tokenize_rule (): PARSED THE LHS SYMBOL NAME >>> " << lhs_symbol_name 
+    std::cout << "tokenize_rule (): PARSED THE LHS SYMBOL NAME >>> " << lhs_symbol_name
             << " LENGTH >>> " << lhs_symbol_name.length () << std::endl;
 
     std::string rhs_productions = str.substr (equal_sign_pos + 1, str.length ());

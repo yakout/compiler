@@ -41,29 +41,42 @@ void parsing_table::build()
    auto follow_set = follow_cfg_set->get_set_map();
    for (auto non_terminal : non_terminals)
    {
+      std::cout << "Non-Terminal : " << non_terminal.get_name() << std::endl;
       auto first = first_set[non_terminal.get_name()];
       auto follow = follow_set[non_terminal.get_name()];
        bool has_eps = false;
        cfg_symbol eps_terminal;
        cfg_production *eps_prod;
+       for (auto first_terminal : first) std::cout << first_terminal.first.get_name() << std::endl;
        // filling table with first symbols except for EPS case.
        for (auto first_terminal : first)
        {
            auto it = table.find(make_pair(non_terminal.get_name(),
                                           first_terminal.first.get_name()));
-           if (first_terminal.first.get_name() != EPS && it != table.end())
-               table[make_pair(non_terminal.get_name(), first_terminal.first.get_name())]
-                     = *first_terminal.second;
-           else if (it == table.end())
+
+           std::cout << "\tAttempting Adding Entry : {" <<
+           non_terminal.get_name() << " , " <<
+           first_terminal.first.get_name() << '}' << std::endl;
+
+           if (first_terminal.first.get_name() != EPS && it == table.end())
            {
-                throw std::runtime_error(INVALID_LL1_GRAMMAR);
+              std::cout << "\tAdding to table" << std::endl;
+              // table.insert (std::pair <std::pair<std::string, std::string>, cfg_production>(make_pair(non_terminal.get_name(), first_terminal.first.get_name()),synch_prod));
+              table[make_pair(non_terminal.get_name(), first_terminal.first.get_name())]
+                  = *first_terminal.second;
            }
-           else
+           else if (first_terminal.first.get_name() == EPS)
            {
                eps_terminal = first_terminal.first;
                eps_prod = first_terminal.second;
                has_eps = true;
            }
+           else
+           {
+              throw std::runtime_error(INVALID_LL1_GRAMMAR);
+
+           }
+
        }
        if (has_eps)       /// case of eps production in the rule.
        {

@@ -60,7 +60,7 @@ public:
     /** Grammar Correction **/
     void left_factor ();
     void remove_left_recursion ();
-    
+
     /** Getters **/
     std::unordered_set <cfg_symbol, cfg_symbol::hasher
                                 , cfg_symbol::comparator> get_non_terminals ();
