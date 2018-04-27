@@ -5,6 +5,7 @@
 #include <sstream>
 #include <algorithm>
 #include <string>
+#include <map>
 
 struct rule_holder {
     std::string lhs_symbol_name;
@@ -124,44 +125,46 @@ void cfg::add_rule (cfg_rule & rule) {
 
 void cfg::left_factor ()
 {
-    // for (auto rule : rules)
-    // {
-    //     std::map <std::vector<std::string>, std::vector <cfg_production>> common_factors;
-    //     for (auto prod : rule.get_productions())
-    //     {
-    //         std::std::vector<std::string> v;
-    //         v.push_back(prod.get_symbols()[0].get_name());
-    //         common_factors[v].push_back (prod);
-    //     }
-    //     rule.empty_productions ();
-    //     size_t counter = 1;
-    //     std::vector <cfg_production> new_productions;
-    //     for (auto entry : common_factors)
-    //     {
-    //         if (entry.second.size() == 1)
-    //         {
-    //             new_productions.push_back (entry.second.front());
-    //         }
-    //         else
-    //         {
-    //             std::vector<cfg_symbol> v;
-    //             int i;
-    //             for (i = 0; i < entry.first.size(); i++)
-    //             {
-    //                v.push_back(entry.second.front()[i]);
-    //             }
-    //             cfg_symbol new_sym(rule.get_lhs_symbol().get_name()
-    //                 + std::to_string(counter), rule.get_lhs_symbol().get_type())
-    //             v.push_back(new_sym);
-    //             cfg_production new_prod(rule.get_lhs_symbol(), v);
-    //             new_productions.push_back (new_prod);
-    //
-    //             std::vector<cfg_symbol> rest_symbols;
-    //             add_rule(new_sym, )
-    //
-    //         }
-    //     }
-    // }
+     for (auto rule : rules)
+     {
+         std::map <std::vector<std::string>, std::vector <cfg_production>> common_factors;
+         for (auto prod : rule.get_productions())
+         {
+             std::vector<std::string> v;
+             // find longest common prefix
+             v.push_back(prod.get_symbols()[0].get_name()); // TODO
+
+             common_factors[v].push_back (prod);
+         }
+         rule.empty_productions ();
+         size_t counter = 1;
+         std::vector <cfg_production> new_productions;
+         for (auto entry : common_factors)
+         {
+             if (entry.second.size() == 1)
+             {
+                 new_productions.push_back (entry.second.front());
+             }
+             else
+             {
+                 std::vector<cfg_symbol> v;
+                 int i;
+                 for (i = 0; i < entry.first.size(); i++)
+                 {
+//                    v.push_back(entry.second.front()[i]);
+                 }
+//                 cfg_symbol new_sym(rule.get_lhs_symbol().get_name()
+//                     + std::to_string(counter), rule.get_lhs_symbol().get_type())
+//                 v.push_back(new_sym);
+//                 cfg_production new_prod(rule.get_lhs_symbol(), v);
+//                 new_productions.push_back (new_prod);
+
+                 std::vector<cfg_symbol> rest_symbols;
+//                 add_rule(new_sym, )
+
+             }
+         }
+     }
 }
 
 void cfg::remove_left_recursion ()
@@ -192,8 +195,8 @@ bool cfg::is_ll_1 () {
 }
 
 void
-cfg::process_first_set(int prod_symbol_index, std::shared_ptr<cfg_set> first_set,
-                       std::shared_ptr<cfg_production> prod) {
+cfg::process_first_set(int prod_symbol_index, std::shared_ptr<first_set> first_set,
+                       cfg_production *prod) {
     if (prod_symbol_index == prod->get_symbols().size()) {
         return;
     }
@@ -214,7 +217,7 @@ cfg::process_first_set(int prod_symbol_index, std::shared_ptr<cfg_set> first_set
     if (first_set->empty(curr_prod_symbol.get_name())) {
         // Go to curr_prod_symbol rule and iterate over all its prods and calc its first set.
         for (auto production : cfg::grammar[curr_prod_symbol].get_productions()) {
-            process_first_set(0, first_set, std::shared_ptr<cfg_production>(&production));
+            process_first_set(0, first_set, &production);
         }
     }
 
@@ -233,29 +236,35 @@ cfg::process_first_set(int prod_symbol_index, std::shared_ptr<cfg_set> first_set
     }
 }
 
-std::shared_ptr<cfg_set> cfg::get_first_set() {
-    std::shared_ptr<cfg_set> first_set = std::make_shared<cfg_set>();
+std::shared_ptr<first_set> cfg::get_first_set() {
+    std::shared_ptr<first_set> first_set_ptr = std::make_shared<first_set>();
 
     /// Build first set
     for (auto non_terminal : cfg::non_terminals) {
-        std::cout << "Current non_terminal = " << non_terminal.get_name() << "\n";
-        if (!first_set->empty(non_terminal.get_name())) {
+        //std::cout << "Current non_terminal = " << non_terminal.get_name() << "\n";
+        if (!first_set_ptr->empty(non_terminal.get_name())) {
             continue;
         }
         auto rule = cfg::grammar[non_terminal];
-        std::cout << "Current rule has lhs = " << rule.get_lhs_symbol().get_name() << "\n";
+        //std::cout << "Current rule has lhs = " << rule.get_lhs_symbol().get_name() << "\n";
         for (auto production : cfg::grammar[non_terminal].get_productions()) { // Iterate over all productions from this non-terminal
-            std::cout << "Current production's lhs = " << production.get_lhs_symbol().get_name() << "\n";
-            process_first_set(0, first_set, std::shared_ptr<cfg_production>(&production));
+            //std::cout << "Current production's lhs = " << production.get_lhs_symbol().get_name() << "\n";
+            process_first_set(0, first_set_ptr, &production);
         }
     }
-    return first_set;
+    for (auto terminal : cfg::terminals) {
+        auto set_map = first_set_ptr->get_set_map();
+        if (set_map[terminal.get_name()].empty()) {
+            first_set_ptr->add_symbol(terminal.get_name(), terminal, nullptr);
+        }
+    }
+    return first_set_ptr;
 }
 
-void cfg::process_follow_set(cfg_symbol non_terminal, std::shared_ptr<cfg_set> follow_set) {
+void cfg::process_follow_set(cfg_symbol non_terminal, std::shared_ptr<follow_set> follow_set_ptr) {
     if (non_terminal.get_name() == cfg::start_symbol.get_name()) {
-        cfg_symbol s_$(END_MARKER);
-        follow_set->add_symbol(non_terminal.get_name(), s_$, nullptr);
+        cfg_symbol s_$("$", END_MARKER);
+        follow_set_ptr->add_symbol(non_terminal.get_name(), s_$);
     }
     for (auto production : cfg::cfg_symbol_productions[non_terminal]) {
         for (int i = 0; i < production.get_symbols().size(); i++) {
@@ -263,15 +272,16 @@ void cfg::process_follow_set(cfg_symbol non_terminal, std::shared_ptr<cfg_set> f
             if (symbol.get_name() == non_terminal.get_name()) {
                 if (i + 1 == production.get_symbols().size()) {
                     // This non_terminal is the last symbol in the production.
-                    if (follow_set->empty(production.get_lhs_symbol().get_name())) {
+                    if (follow_set_ptr->empty(production.get_lhs_symbol().get_name())) {
                         // Calc Follow(lhs) if not calculated
-                        process_follow_set(production.get_lhs_symbol(), follow_set);
+                        process_follow_set(production.get_lhs_symbol(), follow_set_ptr);
                     }
                     // Add everything in Follow(lhs) to Follow(non_terminal)
                     /// TODO: Make this a function in the cfg_set class.
-                    auto follow_set_map = follow_set->get_set_map();
+                    auto follow_set_map = follow_set_ptr->get_set_map();
+
                     for (auto symbol : follow_set_map[production.get_lhs_symbol().get_name()]) {
-                        follow_set->add_symbol(non_terminal.get_name(), symbol.first, nullptr);
+                        follow_set_ptr->add_symbol(non_terminal.get_name(), symbol);
                     }
                 } else {
                     // There is a symbol after this non_terminal in the production.
@@ -285,10 +295,13 @@ void cfg::process_follow_set(cfg_symbol non_terminal, std::shared_ptr<cfg_set> f
                         has_eps = false;
                         // Put everything in first of the next symbol in the follow of non_terminal
                         auto cfg_first_set_map = cfg::get_first_set()->get_set_map();
+//                        for (auto elem : cfg_first_set_map) {
+//                            std::cout << elem.first << "\n";
+//                        }
                         auto next_first_set = cfg_first_set_map[production.get_symbols()[curr_pos++].get_name()];
                         for (auto symbol : next_first_set) {
                             if (symbol.first.get_name() != EPS) {
-                                follow_set->add_symbol(non_terminal.get_name(), symbol.first, nullptr);
+                                follow_set_ptr->add_symbol(non_terminal.get_name(), symbol.first);
                             } else {
                                 has_eps = true;
                             }
@@ -296,15 +309,15 @@ void cfg::process_follow_set(cfg_symbol non_terminal, std::shared_ptr<cfg_set> f
                     }
                     if (has_eps) {
                         // If eps is in first of last symbol, add everything in Follow(lhs) to Follow(non_terminal)
-                        if (follow_set->empty(production.get_lhs_symbol().get_name())) {
+                        if (follow_set_ptr->empty(production.get_lhs_symbol().get_name())) {
                             // Calc Follow(lhs) if not calculated
-                            process_follow_set(production.get_lhs_symbol(), follow_set);
+                            process_follow_set(production.get_lhs_symbol(), follow_set_ptr);
                         }
                         // Add everything in Follow(lhs) to Follow(non_terminal)
-                        // TODO: Make this a function in cfg_set
-                        auto follow_set_map = follow_set->get_set_map();
+                        // TODO: Make this a function in first_set
+                        auto follow_set_map = follow_set_ptr->get_set_map();
                         for (auto symbol : follow_set_map[production.get_lhs_symbol().get_name()]) {
-                            follow_set->add_symbol(non_terminal.get_name(), symbol.first, nullptr);
+                            follow_set_ptr->add_symbol(non_terminal.get_name(), symbol);
                         }
                     }
                 }
@@ -314,15 +327,16 @@ void cfg::process_follow_set(cfg_symbol non_terminal, std::shared_ptr<cfg_set> f
     }
 }
 
-std::shared_ptr<cfg_set> cfg::get_follow_set() {
-    std::shared_ptr<cfg_set> follow_set = std::make_shared<cfg_set>();
+std::shared_ptr<follow_set> cfg::get_follow_set() {
+    std::shared_ptr<follow_set> follow_set_ptr = std::make_shared<follow_set>();
     for (auto non_terminal : cfg::non_terminals) {
-        if (!follow_set->empty(non_terminal.get_name())) {
+        if (!follow_set_ptr->empty(non_terminal.get_name())) {
             continue;
         }
-        process_follow_set(non_terminal, follow_set);
+//        std::cout << "Calculating follow of non_terminal = " << non_terminal.get_name() << "\n";
+        process_follow_set(non_terminal, follow_set_ptr);
     }
-    return follow_set;
+    return follow_set_ptr;
 }
 
 void cfg::set_non_terminals(const std::unordered_set<cfg_symbol
@@ -339,6 +353,25 @@ void
 cfg::set_grammar(const std::unordered_map<cfg_symbol, cfg_rule
                     , cfg_symbol::hasher, cfg_symbol::comparator> &grammar) {
     cfg::grammar = grammar;
+}
+
+void cfg::set_start_symbol(const cfg_symbol &start_symbol) {
+    cfg::start_symbol = start_symbol;
+}
+
+const std::unordered_map<cfg_symbol, std::vector<cfg_production>, cfg_symbol::hasher, cfg_symbol::comparator> &
+cfg::get_cfg_symbol_productions() const {
+    return cfg_symbol_productions;
+}
+
+void cfg::set_cfg_symbol_productions(
+        const std::unordered_map<cfg_symbol, std::vector<cfg_production>, cfg_symbol::hasher, cfg_symbol::comparator> &cfg_symbol_productions) {
+    cfg::cfg_symbol_productions = cfg_symbol_productions;
+}
+
+void cfg::set_terminals(const std::unordered_set <cfg_symbol, cfg_symbol::hasher
+        , cfg_symbol::comparator> &terminals) {
+    cfg::terminals = terminals;
 }
 
 void split_str (std::vector <std::string> & vec
