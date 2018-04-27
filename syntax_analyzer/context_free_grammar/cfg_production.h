@@ -21,9 +21,9 @@ public:
     void add_symbol (cfg_symbol &);
 
     /** Getters **/
-    virtual cfg_symbol get_lhs_symbol ();
+    virtual cfg_symbol get_lhs_symbol () const;
     virtual std::string get_name();
-    virtual std::vector <cfg_symbol> get_symbols ();
+    virtual std::vector <cfg_symbol> get_symbols () const;
 };
 
 #endif //COMPILER_CFG_PRODUCTION_H

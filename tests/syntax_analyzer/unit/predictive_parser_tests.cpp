@@ -97,7 +97,6 @@ TEST_CASE("PREDICTIVE PARSER TEST 1")
     table[{"F", "id"}] = prod_F2;
 
     std::shared_ptr<parsing_table> p_table = std::make_shared<parsing_table>(table);
-    // p_table->draw();
 
     std::vector<std::string> input_buffer{"id", "+", "id", "$"};
 

@@ -18,8 +18,8 @@ public:
     synch_production ();
 
     /** Getters **/
-    cfg_symbol get_lhs_symbol ();
-    std::vector <cfg_symbol> get_symbols ();
+    cfg_symbol get_lhs_symbol () const;
+    std::vector <cfg_symbol> get_symbols () const;
 };
 
 
