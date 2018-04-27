@@ -3,6 +3,7 @@
 #include "context_free_grammar/cfg.h"
 
 int main (int argc, char *argv[]) {
+
     cfg cfg_ob = cfg ("../tests/syntax_analyzer/unit/ready_ll1_cfg.bnf");
     std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::comparator> grammar;
     /** Grammar Checking. **/
@@ -134,25 +135,3 @@ int main (int argc, char *argv[]) {
 //    std::cout << "START SYMBOL NAME: " << cfg_ob.get_start_symbol ().to_string () << std::endl;
 //    std::cout << "START SYMBOL TYPE: " << cfg_ob.get_start_symbol ().get_type () << std::endl;
 }
-
-
-//    E -> TE’
-//    E’ -> +TE’ | eps
-//    T -> FT’
-//    T’ -> *FT’ | eps
-//    F -> (E) | id
-
-//    FIRST(F) = {(,id}
-//    FIRST(T’) = {*, eps}
-//    FIRST(T) = {(,id}
-//    FIRST(E’) = {+, eps}
-//    FIRST(E) = {(,id}
-
-//    FIRST(TE’) = {(,id}
-//    FIRST(+TE’ ) = {+}
-//    FIRST(eps) = {eps}
-//    FIRST(FT’) = {(,id}
-//    FIRST(*FT’) = {*}
-//    FIRST(eps) = {eps}
-//    FIRST((E)) = {(}
-//    FIRST(id) = {id}
