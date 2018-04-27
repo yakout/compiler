@@ -5,8 +5,8 @@
 #include <iostream>
 
 /**
- * Comparator for the map used for building the reference grammar.
- * 
+ * Comparator for cfg_symbol class objects used for building the 
+ * reference grammar represented as std::map<cfg_symbol, cfg_rule>.
  */
 struct cfg_symbol_comparator {
    bool operator() (const cfg_symbol & a, const cfg_symbol & b) const {
