@@ -65,7 +65,8 @@ if (BUILD_UNIT_TEST)
     endmacro (do_test)
 
     do_test (predictive_parser_tests)
-    do_test (first_follow_tests)
+    do_test (first_set_tests)
+    do_test (follow_set_tests)
     #    do_test (parsing_table_tests)
 
 #    do_test (cfg_parser_tests)
