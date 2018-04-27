@@ -20,12 +20,12 @@ void cfg_production::add_symbol (cfg_symbol & sym) {
     production_symbols.push_back (sym);
 }
 
-cfg_symbol cfg_production::get_lhs_symbol ()
+cfg_symbol cfg_production::get_lhs_symbol () const
 {
     return lhs_symbol;
 }
 
-std::vector <cfg_symbol> cfg_production::get_symbols ()
+std::vector <cfg_symbol> cfg_production::get_symbols () const
 {
     return production_symbols;
 }

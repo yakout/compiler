@@ -1,127 +1,29 @@
 #include <iostream>
-#include "predictive_parser.h"
+#include "context_free_grammar/cfg.h"
 
 int main (int argc, char *argv[]) {
-    std::vector<cfg_symbol> eps_vector;
-
-    std::vector<cfg_symbol> E_prod_vector;
-    std::vector<cfg_symbol> E_dash_prod_vector;
-
-    std::vector<cfg_symbol> T_prod_vector;
-    std::vector<cfg_symbol> T_dash_prod_vector;
-
-    std::vector<cfg_symbol> F_prod_vector1;
-    std::vector<cfg_symbol> F_prod_vector2;
-
-    // SPECIAL SYMBOLS
-    cfg_symbol eps(EPS, TERMINAL);
-    cfg_symbol s_$(END_MARKER);
-
-    // LHS NON_TERMINALS SYMBOLS
-    cfg_symbol E("E", NON_TERMINAL);
-    cfg_symbol E_dash("E'", NON_TERMINAL);
-    cfg_symbol T("T", NON_TERMINAL);
-    cfg_symbol T_dash("T'", NON_TERMINAL);
-    cfg_symbol F("F", NON_TERMINAL);
-
-    // TERMINALS SYMBOLS
-    cfg_symbol plus("+", TERMINAL);
-    cfg_symbol multiplication("*", TERMINAL);
-    cfg_symbol left_paren("(", TERMINAL);
-    cfg_symbol right_paren(")", TERMINAL);
-    cfg_symbol id("id", TERMINAL);
-
-    // FILL THE PRODUCTIONS VECTORS **********************************
-    eps_vector.push_back(eps);
-
-    // E -> TE'
-    E_prod_vector.push_back(T);
-    E_prod_vector.push_back(E_dash);
-
-    // E' -> +TE'
-    E_dash_prod_vector.push_back(plus);
-    E_dash_prod_vector.push_back(T);
-    E_dash_prod_vector.push_back(E_dash);
-
-    // T -> FT'
-    T_prod_vector.push_back(F);
-    T_prod_vector.push_back(T_dash);
-
-    // T' -> *FT'
-    T_dash_prod_vector.push_back(multiplication);
-    T_dash_prod_vector.push_back(F);
-    T_dash_prod_vector.push_back(T_dash);
-
-    // F -> (E)
-    F_prod_vector1.push_back(left_paren);
-    F_prod_vector1.push_back(E);
-    F_prod_vector1.push_back(right_paren);
-
-    // F -> id
-    F_prod_vector2.push_back(id);
-    // ****************************************************************
-
-    // CONSTRUCT PRODUCTION
-    cfg_production prod_E(E, E_prod_vector);
-    cfg_production prod_E_dash(E_dash, E_dash_prod_vector);
-    cfg_production prod_E_dash_eps(E_dash, eps_vector);
-
-    cfg_production prod_T(T, T_prod_vector);
-    cfg_production prod_T_dash(T_dash, T_dash_prod_vector);
-    cfg_production prod_T_dash_eps(T_dash, eps_vector);
-
-    cfg_production prod_F1(F, F_prod_vector1);
-    cfg_production prod_F2(F, F_prod_vector2);
-
-    std::map<std::pair<std::string, std::string>, cfg_production> table;
-
-    table[{"E", "id"}] = prod_E;
-    table[{"E", "("}] = prod_E;
-
-    table[{"E'", "+"}] = prod_E_dash;
-    table[{"E'", ")"}] = prod_E_dash_eps;
-    table[{"E'", "$"}] = prod_E_dash_eps;
-
-    table[{"T", "id"}] = prod_T;
-    table[{"T", "("}] = prod_T;
-
-    table[{"T'", "+"}] = prod_T_dash_eps;
-    table[{"T'", "*"}] = prod_T_dash;
-    table[{"T'", ")"}] = prod_T_dash_eps;
-    table[{"T'", "$"}] = prod_T_dash_eps;
-
-    table[{"F", "("}] = prod_F1;
-    table[{"F", "id"}] = prod_F2;
-
-    std::shared_ptr<parsing_table> p_table = std::make_shared<parsing_table>(table);
-    // p_table->draw();
-
-    std::vector<std::string> input_buffer{"id", "+", "id", "$"};
-
-    predictive_parser parser(E, p_table, input_buffer);
-    parser.parse();
-
-    std::vector<std::string> derivations = parser.get_derivations();
-
-    std::vector<std::string> derivations_test
-            {"E -> TE'",
-             "T -> FT'",
-             "F -> id",
-             "match: id",
-             "T' -> \\E",
-             "E' -> +TE'",
-             "match: +",
-             "T -> FT'",
-             "F -> id",
-             "match: id",
-             "T' -> \\E",
-             "E' -> \\E",
-             "accept"};
-
-    for (int i = 0; i < derivations.size(); ++i)
-    {
-        std::cout << (derivations[i] == derivations_test[i]) << std::endl;
+    cfg cfg_ob = cfg ("../../tests/syntax_analyzer/unit/cfg-multi-line.bnf");
+    std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::comparator> grammar;
+    /** Grammar Checking. **/
+    grammar = cfg_ob.get_grammar ();
+    for (auto it = grammar.begin(); it != grammar.end(); ++it) {
+        std::cout << "RULE KEY SYMBOL >> " << it->first.get_name () << std::endl;
+        std::cout << "RULE LHS SYMBOL AGAIN >> " << it->second.get_lhs_symbol ().get_name () << std::endl;
+        std::cout << "RULE NUMBER OF PRODUCTIONS >> " << it->second.get_productions ().size () << std::endl;
+        for (std::size_t i = 0 ; i < it->second.get_productions ().size () ; i++) {
+            std::cout << "PRODUCTION # " << i << std::endl;
+            std::cout << "LHS SYMBOL >> " << it->second.get_productions ()[i].get_lhs_symbol ().get_name () << std::endl;
+            std::cout << "PRODUCTION SYMBOLS" << std::endl;
+            for (std::size_t j = 0 ; j < it->second.get_productions ()[i].get_symbols ().size () ; j++) {
+                std::cout << "SYMBOL #" << j << std::endl;
+                std::cout << "SYMBOL NAME: " << it->second.get_productions ()[i].get_symbols ()[j].get_name () << std::endl;
+                std::cout << "SYMBOL TYPE: " << it->second.get_productions ()[i].get_symbols ()[j].get_type () << std::endl;
+            }
+        }
     }
+    /** Start Symbol Checking **/
+    std::cout << "START SYMBOL NAME: " << cfg_ob.get_start_symbol ().get_name () << std::endl;
+    std::cout << "START SYMBOL TYPE: " << cfg_ob.get_start_symbol ().get_type () << std::endl; 
 }
 
 

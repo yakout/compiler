@@ -22,6 +22,11 @@ void split_str (std::vector <std::string> &, std::string &, char);
  */
 bool remove_single_quotes (std::string &);
 
+/**
+ *  Trims leading and trailing spaces from string.
+ */
+void trim_spaces (std::string &);
+
 rule_holder tokenize_rule (std::string &);
 
 cfg::cfg ()
@@ -30,8 +35,8 @@ cfg::cfg ()
 }
 
 cfg::cfg (std::string grammar_file)
-    : non_terminals (), terminals (), rules () {
-
+        : non_terminals (), terminals (), rules () {
+    parse (grammar_file);
 }
 
 void cfg::parse (std::string grammar_file) {
@@ -49,8 +54,10 @@ void cfg::parse (std::string grammar_file) {
             first_line = false;
         } else {
             if (current_line[0] == '#') {
-                std::cout << previous_line << std::endl;    // DEBUGGING
+                std::cout << "READ A WHOLE RULE." << std::endl;     // DEBUGGING 
+                std::cout << previous_line << std::endl;
                 parse_rule (previous_line, first_rule);
+                std::cout << "PARSED A WHOLE RULE." << std::endl;
                 if (first_rule)
                     first_rule = false;
                 previous_line.clear ();
@@ -60,18 +67,27 @@ void cfg::parse (std::string grammar_file) {
             }
         }
     }
+    parse_rule (previous_line, first_rule);
 }
 
 void cfg::parse_rule (std::string & rule_str, bool first_rule) {
     rule_holder r_h;
+    std::cout << "ENTERED parse_rule () FUNCTION." << std::endl;
     r_h = tokenize_rule (rule_str);
+    std::cout << "parse_rule (): PASSED TOKENIZING RULE TO TWO PARTS." << std::endl;
     std::vector <cfg_production> productions;
     cfg_production prod;
     cfg_symbol lhs_symbol = cfg_symbol (r_h.lhs_symbol_name, cfg_symbol_type::NON_TERMINAL);
+    std::cout << "parse_rule (): CREATED LHS SYMBOL OF RULE." << std::endl;
     for (std::size_t i = 0 ; i < r_h.productions.size () ; i++) {
+        std::cout << "parse_rule (): BUILDING PRODUCTION # " << i << std::endl;
         cfg_production prod;
-        for (std::size_t j = 0 ; j < r_h.productions[i].size () ; i++) {
+        prod.set_lhs_symbol (lhs_symbol);
+        for (std::size_t j = 0 ; j < r_h.productions[i].size () ; j++) {
+            std::cout << "parse_rule (): BUILDING PRODUCTION # " << i 
+                << " SYMBOL # " << j << std::endl;
             cfg_symbol symbol;
+            trim_spaces (r_h.productions[i][j]);
             if (!remove_single_quotes (r_h.productions[i][j])) {
                 symbol = cfg_symbol (r_h.productions[i][j], cfg_symbol_type::NON_TERMINAL);
                 non_terminals.insert (symbol);
@@ -84,11 +100,14 @@ void cfg::parse_rule (std::string & rule_str, bool first_rule) {
         // Builds the cfg_symbol_productions map.
         for (auto symbol : prod.get_symbols ())
             cfg_symbol_productions[symbol].push_back (prod);
+        std::cout << "parse_rule (): BUILT THE cfg_symbol_productions MAP." << std::endl;
         productions.push_back (prod);
+        std::cout << "parse_rule (): ADDED PRODUCTION TO THE PRODUCTIONS VECTOR." << std::endl;
     }
     if (first_rule)
         start_symbol = lhs_symbol;
     add_rule (lhs_symbol, productions);
+    std::cout << "parse_rule (): ADDED RULE TO GRAMMAR AND RULES VECTOR." << std::endl;
 }
 
 void cfg::add_rule (cfg_symbol & lhs_symbol
@@ -332,9 +351,9 @@ void split_str (std::vector <std::string> & vec
 }
 
 bool remove_single_quotes (std::string & str) {
-    if (str.length () > 2) {
-        str.erase (remove (str.begin (), str.end (), '\''), str.end ());
-        str.erase (remove (str.begin (), str.end (), '\''), str.end ());
+    if (str[0] == '\'' && str[str.length () - 1] == '\'') {
+        str.erase (0, 1);
+        str.erase (str.length () - 1, 1);
         return true;
     }
     return false;
@@ -343,27 +362,52 @@ bool remove_single_quotes (std::string & str) {
 rule_holder tokenize_rule (std::string & str) {
     rule_holder r_h;
     std::vector <std::string> vec;
+    std::cout << "ENTERED tokenize_rule () FUNCTION." << std::endl;
     str.erase (str.begin ());
+    std::cout << "tokenize_rule (): ERASED FIRST HASH CHARACTER: " << str << std::endl;
     // Gets the position of the first equal sign to split the rule to LHS and RHS.
     std::size_t equal_sign_pos = str.find_first_of ("=");
-
+    std::cout << "tokenize_rule (): FOUND THE POSITION OF THE EQUAL SIGN = " << equal_sign_pos << std::endl;
     if (equal_sign_pos == std::string::npos) {
         //TODO: Report "Invalid rule so invalid grammar" error.
     }
 
     std::string lhs_symbol_name = str.substr (0, equal_sign_pos - 1);
+    trim_spaces (lhs_symbol_name);
+    std::cout << "tokenize_rule (): PARSED THE LHS SYMBOL NAME >>> " << lhs_symbol_name 
+            << " LENGTH >>> " << lhs_symbol_name.length () << std::endl;
+
     std::string rhs_productions = str.substr (equal_sign_pos + 1, str.length ());
+    trim_spaces (rhs_productions);
+    std::cout << "tokenize_rule (): PARSED THE RHS PRODUCTIONS >>> " << rhs_productions
+            << " LENGTH >>> " << rhs_productions.length () << std::endl;
+
 
     r_h.lhs_symbol_name = lhs_symbol_name;
-
+    std::cout << "tokenize_rule (): SET THE LHS SYMBOL NAME IN THE RHS HOLDER." << std::endl;
     split_str (vec, rhs_productions, '|');
-
-    std::vector <std::string> prod;
-
+    std::cout << "tokenize_rule (): SPLITTED THE RHS PRODUCTIONS TO SINGLE PRODUCTIONS." << std::endl;
     for (std::size_t i = 0 ; i < vec.size (); i++) {
+        std::vector <std::string> prod;
+        trim_spaces (vec[i]);
+        std::cout << "tokenize_rule (): TRIMMED PRODUCTION >>> " << i << " STRING >>> " << vec[i] << std::endl;
         split_str (prod, vec[i], ' ');
-        r_h.productions[i] = prod;
+        std::cout << "tokenize_rule (): SPLITTED PRODUCTION >>> " << i << " STRING TO SYMBOLS >>> " << vec[i] << std::endl;
+        r_h.productions.push_back (prod);
+        std::cout << "tokenize_rule (): ADDED PRODUCTION >>> " << i << " TO PRODUCTION RULE." << std::endl;
         prod.clear ();
     }
     return r_h;
+}
+
+void trim_spaces (std::string & str) {
+    // trim leading spaces.
+    str.erase (str.begin (), std::find_if (str.begin (), str.end (), [](int character) {
+        return !std::isspace (character);
+    }));
+
+    // trim trailing spaces.
+    str.erase (std::find_if (str.rbegin (), str.rend (), [](int character) {
+        return !std::isspace (character);
+    }).base (), str.end ());
 }
