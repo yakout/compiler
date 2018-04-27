@@ -6,10 +6,10 @@
 
 #define INVALID_LL1_GRAMMAR "This is NOT LL1 Grammar"
 
-parsing_table::parsing_table(cfg g)
+parsing_table::parsing_table(cfg g, first_set first, follow_set follow)
  : grammar(g), table()
 {
-    build ();
+    build (first, follow);
 }
 
 parsing_table::parsing_table(std::unordered_map <std::pair<std::string, std::string>, cfg_production,
@@ -29,17 +29,17 @@ std::shared_ptr<cfg_production> get_synch_prod ()
     return prod;
 }
 
-void parsing_table::build()
+void parsing_table::build(first_set first_orig, follow_set follow_orig)
 {
    /// list of non-terminals in the CFG.
    std::unordered_set <cfg_symbol, cfg_symbol::hasher
                 , cfg_symbol::comparator> non_terminals = grammar.get_non_terminals ();
    /// First and follow cfg_sets
-   std::shared_ptr <first_set> first_cfg_set = grammar.get_first_set();
-   std::shared_ptr <follow_set> follow_cfg_set = grammar.get_follow_set();
+//   std::shared_ptr <first_set> first_cfg_set = grammar.get_first_set();
+//   std::shared_ptr <follow_set> follow_cfg_set = grammar.get_follow_set();
    /// First and Follow maps.
-   auto first_set = first_cfg_set->get_set_map();
-   auto follow_set = follow_cfg_set->get_set_map();
+   auto first_set = first_orig.get_set_map();//first_cfg_set->get_set_map();
+   auto follow_set = follow_orig.get_set_map();//follow_cfg_set->get_set_map();
    for (auto non_terminal : non_terminals)
    {
       std::cout << "Non-Terminal : " << non_terminal.get_name() << std::endl;
@@ -107,7 +107,8 @@ cfg_production parsing_table::get_production (std::string rule, std::string toke
 void parsing_table::draw(std::string file_name)
 {
     // TODO :: write in file
-    freopen(file_name.c_str(),"w", stdout);
+    std::ofstream file;
+    file.open(file_name);
 
     int max_size = 0;
 
@@ -134,26 +135,29 @@ void parsing_table::draw(std::string file_name)
         non_terminals.push_back(s);
 
 
-    std::cout << '|' << std::setw(max_size) << "";
+    file << '|' << std::setw(max_size) << "";
     for (auto const &t : terminals)
     {
-        std::cout << '|' << std::setw(max_size) << t ;
+        file << '|' << std::setw(max_size) << t ;
     }
-    std::cout << '|' << std::endl;
+    file << '|' << std::endl;
 
 
-    for (int i = 0; i < max_size * (terminals.size() + 2); i++) std::cout << "_";
-    std::cout << std::endl;
+    for (int i = 0; i < max_size * (terminals.size() + 2); i++) file << "_";
+    file << std::endl;
 
     for (int i = 0; i < non_terminals.size(); ++i)
     {
-        std::cout << '|' << std::setw(max_size) << non_terminals[i];
+        file << '|' << std::setw(max_size) << non_terminals[i];
         for (int j = 0; j < terminals.size(); ++j)
         {
-            std::cout << '|' << std::setw(max_size) << get_production(non_terminals[i], terminals[j]).to_string();
+            file << '|' << std::setw(max_size) << get_production(non_terminals[i], terminals[j]).to_string();
         }
-        std::cout << '|' << std::endl;
-        for (int i = 0; i < max_size * (terminals.size() + 2); i++) std::cout << "_";
-        std::cout << std::endl;
+        file << '|' << std::endl;
+        for (int i = 0; i < max_size * (terminals.size() + 2); i++) file << "_";
+        file << std::endl;
     }
+
+    file.close();
 }
+

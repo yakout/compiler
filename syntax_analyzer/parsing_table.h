@@ -9,6 +9,7 @@
 #include <set>
 #include <iomanip>
 #include <iostream>
+#include <fstream>
 
 /**
     Parsing table that contains state machine to parse input program.
@@ -46,14 +47,15 @@ private:
         It fills the table map defined above by productions using the first and.
         follow sets supplied before.
     */
-    void build();
+    void build(first_set, follow_set);
 public:
     /**
      *  Constructor for parsing table.
      *  @param cfg grammar to build parsing table for
      *  @param first_follow_sets to be used in building parsing table
      */
-    parsing_table (cfg);
+//    parsing_table (cfg);
+    parsing_table (cfg, first_set, follow_set);
     /**
      * Constructor for parsing table, that takes the map with the productions entries in it.
      * used for testing.

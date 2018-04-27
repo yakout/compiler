@@ -127,6 +127,91 @@ TEST_CASE("PREDICTIVE PARSER TEST 1")
 }
 
 
+TEST_CASE("predictive parser test 2")
+{
+    std::vector<cfg_symbol> eps_vector;
+    std::vector<cfg_symbol> empty_vector;
+
+    std::vector<cfg_symbol> S_prod_vector_1;
+    std::vector<cfg_symbol> S_prod_vector_2;
+
+    std::vector<cfg_symbol> A_prod_vector_1;
+    std::vector<cfg_symbol> A_prod_vector_2;
+
+
+    // SPECIAL SYMBOLS
+    cfg_symbol eps(EPS, TERMINAL);
+    cfg_symbol s_$(END_MARKER);
+    cfg_symbol synch(SYNCH);
+
+    // LHS NON_TERMINALS SYMBOLS
+    cfg_symbol S("S", NON_TERMINAL);
+    cfg_symbol A("A", NON_TERMINAL);
+
+
+    // TERMINALS SYMBOLS
+    cfg_symbol a("a", TERMINAL);
+    cfg_symbol b("b", TERMINAL);
+    cfg_symbol c("c", TERMINAL);
+    cfg_symbol d("d", TERMINAL);
+    cfg_symbol e("e", TERMINAL);
+
+    // FILL THE PRODUCTIONS VECTORS **********************************
+    eps_vector.push_back(eps);
+
+    S_prod_vector_1.push_back(A);
+    S_prod_vector_1.push_back(b);
+    S_prod_vector_1.push_back(S);
+
+    S_prod_vector_2.push_back(e);
+
+    A_prod_vector_2.push_back(c);
+    A_prod_vector_2.push_back(A);
+    A_prod_vector_2.push_back(d);
+
+    A_prod_vector_1.push_back(a);
+    // ****************************************************************
+
+    // CONSTRUCT PRODUCTION
+    cfg_production prod_S1(S, S_prod_vector_1);
+    cfg_production prod_S2(S, S_prod_vector_2);
+    cfg_production prod_S_eps(S, eps_vector);
+
+    cfg_production prod_A1(A, A_prod_vector_1);
+    cfg_production prod_A2(A, A_prod_vector_2);
+
+    cfg_production  synch_prod(synch, empty_vector);
+
+    std::unordered_map<std::pair<std::string, std::string>, cfg_production, parsing_table_hasher, parsing_table_comparator> table;
+
+    table[{"S", "a"}] = prod_S1;
+    table[{"S", "c"}] = prod_S1;
+    table[{"S", "e"}] = prod_S2;
+    table[{"S", "$"}] = prod_S_eps;
+
+
+    table[{"A", "a"}] = prod_A1;
+    table[{"A", "b"}] = synch_prod;
+    table[{"A", "c"}] = prod_A2;
+    table[{"A", "d"}] = synch_prod;
+
+    std::shared_ptr<parsing_table> p_table = std::make_shared<parsing_table>(table);
+
+    std::vector<std::string> input_buffer{"c", "b", "$"};
+
+    predictive_parser parser(S, p_table, input_buffer);
+    parser.parse();
+
+    std::vector<std::string> derivations = parser.get_derivations();
+    std::vector<std::string> reference_derivations {"S -> A b S ", "A -> c A d ", "matched: c"};
+    // TODO
+
+    for (std::string s : derivations)
+    {
+        std::cout << s << std::endl;
+    }
+}
+
 TEST_CASE("test FIRST")
 {
 //    E -> TE’

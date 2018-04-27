@@ -13,8 +13,12 @@ void err_no_file_exists (char *);
 void help ();
 bool file_exists (char *);
 void print_output (std::vector<token> &);
+
 void lex_generate_tokenize (char *, char *, std::vector<token> &);
 void lex_tokenize (char *, char *, std::vector<token> &);
+
+void parse_generate_tokenize (char *, char *, char *, std::vector<token> &);
+void parse_tokenize (char *, char *, char *, std::vector<token> &);
 
 std::ofstream sym_tab_file;
 std::ofstream token_file;
@@ -33,6 +37,14 @@ int main (int argc, char *argv[]) {
             lex_generate_tokenize (argv[3], argv[4], token_vec);
         } else if (argc == 4) {
             lex_tokenize (argv[2], argv[3], token_vec);
+        } else {
+            err_argc ();
+        }
+    } else if (!strcmp (argv[1], "--parse")) {
+        if (argc == 6 && !strcmp (argv[2], "-g")) {
+            parse_generate_tokenize (argv[3], argv[4], argv[5], token_vec);
+        } else if (argc == 5) {
+            parse_tokenize (argv[2], argv[3], argv[4],token_vec);
         } else {
             err_argc ();
         }
