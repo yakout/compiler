@@ -3,6 +3,7 @@
 
 #include "context_free_grammar/cfg_production.h"
 #include "parsing_table.h"
+#include "../lexical_analyzer/lexical_tokenizer/token.h"
 #include <stack>
 #include <string>
 #include <vector>
@@ -48,6 +49,8 @@ public:
      */ 
     predictive_parser (cfg_symbol start_symbol, std::shared_ptr<parsing_table> p_table,
                        std::vector<std::string> input_buffer);
+
+    predictive_parser (char *cfg_file, std::vector<token> token_vec);
     /**
      * print the debug stack contents into consol for debugging.
      */

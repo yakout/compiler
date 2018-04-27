@@ -26,7 +26,8 @@ set (HEADER_FILES
         context_free_grammar/util/follow_set.h
         context_free_grammar/synch_production.h
         parsing_table.h
-        predictive_parser.h)
+        predictive_parser.h
+        context_free_grammar/util/follow_set.h)
 
 set (SOURCE_FILES
         context_free_grammar/cfg_production.cpp

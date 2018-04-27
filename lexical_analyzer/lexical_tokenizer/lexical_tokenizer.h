@@ -3,18 +3,13 @@
 
 #include "../lexical_analyzer_generator/finite_automata/dfa_state.h"
 #include "../lexical_analyzer_generator/finite_automata/dfa.h"
+#include "token.h"
 #include <string>
 #include <vector>
 
 struct acceptance_state {
   int state_id;
   std::string token_class;
-};
-
-struct token {
-  std::string lexeme;
-  std::string token_class;
-  int str_pos;
 };
 
 class lexical_tokenizer {

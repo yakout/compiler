@@ -134,15 +134,14 @@ void cfg::add_rule (cfg_rule & rule) {
 
 void cfg::left_factor ()
 {
+    std::unordered_map <cfg_symbol, cfg_rule
+            , cfg_symbol::hasher, cfg_symbol::comparator> new_grammar;
      for (auto grammar_entry : grammar)
      {
-         std::map <std::vector<std::string>, std::vector <cfg_production>> common_factors;
+         std::map <std::string, std::vector <cfg_production>> common_factors;
          for (auto prod : grammar_entry.second.get_productions())
          {
-             std::vector<std::string> v;
-             // find longest common prefix
-             v.push_back(prod.get_symbols()[0].get_name());
-             common_factors[v].push_back (prod);
+             common_factors[prod.get_symbols()[0].get_name()].push_back (prod);
          }
 
          grammar_entry.second.empty_productions ();
@@ -172,6 +171,9 @@ void cfg::left_factor ()
                  cfg_production new_prod(original_symbol, v);
                  new_productions.push_back (new_prod);
 
+                 // construct the new rules
+                 std::vector<cfg_production> productions_vec;
+
                  for (auto prod : entry.second)
                  {
                      std::vector<cfg_symbol> rest_symbols;
@@ -179,14 +181,34 @@ void cfg::left_factor ()
                      {
                          rest_symbols.push_back(prod.get_symbols()[i]);
                      }
+                     if (rest_symbols.empty()) {
+                         cfg_symbol eps("\\E", TERMINAL);
+                         rest_symbols.push_back(eps);
+                     }
                      cfg_production rest_symbols_as_production(new_sym, rest_symbols);
-                     std::vector<cfg_production> productions_vec;
                      productions_vec.push_back(rest_symbols_as_production);
-                     add_rule(new_sym, productions_vec);
+                 }
+                 cfg_rule new_rule(new_sym, productions_vec);
+
+                 cfg temp_cfg;
+                 std::unordered_map <cfg_symbol, cfg_rule
+                         , cfg_symbol::hasher, cfg_symbol::comparator> temp_grammar;
+
+                 temp_grammar[new_sym] = new_rule;
+                 temp_cfg.set_grammar(temp_grammar);
+                 temp_cfg.left_factor();
+
+                 for (auto temp_cfg_entry : temp_cfg.get_grammar())
+                 {
+                     new_grammar[temp_cfg_entry.first] = temp_cfg_entry.second;
                  }
              }
          }
+         cfg_symbol sym(grammar_entry.first);
+         cfg_rule new_rule(sym, new_productions);
+         new_grammar[sym] = new_rule;
      }
+    grammar = new_grammar;
 }
 
 void cfg::remove_left_recursion ()

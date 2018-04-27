@@ -1,5 +1,3 @@
-#include "lexical_analyzer/lexical_tokenizer/lexical_tokenizer.h"
-#include "lexical_analyzer/lexical_analyzer_generator/lexical_analyzer_generator.h"
 #include <iostream>
 #include <string.h>
 #include <iomanip>
@@ -7,14 +5,22 @@
 #include <memory>
 #include <cstdlib>
 
+#include "lexical_analyzer/lexical_tokenizer/lexical_tokenizer.h"
+#include "syntax_analyzer/predictive_parser.h"
+#include "lexical_analyzer/lexical_analyzer_generator/lexical_analyzer_generator.h"
+
 void err_argc ();
 void err_option ();
 void err_no_file_exists (char *);
 void help ();
 bool file_exists (char *);
 void print_output (std::vector<token> &);
+
 void lex_generate_tokenize (char *, char *, std::vector<token> &);
 void lex_tokenize (char *, char *, std::vector<token> &);
+
+void parse_generate_tokenize (char *, char *, char *, std::vector<token> &);
+void parse_tokenize (char *, char *, char *, std::vector<token> &);
 
 std::ofstream sym_tab_file;
 std::ofstream token_file;
@@ -33,6 +39,14 @@ int main (int argc, char *argv[]) {
             lex_generate_tokenize (argv[3], argv[4], token_vec);
         } else if (argc == 4) {
             lex_tokenize (argv[2], argv[3], token_vec);
+        } else {
+            err_argc ();
+        }
+    } else if (!strcmp (argv[1], "--parse")) {
+        if (argc == 6 && !strcmp (argv[2], "-g")) {
+            parse_generate_tokenize (argv[3], argv[4], argv[5], token_vec);
+        } else if (argc == 5) {
+            parse_tokenize (argv[2], argv[3], argv[4],token_vec);
         } else {
             err_argc ();
         }
@@ -128,6 +142,24 @@ void lex_tokenize (char *transition_table_file, char *code_file
     while (lex->get_next_token (t)) {
         token_vec.push_back (token (t));
     }
+}
+
+void parse_generate_tokenize (char *rules_file, char *code_file, char *cfg_file
+        , std::vector<token> &token_vec)
+{
+    lex_generate_tokenize(rules_file, code_file, token_vec);
+
+    predictive_parser parser(cfg_file, token_vec);
+    parser.parse();
+}
+
+void parse_tokenize (char *transition_table_file, char *code_file, char *cfg_file
+        , std::vector<token> &token_vec)
+{
+    lex_tokenize(transition_table_file, code_file, token_vec);
+
+    predictive_parser parser(cfg_file, token_vec);
+    parser.parse();
 }
 
 void print_output (std::vector<token> &token_vec) {

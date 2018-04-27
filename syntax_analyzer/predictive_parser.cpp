@@ -7,6 +7,19 @@ predictive_parser::predictive_parser (cfg_symbol start_symbol, std::shared_ptr<p
 	init_stack(start_symbol);
 }
 
+predictive_parser::predictive_parser(char *cfg_file, std::vector<token> token_vec)
+{
+    for (auto tok : token_vec)
+    {
+        input_buffer.push_back(tok.lexeme);
+    }
+
+    cfg grammar(cfg_file);
+    std::shared_ptr<parsing_table> ll1_table = std::make_shared<parsing_table>(grammar);
+    p_table = ll1_table;
+    init_stack(grammar.get_start_symbol());
+}
+
 void predictive_parser::init_stack (cfg_symbol start_sym) 
 {
     cfg_symbol end_marker("$", END_MARKER);
@@ -20,8 +33,10 @@ std::string predictive_parser::dump_stack ()
 	std::string stack_str = "";
 	while (!parser_stack.empty())
 	{
-		temp_stack.push(parser_stack.top());
-		stack_str += "(" + parser_stack.top().get_name() + ")";
+        if (parser_stack.top().get_name() != "$") {
+            temp_stack.push(parser_stack.top());
+            stack_str += "(" + parser_stack.top().get_name() + ")";
+        }
         parser_stack.pop();
 	}
 
@@ -83,24 +98,32 @@ void predictive_parser::parse()
             if (prod.get_lhs_symbol().get_type() == SYNCH)
             {
                 // TODO::SYNCH production
-                break;
+                parser_stack.pop();
+                output.push_back("SYNCH (pop_stack)");
+//                break;
             }
             else if (prod.get_symbols().empty())
             {
-                // TODO::ERROR!
-                break;
+                // ERROR! discard curr_tok
+                output.push_back("Error: (illegal " + stack_top.get_name() + ") - discard " + cur_token);
+                i++;
+//                break;
             }
             else
             {
                 write_prod(prod);
                 std::vector<cfg_symbol> symbols = prod.get_symbols();
                 std::reverse(symbols.begin(), symbols.end());
-                parser_stack.pop();
+
                 if (prod.get_symbols().front().get_name() != EPS)
                 {
+                    parser_stack.pop();
                     for (cfg_symbol sym : symbols) {
                         parser_stack.push(sym);
                     }
+                } else {
+                    // EPSILON PRODUCTION
+                    parser_stack.pop();
                 }
             }
 		}
@@ -114,8 +137,10 @@ void predictive_parser::parse()
 			}
 			else
 			{
-				// TODO::ERROR!
-                break;
+                // ERROR! insert curr_tok
+                output.push_back("Error: (missing " + stack_top.get_name() + ") - inserted.");
+                parser_stack.pop();
+//                break;
 			}
 		}
 		else if (stack_top.get_type() == END_MARKER)
@@ -125,7 +150,10 @@ void predictive_parser::parse()
                 parser_stack.pop();
 				output.push_back("accept");
 				break;
-			}
+			} else {
+                output.push_back("Error: (illegal " + stack_top.get_name() + " - discard " + cur_token);
+                i++;
+            }
 		}
 		else if (stack_top.get_type() == SYNCH)
 		{
@@ -136,4 +164,5 @@ void predictive_parser::parse()
 		}
 	}
 }
+
 

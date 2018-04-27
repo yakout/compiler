@@ -105,65 +105,116 @@ TEST_CASE("PREDICTIVE PARSER TEST 1")
 
     std::vector<std::string> derivations = parser.get_derivations();
 
-    std::vector<std::string> derivations_test
-            {"E -> T E' ",
-             "T -> F T' ",
-             "F -> id ",
-             "match: id",
-             "T' -> \\E ",
-             "E' -> + T E' ",
-             "match: +",
-             "T -> F T' ",
-             "F -> id ",
-             "match: id",
-             "T' -> \\E ",
-             "E' -> \\E ",
-             "accept"};
+    std::vector<std::string> reference_derivations{"E -> T E' ",
+                                              "T -> F T' ",
+                                              "F -> id ",
+                                              "match: id",
+                                              "T' -> \\L ",
+                                              "E' -> + T E' ",
+                                              "match: +",
+                                              "T -> F T' ",
+                                              "F -> id ",
+                                              "match: id",
+                                              "T' -> \\L ",
+                                              "E' -> \\L ",
+                                              "accept"};
 
     for (int i = 0; i < derivations.size(); ++i)
     {
-        REQUIRE(derivations[i] == derivations_test[i]);
+        REQUIRE(derivations[i] == reference_derivations[i]);
     }
 }
 
 
-TEST_CASE("test FIRST")
+TEST_CASE("PREDICTIVE PARSER TEST 1 (panic mode)")
 {
-//    E -> TE’
-//    E’ -> +TE’ | eps
-//    T -> FT’
-//    T’ -> *FT’ | eps
-//    F -> (E) | id
+    std::vector<cfg_symbol> eps_vector;
+    std::vector<cfg_symbol> empty_vector;
 
-//    FIRST(F) = {(,id}
-//    FIRST(T’) = {*, eps}
-//    FIRST(T) = {(,id}
-//    FIRST(E’) = {+, eps}
-//    FIRST(E) = {(,id}
+    std::vector<cfg_symbol> S_prod_vector_1;
+    std::vector<cfg_symbol> S_prod_vector_2;
 
-//    FIRST(TE’) = {(,id}
-//    FIRST(+TE’ ) = {+}
-//    FIRST(eps) = {eps}
-//    FIRST(FT’) = {(,id}
-//    FIRST(*FT’) = {*}
-//    FIRST(eps) = {eps}
-//    FIRST((E)) = {(}
-//    FIRST(id) = {id}
+    std::vector<cfg_symbol> A_prod_vector_1;
+    std::vector<cfg_symbol> A_prod_vector_2;
+
+
+    // SPECIAL SYMBOLS
+    cfg_symbol eps(EPS, TERMINAL);
+    cfg_symbol s_$(END_MARKER);
+    cfg_symbol synch(SYNCH);
+
+    // LHS NON_TERMINALS SYMBOLS
+    cfg_symbol S("S", NON_TERMINAL);
+    cfg_symbol A("A", NON_TERMINAL);
+
+
+    // TERMINALS SYMBOLS
+    cfg_symbol a("a", TERMINAL);
+    cfg_symbol b("b", TERMINAL);
+    cfg_symbol c("c", TERMINAL);
+    cfg_symbol d("d", TERMINAL);
+    cfg_symbol e("e", TERMINAL);
+
+    // FILL THE PRODUCTIONS VECTORS **********************************
+    eps_vector.push_back(eps);
+
+    S_prod_vector_1.push_back(A);
+    S_prod_vector_1.push_back(b);
+    S_prod_vector_1.push_back(S);
+
+    S_prod_vector_2.push_back(e);
+
+    A_prod_vector_2.push_back(c);
+    A_prod_vector_2.push_back(A);
+    A_prod_vector_2.push_back(d);
+
+    A_prod_vector_1.push_back(a);
+    // ****************************************************************
+
+    // CONSTRUCT PRODUCTION
+    cfg_production prod_S1(S, S_prod_vector_1);
+    cfg_production prod_S2(S, S_prod_vector_2);
+    cfg_production prod_S_eps(S, eps_vector);
+
+    cfg_production prod_A1(A, A_prod_vector_1);
+    cfg_production prod_A2(A, A_prod_vector_2);
+
+    cfg_production  synch_prod(synch, empty_vector);
+
+    std::unordered_map<std::pair<std::string, std::string>, cfg_production, parsing_table_hasher,
+            parsing_table_comparator> table;
+
+    table[{"S", "a"}] = prod_S1;
+    table[{"S", "c"}] = prod_S1;
+    table[{"S", "e"}] = prod_S2;
+    table[{"S", "$"}] = prod_S_eps;
+
+
+    table[{"A", "a"}] = prod_A1;
+    table[{"A", "b"}] = synch_prod;
+    table[{"A", "c"}] = prod_A2;
+    table[{"A", "d"}] = synch_prod;
+
+    std::shared_ptr<parsing_table> p_table = std::make_shared<parsing_table>(table);
+
+    std::vector<std::string> input_buffer{"c", "b", "$"};
+
+    predictive_parser parser(S, p_table, input_buffer);
+    parser.parse();
+
+    std::vector<std::string> derivations = parser.get_derivations();
+    std::vector<std::string> reference_derivations {"S -> A b S ",
+                                                    "A -> c A d ",
+                                                    "match: c",
+                                                    "SYNCH (pop_stack)",
+                                                    "Error: (missing d) - inserted.",
+                                                    "match: b",
+                                                    "S -> \\L ",
+                                                    "accept"};
+
+    for (int i = 0; i < derivations.size(); ++i)
+    {
+        REQUIRE(derivations[i] == reference_derivations[i]);
+    }
 }
 
-TEST_CASE("test FOLLOW")
-{
-    // TODO
-//    E -> TE’
-//    E’ -> +TE’ | eps
-//    T -> FT’
-//    T’ -> *FT’ | eps
-//    F -> (E) | id
-
-//    FOLLOW(E) = { $, ) }
-//    FOLLOW(E’) = { $, ) }
-//    FOLLOW(T) = { +, ), $ }
-//    FOLLOW(T’) = { +, ), $ }
-//    FOLLOW(F) = {+, *, ), $ }
-
-}
