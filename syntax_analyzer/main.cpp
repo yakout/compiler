@@ -1,9 +1,10 @@
 #include <iostream>
+#include "parsing_table.h"
 #include "context_free_grammar/cfg.h"
 
 int main (int argc, char *argv[]) {
 
-    cfg cfg_ob = cfg ("../../tests/syntax_analyzer/unit/cfg-multi-line.bnf");
+    cfg cfg_ob = cfg ("../tests/syntax_analyzer/unit/ready_ll1_cfg.bnf");
     std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::comparator> grammar;
     /** Grammar Checking. **/
     grammar = cfg_ob.get_grammar ();
@@ -24,5 +25,9 @@ int main (int argc, char *argv[]) {
     }
     /** Start Symbol Checking **/
     std::cout << "START SYMBOL NAME: " << cfg_ob.get_start_symbol ().get_name () << std::endl;
-    std::cout << "START SYMBOL TYPE: " << cfg_ob.get_start_symbol ().get_type () << std::endl; 
+    std::cout << "START SYMBOL TYPE: " << cfg_ob.get_start_symbol ().get_type () << std::endl;
+
+
+    parsing_table p_table = parsing_table (cfg_ob);
+    // p_table.draw ("parsing_table.txt");
 }
