@@ -9,7 +9,7 @@
 parsing_table::parsing_table(cfg g)
         : grammar(g), table()
 {
-//    build (first, follow);
+//    build ();
     // TODO
 }
 
@@ -30,23 +30,29 @@ parsing_table::parsing_table() {}
 
 std::shared_ptr<cfg_production> get_synch_prod ()
 {
-    synch_production synch_prod = synch_production ();
+    // TODO
+    std::vector<cfg_symbol> v;
+    cfg_symbol synch(SYNCH);
+    cfg_production synch_prod(synch, v);
+
     std::shared_ptr<cfg_production> prod =
                     std::make_shared<cfg_production> (synch_prod);
     return prod;
 }
 
-void parsing_table::build(first_set first_orig, follow_set follow_orig)
+void parsing_table::build(first_set first_set1, follow_set follow_set1)
 {
    /// list of non-terminals in the CFG.
    std::unordered_set <cfg_symbol, cfg_symbol::hasher
                 , cfg_symbol::comparator> non_terminals = grammar.get_non_terminals ();
    /// First and follow cfg_sets
-//   std::shared_ptr <first_set> first_cfg_set = grammar.get_first_set();
-//   std::shared_ptr <follow_set> follow_cfg_set = grammar.get_follow_set();
+   std::shared_ptr <first_set> first_cfg_set = grammar.get_first_set();
+   std::shared_ptr <follow_set> follow_cfg_set = grammar.get_follow_set();
    /// First and Follow maps.
-   auto first_set = first_orig.get_set_map();//first_cfg_set->get_set_map();
-   auto follow_set = follow_orig.get_set_map();//follow_cfg_set->get_set_map();
+//   auto first_set = first_cfg_set->get_set_map();
+//   auto follow_set = follow_cfg_set->get_set_map();
+    auto first_set = first_set1.get_set_map();
+    auto follow_set = follow_set1.get_set_map();
    for (auto non_terminal : non_terminals)
    {
       std::cout << "Non-Terminal : " << non_terminal.get_name() << std::endl;
@@ -90,8 +96,14 @@ void parsing_table::build(first_set first_orig, follow_set follow_orig)
        {
            for (auto follow_terminal : follow) /// add eps production to follow entries in table
            {
-               table[make_pair(non_terminal.get_name(), follow_terminal.get_name())]
-                     = *eps_prod;
+               auto it = table.find(std::make_pair(non_terminal.get_name(),
+                                                   follow_terminal.get_name()));
+               if (it == table.end()) {
+                   table[make_pair(non_terminal.get_name(), follow_terminal.get_name())]
+                           = *eps_prod;
+               } else {
+                   throw std::runtime_error(INVALID_LL1_GRAMMAR);
+               }
            }
        }
        else
@@ -99,8 +111,11 @@ void parsing_table::build(first_set first_orig, follow_set follow_orig)
          cfg_production synch_prod = *get_synch_prod();
          for (auto follow_terminal : follow)
          {
-             table[make_pair(non_terminal.get_name(), follow_terminal.get_name())]
-                   = synch_prod;
+             auto it = table.find(make_pair(non_terminal.get_name(), follow_terminal.get_name()));
+             if (it == table.end()) {
+                 table[make_pair(non_terminal.get_name(), follow_terminal.get_name())]
+                         = synch_prod;
+             }
          }
        }
    }

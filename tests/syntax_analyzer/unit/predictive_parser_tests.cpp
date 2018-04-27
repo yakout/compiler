@@ -18,7 +18,7 @@ TEST_CASE("PREDICTIVE PARSER TEST 1")
 
     // SPECIAL SYMBOLS
     cfg_symbol eps(EPS, TERMINAL);
-    cfg_symbol s_$(END_MARKER);
+    cfg_symbol s_$("$", END_MARKER);
 
     // LHS NON_TERMINALS SYMBOLS
     cfg_symbol E("E", NON_TERMINAL);
@@ -140,7 +140,7 @@ TEST_CASE("PREDICTIVE PARSER TEST 1 (panic mode)")
 
     // SPECIAL SYMBOLS
     cfg_symbol eps(EPS, TERMINAL);
-    cfg_symbol s_$(END_MARKER);
+    cfg_symbol s_$("$", END_MARKER);
     cfg_symbol synch(SYNCH);
 
     // LHS NON_TERMINALS SYMBOLS

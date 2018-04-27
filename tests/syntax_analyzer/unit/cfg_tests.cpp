@@ -194,7 +194,6 @@ TEST_CASE ("left factoring test 3") {
 }
 
 
-
 TEST_CASE("left factoring test 4")
 {
     std::vector<cfg_symbol> eps_vector;

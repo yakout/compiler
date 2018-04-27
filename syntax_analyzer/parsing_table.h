@@ -48,6 +48,7 @@ private:
         follow sets supplied before.
     */
     void build(first_set, follow_set);
+//    void build();
 public:
     /**
      *  Constructor for parsing table.

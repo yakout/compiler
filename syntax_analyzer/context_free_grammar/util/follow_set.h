@@ -18,7 +18,8 @@ public:
     follow_set();
 
     void add_symbol(std::string, cfg_symbol symbol);
-    const std::unordered_map<std::string, std::unordered_set<cfg_symbol, cfg_symbol::hasher, cfg_symbol::comparator>> &get_set_map() const;
+    const std::unordered_map<std::string, std::unordered_set<cfg_symbol, cfg_symbol::hasher,
+            cfg_symbol::comparator>> &get_set_map() const;
     bool has_eps(std::string);
     bool empty(std::string);
 
