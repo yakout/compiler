@@ -2,7 +2,8 @@
 #define COMPILER_CFG_H
 
 #include "cfg_rule.h"
-#include "utility/cfg_set.h"
+#include "util/first_set.h"
+#include "util/follow_set.h"
 #include <string>
 #include <vector>
 #include <unordered_set>
@@ -24,26 +25,35 @@ private:
     std::unordered_map <cfg_symbol, std::vector <cfg_production>, cfg_symbol::hasher
             , cfg_symbol::comparator> cfg_symbol_productions;
 
-    void process_first_set(int prod_symbol_index, std::shared_ptr<cfg_set> first_set,
-                           std::shared_ptr<cfg_production> prod);
-    void process_follow_set(cfg_symbol non_terminal, std::shared_ptr<cfg_set> follow_set);
+    void process_first_set(int prod_symbol_index, std::shared_ptr<first_set> first_set,
+                           cfg_production *prod);
+    void process_follow_set(cfg_symbol non_terminal, std::shared_ptr<follow_set> follow_set);
 
     void parse_rule (std::string &, bool);
 
 public:
     cfg ();
     explicit cfg (std::string);
+
+    const std::unordered_map<cfg_symbol, std::vector<cfg_production>, cfg_symbol::hasher, cfg_symbol::comparator> &
+    get_cfg_symbol_productions() const;
+
+    void set_cfg_symbol_productions(
+            const std::unordered_map<cfg_symbol, std::vector<cfg_production>, cfg_symbol::hasher, cfg_symbol::comparator> &cfg_symbol_productions);
+    const std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::comparator> &get_grammar() const;
     void set_non_terminals(const std::unordered_set<cfg_symbol
                                 , cfg_symbol::hasher, cfg_symbol::comparator> &);
-    const std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::comparator> & get_grammar() const;
     void
     set_grammar(const std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::comparator> &);
     void parse (std::string);
+    std::shared_ptr <first_set> get_first_set ();
+    std::shared_ptr <follow_set> get_follow_set ();
+    bool is_ll_1 ();
     void add_rule (cfg_symbol &, std::vector<cfg_production> &);
     void add_rule (cfg_rule &);
-    std::shared_ptr <cfg_set> get_first_set ();
-    std::shared_ptr <cfg_set> get_follow_set ();
-    bool is_ll_1 ();
+    void set_terminals(const std::unordered_set <cfg_symbol, cfg_symbol::hasher
+            , cfg_symbol::comparator> &terminals);
+    void set_start_symbol(const cfg_symbol &start_symbol);
 
     /** Grammar Correction **/
     void left_factor ();

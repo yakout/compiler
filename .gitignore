@@ -1,3 +1,10 @@
+# output and make files
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+compiler.cbp
+CMakeFiles/
+
 # macOS
 .DS_Store
 
