@@ -18,6 +18,9 @@ cmake-build-debug
 # cmake
 build/
 
+# ctest
+Testing/
+
 # Prerequisites
 *.d
 
