@@ -5,8 +5,7 @@
 #include <iostream>
 
 /**
- * Comparator for cfg_symbol class objects used for building the 
- * reference grammar represented as std::map<cfg_symbol, cfg_rule>.
+ * Comparator for cfg_symbol class objects used for building the reference grammar.
  */
 struct cfg_symbol_comparator {
    bool operator() (const cfg_symbol & a, const cfg_symbol & b) const {
@@ -14,11 +13,13 @@ struct cfg_symbol_comparator {
    }
 };
 
-TEST_CASE ("Problem statement's multi-line CFG.") {
+TEST_CASE ("Problem statement's multi-line CFG test.") {
 
-    // BUILDING REFERENCE GRAMMAR
+    // BUILDING REFERENCE GRAMMAR & CFG symbol's production.
 
     std::map <cfg_symbol, cfg_rule, cfg_symbol_comparator> ref_grammar;
+    std::map <cfg_symbol, std::vector <cfg_production>
+                            , cfg_symbol_comparator> ref_symbol_productions;
 
     // BUILDING SYMBOLS
 
@@ -71,9 +72,12 @@ TEST_CASE ("Problem statement's multi-line CFG.") {
     method_body_prod_vec.push_back (method_body_prod);
 
     cfg_rule method_body_rule (METHOD_BODY, method_body_prod_vec);
-
+    
     // ADDING RULE TO REFERENCE GRAMMAR
     ref_grammar[METHOD_BODY] = method_body_rule;
+
+    // ADDING PRODUCTIONS TO CFG SYMBOL'S PRODCUTIONS.
+    ref_symbol_productions[STATEMENT_LIST].push_back (method_body_prod);
 
     // STATEMENT_LIST = STATEMENT | STATEMENT_LIST STATEMENT
 
@@ -96,6 +100,11 @@ TEST_CASE ("Problem statement's multi-line CFG.") {
 
     // ADDING RULE TO REFERENCE GRAMMAR
     ref_grammar[STATEMENT_LIST] = statement_list_rule;
+
+    // ADDING PRODUCTIONS TO CFG SYMBOL'S PRODCUTIONS.
+    ref_symbol_productions[STATEMENT].push_back (statement_list_prod_1);
+    ref_symbol_productions[STATEMENT_LIST].push_back (statement_list_prod_2);
+    ref_symbol_productions[STATEMENT].push_back (statement_list_prod_2);
 
 
     // STATEMENT = DECLARATION | IF | WHILE | ASSIGNMENT
@@ -131,6 +140,12 @@ TEST_CASE ("Problem statement's multi-line CFG.") {
     // ADDING RULE TO REFERENCE GRAMMAR
     ref_grammar[STATEMENT] = statement_rule;
 
+    // ADDING PRODUCTIONS TO CFG SYMBOL'S PRODCUTIONS.
+    ref_symbol_productions[DECLARATION].push_back (statement_prod_1);
+    ref_symbol_productions[IF].push_back (statement_prod_2);
+    ref_symbol_productions[WHILE].push_back (statement_prod_3);
+    ref_symbol_productions[ASSIGNMENT].push_back (statement_prod_4);
+
 
     // DECLARATION = PRIMITIVE_TYPE 'id' ';'
 
@@ -147,6 +162,11 @@ TEST_CASE ("Problem statement's multi-line CFG.") {
 
     // ADDING RULE TO REFERENCE GRAMMAR
     ref_grammar[DECLARATION] = declaration_rule;
+
+    // ADDING PRODUCTIONS TO CFG SYMBOL'S PRODCUTIONS.
+    ref_symbol_productions[PRIMITIVE_TYPE].push_back (declaration_prod);
+    ref_symbol_productions[id].push_back (declaration_prod);
+    ref_symbol_productions[semi_colon].push_back (declaration_prod);
 
 
     // PRIMITIVE_TYPE = 'int' | 'float' | \L
@@ -176,6 +196,11 @@ TEST_CASE ("Problem statement's multi-line CFG.") {
     // ADDING RULE TO REFERENCE GRAMMAR
     ref_grammar[PRIMITIVE_TYPE] = primitive_type_rule;
 
+    // ADDING PRODUCTIONS TO CFG SYMBOL'S PRODCUTIONS.
+    ref_symbol_productions[int_].push_back (primitive_type_prod_1);
+    ref_symbol_productions[float_].push_back (primitive_type_prod_2);
+    ref_symbol_productions[eps].push_back (primitive_type_prod_3);
+
 
     // IF = 'if' '(' EXPRESSION ')' '{' STATEMENT '}' 'else' '{' STATEMENT '}'
 
@@ -201,6 +226,19 @@ TEST_CASE ("Problem statement's multi-line CFG.") {
     // ADDING RULE TO REFERENCE GRAMMAR
     ref_grammar[IF] = if_rule;
 
+    // ADDING PRODUCTIONS TO CFG SYMBOL'S PRODCUTIONS.
+    ref_symbol_productions[if_].push_back (if_prod);
+    ref_symbol_productions[open_bracket].push_back (if_prod);
+    ref_symbol_productions[EXPRESSION].push_back (if_prod);
+    ref_symbol_productions[closed_bracket].push_back (if_prod);
+    ref_symbol_productions[open_brace].push_back (if_prod);
+    ref_symbol_productions[STATEMENT].push_back (if_prod);
+    ref_symbol_productions[closed_brace].push_back (if_prod);
+    ref_symbol_productions[else_].push_back (if_prod);
+    ref_symbol_productions[open_brace].push_back (if_prod);
+    ref_symbol_productions[STATEMENT].push_back (if_prod);
+    ref_symbol_productions[closed_brace].push_back (if_prod);
+
 
     // WHILE = 'while' '(' EXPRESSION ')' '{' STATEMENT '}'
 
@@ -222,6 +260,16 @@ TEST_CASE ("Problem statement's multi-line CFG.") {
     // ADDING RULE TO REFERENCE GRAMMAR
     ref_grammar[WHILE] = while_rule;
 
+    // ADDING PRODUCTIONS TO CFG SYMBOL'S PRODCUTIONS.
+    ref_symbol_productions[while_].push_back (while_prod);
+    ref_symbol_productions[open_bracket].push_back (while_prod);
+    ref_symbol_productions[EXPRESSION].push_back (while_prod);
+    ref_symbol_productions[closed_bracket].push_back (while_prod);
+    ref_symbol_productions[open_brace].push_back (while_prod);
+    ref_symbol_productions[STATEMENT].push_back (while_prod);
+    ref_symbol_productions[closed_brace].push_back (while_prod);
+
+
     // ASSIGNMENT = 'id' '=' EXPRESSION ';'
 
     std::vector <cfg_symbol> assignment_sym;
@@ -238,6 +286,12 @@ TEST_CASE ("Problem statement's multi-line CFG.") {
 
     // ADDING RULE TO REFERENCE GRAMMAR
     ref_grammar[ASSIGNMENT] = assignment_rule;
+
+    // ADDING PRODUCTIONS TO CFG SYMBOL'S PRODCUTIONS.
+    ref_symbol_productions[id].push_back (assignment_prod);
+    ref_symbol_productions[equal_].push_back (assignment_prod);
+    ref_symbol_productions[EXPRESSION].push_back (assignment_prod);
+    ref_symbol_productions[semi_colon].push_back (assignment_prod);
 
     // EXPRESSION = SIMPLE_EXPRESSION | SIMPLE_EXPRESSION 'relop' SIMPLE_EXPRESSION
 
@@ -261,6 +315,12 @@ TEST_CASE ("Problem statement's multi-line CFG.") {
 
     // ADDING RULE TO REFERENCE GRAMMAR
     ref_grammar[EXPRESSION] = expression_rule;
+
+    // ADDING PRODUCTIONS TO CFG SYMBOL'S PRODCUTIONS.
+    ref_symbol_productions[SIMPLE_EXPRESSION].push_back (expression_prod_1);
+    ref_symbol_productions[SIMPLE_EXPRESSION].push_back (expression_prod_2);
+    ref_symbol_productions[relop].push_back (expression_prod_2);
+    ref_symbol_productions[SIMPLE_EXPRESSION].push_back (expression_prod_2);
 
 
     // SIMPLE_EXPRESSION = TERM | SIGN TERM | SIMPLE_EXPRESSION 'addop' TERM
@@ -293,6 +353,14 @@ TEST_CASE ("Problem statement's multi-line CFG.") {
     // ADDING RULE TO REFERENCE GRAMMAR
     ref_grammar[SIMPLE_EXPRESSION] = simple_expression_rule;
 
+    // ADDING PRODUCTIONS TO CFG SYMBOL'S PRODCUTIONS.
+    ref_symbol_productions[TERM].push_back (simple_expression_prod_1);
+    ref_symbol_productions[SIGN].push_back (simple_expression_prod_2);
+    ref_symbol_productions[TERM].push_back (simple_expression_prod_2);
+    ref_symbol_productions[SIMPLE_EXPRESSION].push_back (simple_expression_prod_3);
+    ref_symbol_productions[addop].push_back (simple_expression_prod_3);
+    ref_symbol_productions[TERM].push_back (simple_expression_prod_3);
+
     // TERM = FACTOR | TERM 'mulop' FACTOR
 
     // TERM = FACTOR
@@ -315,6 +383,13 @@ TEST_CASE ("Problem statement's multi-line CFG.") {
 
     // ADDING RULE TO REFERENCE GRAMMAR
     ref_grammar[TERM] = term_rule;
+
+    // ADDING PRODUCTIONS TO CFG SYMBOL'S PRODCUTIONS.
+    ref_symbol_productions[FACTOR].push_back (term_prod_1);
+    ref_symbol_productions[TERM].push_back (term_prod_2);
+    ref_symbol_productions[mulop].push_back (term_prod_2);
+    ref_symbol_productions[FACTOR].push_back (term_prod_2);
+
 
     // FACTOR = 'id' | 'num' | '(' EXPRESSION ')'
 
@@ -345,6 +420,13 @@ TEST_CASE ("Problem statement's multi-line CFG.") {
     // ADDING RULE TO REFERENCE GRAMMAR
     ref_grammar[FACTOR] = factor_rule;
 
+    // ADDING PRODUCTIONS TO CFG SYMBOL'S PRODCUTIONS.
+    ref_symbol_productions[id].push_back (factor_prod_1);
+    ref_symbol_productions[num].push_back (factor_prod_2);
+    ref_symbol_productions[open_bracket].push_back (factor_prod_3);
+    ref_symbol_productions[EXPRESSION].push_back (factor_prod_3);
+    ref_symbol_productions[closed_bracket].push_back (factor_prod_3);
+
 
     // SIGN = '+' | \L | '-'
 
@@ -373,6 +455,11 @@ TEST_CASE ("Problem statement's multi-line CFG.") {
     // ADDING RULE TO REFERENCE GRAMMAR
     ref_grammar[SIGN] = sign_rule;
 
+    // ADDING PRODUCTIONS TO CFG SYMBOL'S PRODCUTIONS.
+    ref_symbol_productions[plus_].push_back (sign_prod_1);
+    ref_symbol_productions[eps].push_back (sign_prod_2);
+    ref_symbol_productions[minus_].push_back (sign_prod_3);
+
     cfg cfg_obj = cfg ("../../tests/syntax_analyzer/unit/ps_cfg_multi_line.bnf");
     std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher
                                     , cfg_symbol::comparator> grammar;
@@ -384,7 +471,7 @@ TEST_CASE ("Problem statement's multi-line CFG.") {
 
     for (auto rule : grammar) {
 
-        //Checks for the exitence of this rule LHS symbol in grammar.
+        //Checks for the exitence of this rule LHS symbol in reference grammar.
         REQUIRE (ref_grammar.find (rule.first) != ref_grammar.end ());
 
         cfg_symbol ref_grammar_key_sym = rule.first;
@@ -416,6 +503,27 @@ TEST_CASE ("Problem statement's multi-line CFG.") {
 
                 REQUIRE (ref_grammar[ref_grammar_key_sym].get_productions ()[i].get_symbols ()[j].get_type ()
                             == rule.second.get_productions ()[i].get_symbols ()[j].get_type ());
+            }
+        }
+    }
+    std::unordered_map<cfg_symbol, std::vector<cfg_production>
+                        , cfg_symbol::hasher, cfg_symbol::comparator> symbol_productions;
+    symbol_productions = cfg_obj.get_cfg_symbol_productions ();
+
+    for (auto entry : symbol_productions) {
+        //Checks for the exitence of the symbol in reference map.
+        REQUIRE (ref_symbol_productions.find (entry.first) != ref_symbol_productions.end ());
+        cfg_symbol ref_symbol_productions_key_sym = entry.first;
+        REQUIRE (entry.second.size () == ref_symbol_productions[ref_symbol_productions_key_sym].size ());
+
+        // Checks for the correctness of each symbol in the production.
+        for (std::size_t i = 0 ; i < entry.second.size () ; i++) {
+            for (std::size_t j = 0 ; j < entry.second[i].get_symbols ().size () ; j++) {
+                REQUIRE (ref_symbol_productions[ref_symbol_productions_key_sym][i].get_symbols ()[j].get_name ()
+                            == entry.second[i].get_symbols ()[j].get_name ());
+
+                REQUIRE (ref_symbol_productions[ref_symbol_productions_key_sym][i].get_symbols ()[j].get_type ()
+                            == entry.second[i].get_symbols ()[j].get_type ());
             }
         }
     }
