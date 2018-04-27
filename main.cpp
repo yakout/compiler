@@ -1,11 +1,10 @@
-#include "lexical_analyzer/lexical_tokenizer/lexical_tokenizer.h"
-#include "lexical_analyzer/lexical_analyzer_generator/lexical_analyzer_generator.h"
 #include <iostream>
-#include <string.h>
 #include <iomanip>
 #include <fstream>
-#include <memory>
-#include <cstdlib>
+
+#include "lexical_analyzer/lexical_tokenizer/lexical_tokenizer.h"
+#include "syntax_analyzer/predictive_parser.h"
+#include "lexical_analyzer/lexical_analyzer_generator/lexical_analyzer_generator.h"
 
 void err_argc ();
 void err_option ();
@@ -140,6 +139,24 @@ void lex_tokenize (char *transition_table_file, char *code_file
     while (lex->get_next_token (t)) {
         token_vec.push_back (token (t));
     }
+}
+
+void parse_generate_tokenize (char *rules_file, char *code_file, char *cfg_file
+        , std::vector<token> &token_vec)
+{
+    lex_generate_tokenize(rules_file, code_file, token_vec);
+
+    predictive_parser parser(cfg_file, token_vec);
+    parser.parse();
+}
+
+void parse_tokenize (char *transition_table_file, char *code_file, char *cfg_file
+        , std::vector<token> &token_vec)
+{
+    lex_tokenize(transition_table_file, code_file, token_vec);
+
+    predictive_parser parser(cfg_file, token_vec);
+    parser.parse();
 }
 
 void print_output (std::vector<token> &token_vec) {

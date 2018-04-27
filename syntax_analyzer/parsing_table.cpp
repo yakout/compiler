@@ -6,6 +6,13 @@
 
 #define INVALID_LL1_GRAMMAR "This is NOT LL1 Grammar"
 
+parsing_table::parsing_table(cfg g)
+        : grammar(g), table()
+{
+//    build (first, follow);
+    // TODO
+}
+
 parsing_table::parsing_table(cfg g, first_set first, follow_set follow)
  : grammar(g), table()
 {

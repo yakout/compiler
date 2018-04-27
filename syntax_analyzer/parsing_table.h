@@ -54,7 +54,7 @@ public:
      *  @param cfg grammar to build parsing table for
      *  @param first_follow_sets to be used in building parsing table
      */
-//    parsing_table (cfg);
+    parsing_table (cfg);
     parsing_table (cfg, first_set, follow_set);
     /**
      * Constructor for parsing table, that takes the map with the productions entries in it.

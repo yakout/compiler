@@ -7,6 +7,19 @@ predictive_parser::predictive_parser (cfg_symbol start_symbol, std::shared_ptr<p
 	init_stack(start_symbol);
 }
 
+predictive_parser::predictive_parser(char *cfg_file, std::vector<token> token_vec)
+{
+    for (auto tok : token_vec)
+    {
+        input_buffer.push_back(tok.lexeme);
+    }
+
+    cfg grammar(cfg_file);
+    std::shared_ptr<parsing_table> ll1_table = std::make_shared<parsing_table>(grammar);
+    p_table = ll1_table;
+    init_stack(grammar.get_start_symbol());
+}
+
 void predictive_parser::init_stack (cfg_symbol start_sym) 
 {
     cfg_symbol end_marker("$", END_MARKER);
@@ -151,4 +164,5 @@ void predictive_parser::parse()
 		}
 	}
 }
+
 

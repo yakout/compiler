@@ -30,7 +30,8 @@ set (HEADER_FILES
         lexical_analyzer_generator/nfa_tools/regex_processor.h
         lexical_analyzer_generator/lexical_analyzer_generator.h
         lexical_analyzer_generator/finite_automata/util/util.h
-        lexical_tokenizer/lexical_tokenizer.h)
+        lexical_tokenizer/lexical_tokenizer.h
+        lexical_tokenizer/token.h)
 
 set (SOURCE_FILES
         lexical_analyzer_generator/finite_automata/finite_automata.cpp
