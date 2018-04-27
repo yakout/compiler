@@ -1,6 +1,9 @@
 #include <iostream>
+#include <string.h>
 #include <iomanip>
 #include <fstream>
+#include <memory>
+#include <cstdlib>
 
 #include "lexical_analyzer/lexical_tokenizer/lexical_tokenizer.h"
 #include "syntax_analyzer/predictive_parser.h"
