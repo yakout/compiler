@@ -31,8 +31,8 @@ void parsing_table::build()
    /// list of non-terminals in the CFG.
    std::vector <cfg_symbol> non_terminals = grammar.get_non_terminals ();
    /// First and follow cfg_sets
-   std::shared_ptr <cfg_set> first_cfg_set = grammar.get_first_set();
-   std::shared_ptr <cfg_set> follow_cfg_set = grammar.get_follow_set();
+   std::shared_ptr <first_set> first_cfg_set = grammar.get_first_set();
+   std::shared_ptr <follow_set> follow_cfg_set = grammar.get_follow_set();
    /// First and Follow maps.
    auto first_set = first_cfg_set->get_set_map();
    auto follow_set = follow_cfg_set->get_set_map();
@@ -60,7 +60,7 @@ void parsing_table::build()
        {
            for (auto follow_terminal : follow) /// add eps production to follow entries in table
            {
-               table[make_pair(non_terminal.get_name(), follow_terminal.first.get_name())]
+               table[make_pair(non_terminal.get_name(), follow_terminal.get_name())]
                      = *eps_prod;
            }
        }
@@ -69,7 +69,7 @@ void parsing_table::build()
          cfg_production synch_prod = *get_synch_prod();
          for (auto follow_terminal : follow)
          {
-             table[make_pair(non_terminal.get_name(), follow_terminal.first.get_name())]
+             table[make_pair(non_terminal.get_name(), follow_terminal.get_name())]
                    = synch_prod;
          }
        }

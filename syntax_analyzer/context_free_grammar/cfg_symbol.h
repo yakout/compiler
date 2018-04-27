@@ -38,15 +38,22 @@ public:
     struct pair_comparator {
         bool operator () (const std::pair<cfg_symbol, cfg_production *> & p1,
                           const std::pair<cfg_symbol, cfg_production *> & p2) const {
-            if (!p1.first.get_name ().compare (p2.first.get_name ()))
-                return false;
-            return true;
+            if (!p1.first.get_name ().compare (p2.first.get_name ()) && p1.second == p2.second)
+                return true;
+            return false;
         }
     };
 
     struct hasher {
         std::size_t operator () (const cfg_symbol & sym_a) const {
             return std::hash <std::string> () (sym_a.get_name ());
+        }
+    };
+
+    struct pair_hasher {
+        std::size_t operator () (const std::pair<cfg_symbol, cfg_production *> & p) const {
+            return std::hash <std::string>() (p.first.get_name()) ^ std::hash<cfg_production *>() (p.second);
+//            return std::hash<std::string>() (p.first.get_name());
         }
     };
     /** Getters **/

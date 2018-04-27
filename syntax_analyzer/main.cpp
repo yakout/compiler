@@ -171,17 +171,15 @@ int main (int argc, char *argv[]) {
         int cnt = 0;
         for (auto symbol : curr_set) {
             if (cnt != curr_set.size() - 1) {
-                std::cout << symbol.first.get_name() << ",";
+                std::cout << symbol.get_name() << ",";
             } else {
-                std::cout << symbol.first.get_name();
+                std::cout << symbol.get_name();
             }
             cnt++;
         }
         std::cout << "}\n";
         std::cout << "size = " << curr_set.size() << "\n";
     }
-    std::cout << "\n\n";
-
 }
 
 
