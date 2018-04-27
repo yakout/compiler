@@ -23,6 +23,7 @@ set (HEADER_FILES
         context_free_grammar/cfg_symbol.h
         context_free_grammar/cfg.h
         context_free_grammar/util/first_set.h
+        context_free_grammar/util/follow_set.h
         context_free_grammar/synch_production.h
         parsing_table.h
         predictive_parser.h)
@@ -33,10 +34,11 @@ set (SOURCE_FILES
         context_free_grammar/cfg_symbol.cpp
         context_free_grammar/cfg.cpp
         context_free_grammar/util/first_set.cpp
+        context_free_grammar/util/follow_set.cpp
         context_free_grammar/synch_production.cpp
         parsing_table.cpp
         predictive_parser.cpp
-        main.cpp context_free_grammar/util/follow_set.cpp context_free_grammar/util/follow_set.h)
+        main.cpp)
 
 add_library (libsyntax SHARED ${SOURCE_FILES} ${HEADER_FILES})
 
@@ -64,11 +66,10 @@ if (BUILD_UNIT_TEST)
         add_test (unit_${test_name}_syntax_analyzer unit_${test_name}_syntax)
     endmacro (do_test)
 
-    do_test (predictive_parser_tests)
+    do_test (cfg_parser_tests)
+    do_test (ll_1_tests)
     do_test (first_set_tests)
     do_test (follow_set_tests)
+    do_test (predictive_parser_tests)
     #    do_test (parsing_table_tests)
-
-    do_test (cfg_parser_tests)
-
 endif (BUILD_UNIT_TEST)
