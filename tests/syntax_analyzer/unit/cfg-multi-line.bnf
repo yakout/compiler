@@ -27,4 +27,5 @@ EXPRESSION ')' '{' STATEMENT '}'
 | 'num'
 | '(' EXPRESSION ')'
 # SIGN = '+'
-| '-'
+| \L
+# SIGN = '-'

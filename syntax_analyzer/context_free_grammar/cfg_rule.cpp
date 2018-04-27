@@ -28,3 +28,8 @@ void cfg_rule::set_productions (std::vector <cfg_production>& new_productions)
 {
     productions = new_productions;
 }
+
+void cfg_rule::add_productions (std::vector <cfg_production> & new_productions) {
+    productions.insert (productions.end (), new_productions.begin ()
+                                , new_productions.end());
+}

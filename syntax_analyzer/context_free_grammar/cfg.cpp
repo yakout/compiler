@@ -31,16 +31,16 @@ void trim_spaces (std::string &);
 rule_holder tokenize_rule (std::string &);
 
 cfg::cfg ()
-    : non_terminals (), terminals (), rules () {
+    : non_terminals (), terminals () {
 
 }
 
 cfg::cfg (std::string grammar_file)
-        : non_terminals (), terminals (), rules () {
+        : non_terminals (), terminals () {
     parse (grammar_file);
 }
 
-void cfg::parse (std::string grammar_file) {
+void cfg::parse (std::string & grammar_file) {
     std::ifstream grammar_in_file (grammar_file.c_str ());
     // Checks if grammar file exists or not.
     if (!grammar_in_file.good ()) {
@@ -107,7 +107,11 @@ void cfg::parse_rule (std::string & rule_str, bool first_rule) {
     }
     if (first_rule)
         start_symbol = lhs_symbol;
-    add_rule (lhs_symbol, productions);
+    
+    if (grammar.find (lhs_symbol) != grammar.end ())
+        grammar[lhs_symbol].add_productions (productions);
+    else 
+        add_rule (lhs_symbol, productions);
     std::cout << "parse_rule (): ADDED RULE TO GRAMMAR AND RULES VECTOR." << std::endl;
 }
 
@@ -115,20 +119,18 @@ void cfg::add_rule (cfg_symbol & lhs_symbol
                         , std::vector <cfg_production> & vec) {
     cfg_rule rule = cfg_rule (lhs_symbol, vec);
     grammar[lhs_symbol] = rule;
-    rules.push_back (rule);
 }
 
 void cfg::add_rule (cfg_rule & rule) {
     grammar[rule.get_lhs_symbol ()] = rule;
-    rules.push_back (rule);
 }
 
 void cfg::left_factor ()
 {
-     for (auto rule : rules)
+     for (auto grammar_entry : grammar)
      {
          std::map <std::vector<std::string>, std::vector <cfg_production>> common_factors;
-         for (auto prod : rule.get_productions())
+         for (auto prod : grammar_entry.second.get_productions())
          {
              std::vector<std::string> v;
              // find longest common prefix
@@ -136,7 +138,7 @@ void cfg::left_factor ()
 
              common_factors[v].push_back (prod);
          }
-         rule.empty_productions ();
+         grammar_entry.second.empty_productions ();
          size_t counter = 1;
          std::vector <cfg_production> new_productions;
          for (auto entry : common_factors)
@@ -153,10 +155,10 @@ void cfg::left_factor ()
                  {
 //                    v.push_back(entry.second.front()[i]);
                  }
-//                 cfg_symbol new_sym(rule.get_lhs_symbol().get_name()
-//                     + std::to_string(counter), rule.get_lhs_symbol().get_type())
+//                 cfg_symbol new_sym(grammar_entry.second.get_lhs_symbol().get_name()
+//                     + std::to_string(counter), grammar_entry.second.get_lhs_symbol().get_type())
 //                 v.push_back(new_sym);
-//                 cfg_production new_prod(rule.get_lhs_symbol(), v);
+//                 cfg_production new_prod(grammar_entry.second.get_lhs_symbol(), v);
 //                 new_productions.push_back (new_prod);
 
                  std::vector<cfg_symbol> rest_symbols;
@@ -182,12 +184,16 @@ std::unordered_set <cfg_symbol, cfg_symbol::hasher
     return terminals;
 }
 
-std::vector <cfg_rule> cfg::get_rules () {
-    return rules;
-}
-
 cfg_symbol cfg::get_start_symbol () {
     return start_symbol;
+}
+
+std::vector <cfg_rule> cfg::get_rules () {
+    std::vector <cfg_rule> rules;
+    for (auto entry : grammar) {
+        rules.push_back (entry.second);
+    }
+    return rules;
 }
 
 bool cfg::is_ll_1 () {

@@ -18,7 +18,6 @@ private:
                                 , cfg_symbol::comparator> non_terminals;
     std::unordered_set <cfg_symbol, cfg_symbol::hasher
                                 , cfg_symbol::comparator> terminals;
-    std::vector <cfg_rule> rules;
     cfg_symbol start_symbol;
     std::unordered_map <cfg_symbol, cfg_rule
             , cfg_symbol::hasher, cfg_symbol::comparator> grammar;
@@ -30,6 +29,10 @@ private:
     void process_follow_set(cfg_symbol non_terminal, std::shared_ptr<follow_set> follow_set);
 
     void parse_rule (std::string &, bool);
+
+    void update_rule (std::vector<cfg_production> &);
+
+    void parse (std::string &);
 
 public:
     cfg ();
@@ -45,7 +48,6 @@ public:
                                 , cfg_symbol::hasher, cfg_symbol::comparator> &);
     void
     set_grammar(const std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::comparator> &);
-    void parse (std::string);
     std::shared_ptr <first_set> get_first_set ();
     std::shared_ptr <follow_set> get_follow_set ();
     bool is_ll_1 ();
@@ -63,9 +65,9 @@ public:
     std::unordered_set <cfg_symbol, cfg_symbol::hasher
                                 , cfg_symbol::comparator> get_non_terminals ();
     std::unordered_set <cfg_symbol, cfg_symbol::hasher
-                                        , cfg_symbol::comparator> get_terminals ();
-    std::vector <cfg_rule> get_rules ();
+                                , cfg_symbol::comparator> get_terminals ();
     cfg_symbol get_start_symbol ();
+    std::vector <cfg_rule> get_rules ();
 };
 
 #endif //COMPILER_CFG_H
