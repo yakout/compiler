@@ -1,8 +1,6 @@
 #ifndef COMPILER_CFG_SYMBOL_H
 #define COMPILER_CFG_SYMBOL_H
 
-#include "cfg_production.h"
-
 #include <string>
 #include <memory>
 
@@ -12,6 +10,8 @@ enum cfg_symbol_type {
     END_MARKER,
     SYNCH
 };
+
+class cfg_production;
 
 class cfg_symbol {
 private:
