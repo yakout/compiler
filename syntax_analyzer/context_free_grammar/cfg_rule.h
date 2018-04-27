@@ -27,6 +27,7 @@ public:
     std::string to_string();
     void empty_productions ();
     void set_productions (std::vector <cfg_production> &);
+    void add_productions (std::vector <cfg_production> &);
 };
 
 #endif //COMPILER_CFG_RULE_H
