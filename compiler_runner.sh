@@ -21,7 +21,7 @@ cd build/
 #cmake -DBUILD_REG_TEST=ON -DBUILD_UNIT_TEST=ON ..
 
 # 2- With the option of building unit tests turned OFF explicitly.
-cmake -DBUILD_REG_TEST=ON -DBUILD_UNIT_TEST=OFF ..
+cmake -DBUILD_REG_TEST=ON -DBUILD_UNIT_TEST=ON ..
 
 # 3- With both options (Building unit tests as well as regression tests) turned off
 #    implicitly. NOTING that this option will work correctly as long as we remove 

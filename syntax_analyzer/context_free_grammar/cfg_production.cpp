@@ -13,6 +13,13 @@ cfg_production::cfg_production (cfg_symbol & symbol
 {
 }
 
+void cfg_production::set_lhs_symbol (cfg_symbol & lhs_symbol) {
+    cfg_production::lhs_symbol = lhs_symbol;
+}
+void cfg_production::add_symbol (cfg_symbol & sym) {
+    production_symbols.push_back (sym);
+}
+
 cfg_symbol cfg_production::get_lhs_symbol ()
 {
     return lhs_symbol;

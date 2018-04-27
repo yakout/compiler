@@ -17,6 +17,9 @@ public:
     cfg_production ();
     explicit cfg_production (cfg_symbol &, std::vector <cfg_symbol> &);
 
+    void set_lhs_symbol (cfg_symbol &);
+    void add_symbol (cfg_symbol &);
+
     /** Getters **/
     virtual cfg_symbol get_lhs_symbol ();
     virtual std::string get_name();

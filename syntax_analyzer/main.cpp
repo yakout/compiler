@@ -13,10 +13,9 @@ int main (int argc, char *argv[]) {
     std::vector<cfg_symbol> F_prod_vector1;
     std::vector<cfg_symbol> F_prod_vector2;
 
-
     // SPECIAL SYMBOLS
     cfg_symbol eps(EPS, TERMINAL);
-    cfg_symbol s_$("$", END_MARKER);
+    cfg_symbol s_$(END_MARKER);
 
     // LHS NON_TERMINALS SYMBOLS
     cfg_symbol E("E", NON_TERMINAL);
@@ -31,7 +30,6 @@ int main (int argc, char *argv[]) {
     cfg_symbol left_paren("(", TERMINAL);
     cfg_symbol right_paren(")", TERMINAL);
     cfg_symbol id("id", TERMINAL);
-
 
     // FILL THE PRODUCTIONS VECTORS **********************************
     eps_vector.push_back(eps);
@@ -75,25 +73,26 @@ int main (int argc, char *argv[]) {
     cfg_production prod_F1(F, F_prod_vector1);
     cfg_production prod_F2(F, F_prod_vector2);
 
+    std::map<std::pair<std::string, std::string>, cfg_production> table;
+    std::shared_ptr<cfg> cfg_ptr = std::make_shared<cfg>(cfg ());
 
     // Building non_terminals
-    std::shared_ptr<cfg> cfg_ptr = std::make_shared<cfg>(cfg ());
-    std::vector<cfg_symbol> non_terminals;
-    non_terminals.push_back(E);
-    non_terminals.push_back(E_dash);
-    non_terminals.push_back(T_dash);
-    non_terminals.push_back(T);
-    non_terminals.push_back(F);
+    std::unordered_set<cfg_symbol, cfg_symbol::hasher, cfg_symbol::comparator> non_terminals;
+    non_terminals.insert(E);
+    non_terminals.insert(E_dash);
+    non_terminals.insert(T_dash);
+    non_terminals.insert(T);
+    non_terminals.insert(F);
     cfg_ptr->set_non_terminals(non_terminals);
 
     // Building terminals
-    std::vector <cfg_symbol> terminals;
-    terminals.push_back(eps);
-    terminals.push_back(plus);
-    terminals.push_back(multiplication);
-    terminals.push_back(left_paren);
-    terminals.push_back(right_paren);
-    terminals.push_back(id);
+    std::unordered_set<cfg_symbol, cfg_symbol::hasher, cfg_symbol::comparator> terminals;
+    terminals.insert(eps);
+    terminals.insert(plus);
+    terminals.insert(multiplication);
+    terminals.insert(left_paren);
+    terminals.insert(right_paren);
+    terminals.insert(id);
     cfg_ptr->set_terminals(terminals);
 
     // Building grammar
