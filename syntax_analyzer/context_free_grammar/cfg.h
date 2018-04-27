@@ -12,6 +12,11 @@
 
 #define EPS "\\L"
 
+/**
+ * utility function used in left factoring
+ */
+int longest_common_prefix(std::vector<cfg_production> prods);
+
 class cfg {
 private:
     std::unordered_set <cfg_symbol, cfg_symbol::hasher

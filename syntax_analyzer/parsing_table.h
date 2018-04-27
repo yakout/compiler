@@ -24,7 +24,7 @@ private:
        get cfg_production used or error.*/
     std::map <std::pair<std::string, std::string>, cfg_production> table;
 
-      /**
+    /**
         This function builds the parsing table for the previously defined grammar.
         It fills the table map defined above by productions using the first and.
         follow sets supplied before.

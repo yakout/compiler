@@ -21,6 +21,10 @@ public:
     const cfg_symbol & get_lhs_symbol () const;
     const std::vector <cfg_production> & get_productions () const;
 
+    /**
+     * convert the rule to readable string
+     */
+    std::string to_string();
     void empty_productions ();
     void set_productions (std::vector <cfg_production> &);
 };

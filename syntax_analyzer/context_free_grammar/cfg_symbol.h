@@ -26,6 +26,11 @@ public:
     cfg_symbol ();
     explicit cfg_symbol (cfg_symbol_type);
 	explicit cfg_symbol (const std::string &, cfg_symbol_type);
+
+    bool operator==(const cfg_symbol& other) const
+    {
+        return name == other.get_name() && type == other.get_type();
+    }
     
     struct comparator {
         bool operator () (const cfg_symbol & sym_a, const cfg_symbol & sym_b) const {
@@ -53,7 +58,7 @@ public:
     struct pair_hasher {
         std::size_t operator () (const std::pair<cfg_symbol, cfg_production *> & p) const {
             return std::hash <std::string>() (p.first.get_name()) ^ std::hash<cfg_production *>() (p.second);
-//            return std::hash<std::string>() (p.first.get_name());
+//            return std::hash<std::string>() (p.first.to_string());
         }
     };
     /** Getters **/

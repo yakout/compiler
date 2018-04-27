@@ -22,7 +22,8 @@ public:
 
     /** Getters **/
     virtual cfg_symbol get_lhs_symbol () const;
-    virtual std::string get_name();
+    virtual std::string to_string();
+    virtual std::string get_rhs_as_string();
     virtual std::vector <cfg_symbol> get_symbols () const;
 };
 

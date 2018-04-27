@@ -7,6 +7,9 @@
 #include <string>
 #include <map>
 
+
+// *********************** UTILITIES *****************************
+
 struct rule_holder {
     std::string lhs_symbol_name;
     std::vector <std::vector <std::string>> productions;
@@ -29,6 +32,10 @@ bool remove_single_quotes (std::string &);
 void trim_spaces (std::string &);
 
 rule_holder tokenize_rule (std::string &);
+
+// ******************************************************************
+
+
 
 cfg::cfg ()
     : non_terminals (), terminals (), rules () {
@@ -132,12 +139,14 @@ void cfg::left_factor ()
          {
              std::vector<std::string> v;
              // find longest common prefix
-             v.push_back(prod.get_symbols()[0].get_name()); // TODO
-
+             v.push_back(prod.get_symbols()[0].get_name());
              common_factors[v].push_back (prod);
          }
+
          rule.empty_productions ();
-         size_t counter = 1;
+         // reset rule
+
+         int counter = 1;
          std::vector <cfg_production> new_productions;
          for (auto entry : common_factors)
          {
@@ -147,21 +156,34 @@ void cfg::left_factor ()
              }
              else
              {
+                 int common_prefix_size = longest_common_prefix(entry.second);
                  std::vector<cfg_symbol> v;
-                 int i;
-                 for (i = 0; i < entry.first.size(); i++)
+                 for (int i = 0; i < common_prefix_size; i++)
                  {
-//                    v.push_back(entry.second.front()[i]);
+                    v.push_back(entry.second.front().get_symbols()[i]);
                  }
-//                 cfg_symbol new_sym(rule.get_lhs_symbol().get_name()
-//                     + std::to_string(counter), rule.get_lhs_symbol().get_type())
-//                 v.push_back(new_sym);
-//                 cfg_production new_prod(rule.get_lhs_symbol(), v);
-//                 new_productions.push_back (new_prod);
 
-                 std::vector<cfg_symbol> rest_symbols;
-//                 add_rule(new_sym, )
+                 cfg_symbol new_sym(rule.get_lhs_symbol().get_name()
+                     + std::to_string(counter), rule.get_lhs_symbol().get_type());
+                 counter++;
 
+                 v.push_back(new_sym);
+                 cfg_symbol original_symbol(cfg_symbol(rule.get_lhs_symbol()));
+                 cfg_production new_prod(original_symbol, v);
+                 new_productions.push_back (new_prod);
+
+                 for (auto prod : entry.second)
+                 {
+                     std::vector<cfg_symbol> rest_symbols;
+                     for (int i = common_prefix_size; i < prod.get_symbols().size(); i++)
+                     {
+                         rest_symbols.push_back(prod.get_symbols()[i]);
+                     }
+                     cfg_production rest_symbols_as_production(new_sym, rest_symbols);
+                     std::vector<cfg_production> productions_vec;
+                     productions_vec.push_back(rest_symbols_as_production);
+                     add_rule(new_sym, productions_vec);
+                 }
              }
          }
      }
@@ -241,14 +263,14 @@ std::shared_ptr<first_set> cfg::get_first_set() {
 
     /// Build first set
     for (auto non_terminal : cfg::non_terminals) {
-        //std::cout << "Current non_terminal = " << non_terminal.get_name() << "\n";
+        //std::cout << "Current non_terminal = " << non_terminal.to_string() << "\n";
         if (!first_set_ptr->empty(non_terminal.get_name())) {
             continue;
         }
         auto rule = cfg::grammar[non_terminal];
-        //std::cout << "Current rule has lhs = " << rule.get_lhs_symbol().get_name() << "\n";
+        //std::cout << "Current rule has lhs = " << rule.get_lhs_symbol().to_string() << "\n";
         for (auto production : cfg::grammar[non_terminal].get_productions()) { // Iterate over all productions from this non-terminal
-            //std::cout << "Current production's lhs = " << production.get_lhs_symbol().get_name() << "\n";
+            //std::cout << "Current production's lhs = " << production.get_lhs_symbol().to_string() << "\n";
             process_first_set(0, first_set_ptr, &production);
         }
     }
@@ -333,7 +355,7 @@ std::shared_ptr<follow_set> cfg::get_follow_set() {
         if (!follow_set_ptr->empty(non_terminal.get_name())) {
             continue;
         }
-//        std::cout << "Calculating follow of non_terminal = " << non_terminal.get_name() << "\n";
+//        std::cout << "Calculating follow of non_terminal = " << non_terminal.to_string() << "\n";
         process_follow_set(non_terminal, follow_set_ptr);
     }
     return follow_set_ptr;
@@ -443,4 +465,26 @@ void trim_spaces (std::string & str) {
     str.erase (std::find_if (str.rbegin (), str.rend (), [](int character) {
         return !std::isspace (character);
     }).base (), str.end ());
+}
+
+
+int longest_common_prefix(std::vector<cfg_production> prods)
+{
+    cfg_production prod = prods.front();
+
+    int i;
+    for (i = 0; i < prod.get_symbols().size(); i++) {
+        for (int j = 1; j < prods.size(); j++) {
+            if (prods[j].get_symbols().size() >= i) {
+                if (prods[j].get_symbols()[i] == prod.get_symbols()[i]) {
+                    continue;
+                } else {
+                    return i;
+                }
+            } else {
+                return i;
+            }
+        }
+    }
+    return i;
 }

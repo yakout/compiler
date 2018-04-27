@@ -30,7 +30,7 @@ std::vector <cfg_symbol> cfg_production::get_symbols () const
     return production_symbols;
 }
 
-std::string cfg_production::get_name()
+std::string cfg_production::to_string()
 {
     if (production_symbols.empty())
         return "";
@@ -40,7 +40,22 @@ std::string cfg_production::get_name()
     {
         if (s.get_name() == EPS)
             name += "\\E";
-        else name += s.get_name();
+        else name += s.get_name() + " ";
+    }
+
+    return name;
+}
+
+std::string cfg_production::get_rhs_as_string()
+{
+    if (production_symbols.empty())
+        return "";
+    std::string name("");
+    for (cfg_symbol &s : production_symbols)
+    {
+        if (s.get_name() == EPS)
+            name += "\\E";
+        else name += s.get_name() + " ";
     }
 
     return name;

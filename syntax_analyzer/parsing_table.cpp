@@ -120,7 +120,7 @@ void parsing_table::draw(std::string file_name)
     {
         non_terminals_set.insert(entry.first.first);
         terminals_set.insert(entry.first.second);
-        int length = entry.second.get_name().length();
+        int length = entry.second.to_string().length();
         if (length > max_size) {
             max_size = length;
         }
@@ -149,7 +149,7 @@ void parsing_table::draw(std::string file_name)
         std::cout << '|' << std::setw(max_size) << non_terminals[i];
         for (int j = 0; j < terminals.size(); ++j)
         {
-            std::cout << '|' << std::setw(max_size) << get_production(non_terminals[i], terminals[j]).get_name();
+            std::cout << '|' << std::setw(max_size) << get_production(non_terminals[i], terminals[j]).to_string();
         }
         std::cout << '|' << std::endl;
         for (int i = 0; i < max_size * (terminals.size() + 2); i++) std::cout << "_";

@@ -1,4 +1,5 @@
 #include "../../lib/catch.hpp"
+#include "../../../syntax_analyzer/context_free_grammar/cfg.h"
 
 TEST_CASE ("multi-line-cfg-test") {
 
@@ -57,7 +58,147 @@ TEST_CASE ("left factoring test 3") {
 }
 
 
-TEST_CASE ("left factoring test 4") {
-//    F -> FBa ∣ cDS ∣ c
-//
+TEST_CASE ("longest common prefix test 1") {
+
+    std::vector<cfg_symbol> prod1_vec;
+    std::vector<cfg_symbol> prod2_vec;
+    std::vector<cfg_symbol> prod3_vec;
+
+    // LHS NON_TERMINALS SYMBOLS
+    cfg_symbol S("S", NON_TERMINAL);
+
+    // TERMINALS SYMBOLS
+    cfg_symbol plus("+", TERMINAL);
+    cfg_symbol id("id", TERMINAL);
+
+    cfg_symbol term1("term1", TERMINAL);
+    cfg_symbol term2("term2", TERMINAL);
+    cfg_symbol term3("term3", TERMINAL);
+
+    // FILL THE PRODUCTIONS VECTORS **********************************
+    // S -> term1 term2 term3 | term1 term2 term3 | term1 term2 id
+
+    prod1_vec.push_back(term1);
+    prod1_vec.push_back(term2);
+    prod1_vec.push_back(term3);
+
+    prod2_vec.push_back(term1);
+    prod2_vec.push_back(term2);
+    prod2_vec.push_back(term3);
+
+    prod3_vec.push_back(term1);
+    prod3_vec.push_back(term2);
+    prod3_vec.push_back(id);
+
+    // ****************************************************************
+
+    // CONSTRUCT PRODUCTION
+    cfg_production prod1(S, prod1_vec);
+    cfg_production prod2(S, prod2_vec);
+    cfg_production prod3(S, prod3_vec);
+
+
+    std::vector<cfg_production> prods;
+    prods.push_back(prod1);
+    prods.push_back(prod2);
+    prods.push_back(prod3);
+
+    REQUIRE(size == 2);
+}
+
+
+TEST_CASE ("longest common prefix test 1") {
+
+    std::vector<cfg_symbol> prod1_vec;
+    std::vector<cfg_symbol> prod2_vec;
+    std::vector<cfg_symbol> prod3_vec;
+
+    // LHS NON_TERMINALS SYMBOLS
+    cfg_symbol S("S", NON_TERMINAL);
+
+    // TERMINALS SYMBOLS
+    cfg_symbol plus("+", TERMINAL);
+    cfg_symbol id("id", TERMINAL);
+
+    cfg_symbol term1("term1", TERMINAL);
+    cfg_symbol term2("term2", TERMINAL);
+    cfg_symbol term3("term3", TERMINAL);
+
+    // FILL THE PRODUCTIONS VECTORS **********************************
+    // S -> term1 term2 term3 | term1 term2 term3 | term1 term3 id
+
+    prod1_vec.push_back(term1);
+    prod1_vec.push_back(term2);
+    prod1_vec.push_back(term3);
+
+    prod2_vec.push_back(term1);
+    prod2_vec.push_back(term2);
+    prod2_vec.push_back(term3);
+
+    prod3_vec.push_back(term1);
+    prod3_vec.push_back(term3);
+    prod3_vec.push_back(id);
+
+    // ****************************************************************
+
+    // CONSTRUCT PRODUCTION
+    cfg_production prod1(S, prod1_vec);
+    cfg_production prod2(S, prod2_vec);
+    cfg_production prod3(S, prod3_vec);
+
+
+    std::vector<cfg_production> prods;
+    prods.push_back(prod1);
+    prods.push_back(prod2);
+    prods.push_back(prod3);
+
+    REQUIRE(size == 1);
+}
+
+
+TEST_CASE ("longest common prefix test 1") {
+
+    std::vector<cfg_symbol> prod1_vec;
+    std::vector<cfg_symbol> prod2_vec;
+    std::vector<cfg_symbol> prod3_vec;
+
+    // LHS NON_TERMINALS SYMBOLS
+    cfg_symbol S("S", NON_TERMINAL);
+
+    // TERMINALS SYMBOLS
+    cfg_symbol plus("+", TERMINAL);
+    cfg_symbol id("id", TERMINAL);
+
+    cfg_symbol term1("term1", TERMINAL);
+    cfg_symbol term2("term2", TERMINAL);
+    cfg_symbol term3("term3", TERMINAL);
+
+    // FILL THE PRODUCTIONS VECTORS **********************************
+    // S -> term1 term2 term3 | term2 term3 | term1 term3 id
+
+    prod1_vec.push_back(term1);
+    prod1_vec.push_back(term2);
+    prod1_vec.push_back(term3);
+
+    prod2_vec.push_back(term2);
+    prod2_vec.push_back(term3);
+
+    prod3_vec.push_back(term1);
+    prod3_vec.push_back(term3);
+    prod3_vec.push_back(id);
+
+    // ****************************************************************
+
+    // CONSTRUCT PRODUCTION
+    cfg_production prod1(S, prod1_vec);
+    cfg_production prod2(S, prod2_vec);
+    cfg_production prod3(S, prod3_vec);
+
+
+    std::vector<cfg_production> prods;
+    prods.push_back(prod1);
+    prods.push_back(prod2);
+    prods.push_back(prod3);
+
+    REQUIRE(size == 0);
 }

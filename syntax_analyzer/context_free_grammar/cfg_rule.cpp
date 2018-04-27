@@ -28,3 +28,18 @@ void cfg_rule::set_productions (std::vector <cfg_production>& new_productions)
 {
     productions = new_productions;
 }
+
+std::string cfg_rule::to_string()
+{
+    std::string s = "";
+    s += lhs_symbol.get_name() + " -> ";
+    s += productions[0].get_rhs_as_string();
+
+    for (int i = 1; i < productions.size(); i++)
+    {
+        s += " | ";
+        s += productions[i].get_rhs_as_string();
+    }
+
+    return s;
+}
