@@ -138,7 +138,7 @@ void predictive_parser::parse()
 			else
 			{
                 // ERROR! insert curr_tok
-                output.push_back("Error: (missing " + cur_token + ") - inserted.");
+                output.push_back("Error: (missing " + stack_top.get_name() + ") - inserted.");
                 parser_stack.pop();
 //                break;
 			}

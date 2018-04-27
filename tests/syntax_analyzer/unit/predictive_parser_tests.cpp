@@ -105,29 +105,28 @@ TEST_CASE("PREDICTIVE PARSER TEST 1")
 
     std::vector<std::string> derivations = parser.get_derivations();
 
-    std::vector<std::string> derivations_test
-            {"E -> T E' ",
-             "T -> F T' ",
-             "F -> id ",
-             "match: id",
-             "T' -> \\E ",
-             "E' -> + T E' ",
-             "match: +",
-             "T -> F T' ",
-             "F -> id ",
-             "match: id",
-             "T' -> \\E ",
-             "E' -> \\E ",
-             "accept"};
+    std::vector<std::string> reference_derivations{"E -> T E' ",
+                                              "T -> F T' ",
+                                              "F -> id ",
+                                              "match: id",
+                                              "T' -> \\L ",
+                                              "E' -> + T E' ",
+                                              "match: +",
+                                              "T -> F T' ",
+                                              "F -> id ",
+                                              "match: id",
+                                              "T' -> \\L ",
+                                              "E' -> \\L ",
+                                              "accept"};
 
     for (int i = 0; i < derivations.size(); ++i)
     {
-        REQUIRE(derivations[i] == derivations_test[i]);
+        REQUIRE(derivations[i] == reference_derivations[i]);
     }
 }
 
 
-TEST_CASE("predictive parser test 2")
+TEST_CASE("PREDICTIVE PARSER TEST 1 (panic mode)")
 {
     std::vector<cfg_symbol> eps_vector;
     std::vector<cfg_symbol> empty_vector;
@@ -182,7 +181,8 @@ TEST_CASE("predictive parser test 2")
 
     cfg_production  synch_prod(synch, empty_vector);
 
-    std::unordered_map<std::pair<std::string, std::string>, cfg_production, parsing_table_hasher, parsing_table_comparator> table;
+    std::unordered_map<std::pair<std::string, std::string>, cfg_production, parsing_table_hasher,
+            parsing_table_comparator> table;
 
     table[{"S", "a"}] = prod_S1;
     table[{"S", "c"}] = prod_S1;
@@ -203,52 +203,18 @@ TEST_CASE("predictive parser test 2")
     parser.parse();
 
     std::vector<std::string> derivations = parser.get_derivations();
-    std::vector<std::string> reference_derivations {"S -> A b S ", "A -> c A d ", "matched: c"};
-    // TODO
+    std::vector<std::string> reference_derivations {"S -> A b S ",
+                                                    "A -> c A d ",
+                                                    "match: c",
+                                                    "SYNCH (pop_stack)",
+                                                    "Error: (missing d) - inserted.",
+                                                    "match: b",
+                                                    "S -> \\L ",
+                                                    "accept"};
 
-    for (std::string s : derivations)
+    for (int i = 0; i < derivations.size(); ++i)
     {
-        std::cout << s << std::endl;
+        REQUIRE(derivations[i] == reference_derivations[i]);
     }
 }
 
-TEST_CASE("test FIRST")
-{
-//    E -> TE’
-//    E’ -> +TE’ | eps
-//    T -> FT’
-//    T’ -> *FT’ | eps
-//    F -> (E) | id
-
-//    FIRST(F) = {(,id}
-//    FIRST(T’) = {*, eps}
-//    FIRST(T) = {(,id}
-//    FIRST(E’) = {+, eps}
-//    FIRST(E) = {(,id}
-
-//    FIRST(TE’) = {(,id}
-//    FIRST(+TE’ ) = {+}
-//    FIRST(eps) = {eps}
-//    FIRST(FT’) = {(,id}
-//    FIRST(*FT’) = {*}
-//    FIRST(eps) = {eps}
-//    FIRST((E)) = {(}
-//    FIRST(id) = {id}
-}
-
-TEST_CASE("test FOLLOW")
-{
-    // TODO
-//    E -> TE’
-//    E’ -> +TE’ | eps
-//    T -> FT’
-//    T’ -> *FT’ | eps
-//    F -> (E) | id
-
-//    FOLLOW(E) = { $, ) }
-//    FOLLOW(E’) = { $, ) }
-//    FOLLOW(T) = { +, ), $ }
-//    FOLLOW(T’) = { +, ), $ }
-//    FOLLOW(F) = {+, *, ), $ }
-
-}
