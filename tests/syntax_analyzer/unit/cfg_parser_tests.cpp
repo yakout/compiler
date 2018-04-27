@@ -32,7 +32,7 @@ TEST_CASE ("left factoring test 2") {
 }
 
 
-TEST_CASE ("left factoring test 2") {
+TEST_CASE ("left factoring test 3") {
     // grammar:
 
 //    X -> aE | IXE | (X)E
@@ -41,6 +41,23 @@ TEST_CASE ("left factoring test 2") {
 //    B -> + | - | ϵ
 
     // result:
-//    A -> aZ
-//    Z -> X | Y
+//    steps:
+//    X -> aE ∣ ++XE ∣ --XE ∣ (X)E
+//    E -> ++E ∣ --E ∣ +XE ∣ -XE ∣ XE | eps // sub x
+
+//    X -> aE ∣ ++XE ∣ --XE ∣ (X)E
+//    E -> ++E ∣ --E ∣ +XE ∣ -XE ∣ aEE ∣ ++XEE ∣ --XEE ∣ (X)EE | eps
+
+//     X -> aE ∣ ++XE ∣ --XE ∣ (X)E
+//     E -> +E1 | -E2 | aEE | (X)EE | eps
+//     E1 -> +E | XE | +XEE
+//     E2 -> -E | XE | -XEE
+    // we can sub X again and keep doing so we will find that this grammar is not even LL
+
+}
+
+
+TEST_CASE ("left factoring test 4") {
+//    F -> FBa ∣ cDS ∣ c
+//
 }

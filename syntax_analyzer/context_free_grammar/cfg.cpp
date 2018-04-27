@@ -112,7 +112,7 @@ void cfg::left_factor ()
          for (auto prod : rule.get_productions())
          {
              std::vector<std::string> v;
-
+             // find longest common prefix
              v.push_back(prod.get_symbols()[0].get_name()); // TODO
 
              common_factors[v].push_back (prod);
