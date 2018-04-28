@@ -35,9 +35,9 @@ std::string predictive_parser::dump_stack ()
 	while (!parser_stack.empty())
 	{
         if (parser_stack.top().get_name() != "$") {
-            temp_stack.push(parser_stack.top());
-            stack_str += "(" + parser_stack.top().get_name() + ")";
+            stack_str += parser_stack.top().get_name() + " ";
         }
+        temp_stack.push(parser_stack.top());
         parser_stack.pop();
 	}
 
@@ -50,15 +50,6 @@ std::string predictive_parser::dump_stack ()
 	return stack_str;
 }
 
-
-void predictive_parser::print_debug_stack () 
-{
-	for (std::string step : debug_stack)
-	{
-		std::cout << step << std::endl;
-	}
-}
-
 std::vector<std::string> predictive_parser::get_debug_stack ()
 {
 	return debug_stack;
@@ -69,19 +60,10 @@ void predictive_parser::write_prod (cfg_production prod)
 	output.push_back (prod.to_string());
 }
 
-void predictive_parser::write_derivations(std::string)
-{
-
-}
 
 std::vector<std::string> predictive_parser::get_derivations ()
 {
 	return output;
-}
-
-void predictive_parser::handle_error()
-{
-
 }
 
 void predictive_parser::parse() 
@@ -101,14 +83,12 @@ void predictive_parser::parse()
                 // TODO::SYNCH production
                 parser_stack.pop();
                 output.push_back("SYNCH (pop_stack)");
-//                break;
             }
             else if (prod.get_symbols().empty())
             {
                 // ERROR! discard curr_tok
                 output.push_back("Error: (illegal " + stack_top.get_name() + ") - discard " + cur_token);
                 i++;
-//                break;
             }
             else
             {
@@ -141,7 +121,6 @@ void predictive_parser::parse()
                 // ERROR! insert curr_tok
                 output.push_back("Error: (missing " + stack_top.get_name() + ") - inserted.");
                 parser_stack.pop();
-//                break;
 			}
 		}
 		else if (stack_top.get_type() == END_MARKER)
@@ -156,7 +135,7 @@ void predictive_parser::parse()
                 i++;
             }
 		}
-		else if (stack_top.get_type() == SYNCH)
+		else if (stack_top.get_type() == SYNCH) // TODO this will never happen
 		{
 			if (cur_token == stack_top.get_name())
 			{
@@ -166,4 +145,27 @@ void predictive_parser::parse()
 	}
 }
 
+void predictive_parser::write_debug_stack(std::string file_name)
+{
+	std::ofstream output_file;
+	output_file.open(file_name);
 
+	for (auto s : debug_stack)
+	{
+		output_file << s << std::endl;
+	}
+	output_file.close();
+}
+
+void predictive_parser::write_derivations(std::string file_name)
+{
+	std::ofstream output_file;
+	output_file.open(file_name);
+
+	for (auto derivation : output)
+	{
+		output_file << derivation << std::endl;
+	}
+
+	output_file.close();
+}
