@@ -60,3 +60,7 @@ std::string cfg_production::get_rhs_as_string()
 
     return name;
 }
+
+void cfg_production::pop_first_symbol() {
+    production_symbols.erase(production_symbols.begin());
+}

@@ -20,6 +20,7 @@ public:
     void set_lhs_symbol (cfg_symbol &);
     void add_symbol (cfg_symbol &);
 
+    void pop_first_symbol();
     /** Getters **/
     virtual cfg_symbol get_lhs_symbol () const;
     virtual std::string to_string();

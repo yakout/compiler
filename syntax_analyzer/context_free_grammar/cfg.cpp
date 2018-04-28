@@ -172,13 +172,14 @@ void cfg::left_factor ()
                          rest_symbols.push_back(prod.get_symbols()[i]);
                      }
                      if (rest_symbols.empty()) {
-                         cfg_symbol eps("\\E", TERMINAL);
+                         cfg_symbol eps("\\L", TERMINAL);
                          rest_symbols.push_back(eps);
                      }
                      cfg_production rest_symbols_as_production(new_sym, rest_symbols);
                      productions_vec.push_back(rest_symbols_as_production);
                  }
                  cfg_rule new_rule(new_sym, productions_vec);
+                 non_terminals.insert(new_sym);
 
                  cfg temp_cfg;
                  std::unordered_map <cfg_symbol, cfg_rule
@@ -203,7 +204,59 @@ void cfg::left_factor ()
 
 void cfg::remove_left_recursion ()
 {
+    std::unordered_map <cfg_symbol, cfg_rule
+            , cfg_symbol::hasher, cfg_symbol::comparator> new_grammar;
+    for (auto rule : get_rules()) {
+        std::vector<cfg_production> target_prods;
+        std::vector<cfg_production> rest_prods;
+        bool is_left_recursion = false;
 
+        for (auto prod : rule.get_productions()) {
+            if (prod.get_symbols().front() == rule.get_lhs_symbol()) {
+                is_left_recursion = true;
+                target_prods.push_back(prod);
+            } else {
+                rest_prods.push_back(prod);
+            }
+        }
+
+        if (!is_left_recursion) {
+            new_grammar[rule.get_lhs_symbol()] = rule;
+            continue;
+        }
+
+        cfg_symbol new_symbol(rule.get_lhs_symbol().get_name() + "'", NON_TERMINAL);
+        rule.empty_productions();
+
+        for (auto it = rest_prods.begin(); it != rest_prods.end(); it++)
+        {
+            (*it).add_symbol(new_symbol);
+        }
+        cfg_symbol_productions[new_symbol] = rest_prods;
+
+        rule.set_productions(rest_prods);
+
+        new_grammar[rule.get_lhs_symbol()] = rule;
+
+        // CONSTRUCTING THE NEW RULE
+        cfg_symbol eps("\\L", TERMINAL);
+        std::vector<cfg_symbol> v;
+        v.push_back(eps);
+        cfg_production eps_prod(new_symbol, v);
+
+        for (auto it = target_prods.begin(); it != target_prods.end(); it++)
+        {
+            (*it).pop_first_symbol();
+            (*it).add_symbol(new_symbol);
+        }
+
+        target_prods.push_back(eps_prod);
+        non_terminals.insert(new_symbol);
+        cfg_rule new_rule(new_symbol, target_prods);
+        new_grammar[new_symbol] = new_rule;
+    }
+
+    grammar = new_grammar;
 }
 
 std::unordered_set <cfg_symbol, cfg_symbol::hasher
