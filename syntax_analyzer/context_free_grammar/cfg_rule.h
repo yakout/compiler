@@ -19,7 +19,7 @@ public:
 
     /** Getters **/
     const cfg_symbol & get_lhs_symbol () const;
-    const std::vector <cfg_production> & get_productions () const;
+    std::vector <cfg_production> & get_productions ();
 
     /**
      * convert the rule to readable string

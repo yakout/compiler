@@ -284,10 +284,17 @@ std::shared_ptr<first_set> cfg::get_first_set() {
         }
         auto rule = cfg::grammar[non_terminal];
         //std::cout << "Current rule has lhs = " << rule.get_lhs_symbol().to_string() << "\n";
-        for (auto production : cfg::grammar[non_terminal].get_productions()) { // Iterate over all productions from this non-terminal
-            //std::cout << "Current production's lhs = " << production.get_lhs_symbol().to_string() << "\n";
-            process_first_set(0, first_set_ptr, &production);
+
+        for (auto it = cfg::grammar[non_terminal].get_productions().begin();
+             it != cfg::grammar[non_terminal].get_productions().end(); it++)
+        {
+            process_first_set(0, first_set_ptr, &*it);
         }
+//        for (auto production : cfg::grammar[non_terminal].get_productions()) { // Iterate over all productions from this non-terminal
+////            //std::cout << "Current production's lhs = " << production.get_lhs_symbol().to_string() << "\n";
+////            cfg_production* copy_prod = new cfg_production(production);
+//            process_first_set(0, first_set_ptr, &production);
+//        }
     }
     for (auto terminal : cfg::terminals) {
         auto set_map = first_set_ptr->get_set_map();

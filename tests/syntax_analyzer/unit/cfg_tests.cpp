@@ -209,13 +209,9 @@ TEST_CASE("left factoring test 4")
 
     // LHS NON_TERMINALS SYMBOLS
     cfg_symbol S("S", NON_TERMINAL);
-    cfg_symbol E("E", NON_TERMINAL);
 
     // TERMINALS SYMBOLS
     cfg_symbol plus("+", TERMINAL);
-    cfg_symbol multiplication("*", TERMINAL);
-    cfg_symbol left_paren("(", TERMINAL);
-    cfg_symbol right_paren(")", TERMINAL);
     cfg_symbol id("id", TERMINAL);
 
     cfg_symbol term1("term1", TERMINAL);
@@ -234,11 +230,8 @@ TEST_CASE("left factoring test 4")
 
     prod2_vec.push_back(term1);
     prod2_vec.push_back(term2);
-//    prod2_vec.push_back(term3);
     prod2_vec.push_back(E);
 
-//    prod3_vec.push_back(term1);
-//    prod3_vec.push_back(term2);
     prod3_vec.push_back(id);
 
     prod4_vec.push_back(id);
