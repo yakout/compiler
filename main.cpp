@@ -27,7 +27,7 @@ std::ofstream token_file;
 std::ofstream log_file;
 
 int main (int argc, char *argv[]) {
-    if (argc > 5 || argc == 1 || argc == 3) {
+    if (argc > 6 || argc == 1 || argc == 3) {
         err_argc ();
     }
     std::vector<token> token_vec;
@@ -66,34 +66,35 @@ int main (int argc, char *argv[]) {
 }
 
 void err_argc () {
-    std::cout << "Invalid number of arguments.\n"
-        << "Please enter \"./compiler --help\" "
-        << "to know the supported options in this version.\n";
-
-    exit (EXIT_FAILURE);
+    throw std::runtime_error ("Invalid number of arguments.\n"
+                    "Please enter \"./compiler --help\" "
+                    "to know the supported options in this version.\n");
 }
 
 void err_option () {
-    std::cout << "Unsupported option.\n"
-        << "Please enter \"./compiler --help\" "
-        << "to know the supported options in this version.\n";
-
-    exit (EXIT_FAILURE);
+    throw std::runtime_error("Unsupported option. \nPlease enter \"./compiler --help\"" 
+                        "to know the supported options in this version.\n");
 }
 
 void err_no_file_exists (char *file_name) {
-    std::cout << file_name << ":  File doesn't exists.\n";
-
-    exit (EXIT_FAILURE);
+    throw std::runtime_error(std::string (file_name) + ": File doesn't exists.\n");
 }
 
 void help () {
-    std::cout << "Currently there is one supported option with 2 variations:\n\n"
+    std::cout << "\n./compiler [OPTION] [FLAG] [ARG ...]\n\n" 
+        << "Currently there is two supported options each with 2 variations:\n\n"
         << "--lex --- Performs lexical analysis only on the given source code using the given rules file.\n\n"
         << "\t-g --- A flag for building lexical analyzer generator transition table from <rules-file>"
         << "and use it in tokenizing the input source code file.\n\n"
         << "\t \" ./compiler --lex -g <rules-file> <source-code-file>. \"\n"
         << "\t \" ./compiler --lex <transition-table-file> <source-code-file>. \"\n\n"
+        << "--parse --- Performs syntax analysis only on the given source code using the given grammar"
+        << "file and the output token file from the lexical analyzer.\n\n"
+        << "\t-g --- A flag for building lexical analyzer generator transition table from <rules-file>"
+        << "and use it in tokenizing the input source code\n\t       file then use these tokens in parsing the" 
+        << "<source-code-file> according to the given <cfg-file>\n\n"
+        << "\t \" ./compiler --parse -g <rules-file> <source-code-file> <cfg-file>. \"\n"
+        << "\t \" ./compiler --parse <transition-table-file> <source-code-file> <cfg-file>. \"\n\n"
         << "NOTE: This option will write its output in default files in the current directory.\n\n";
 }
 
@@ -117,9 +118,8 @@ void lex_generate_tokenize (char *rules_file, char *code_file
     std::shared_ptr<dfa> dfa_ptr(new dfa(combined_nfa));
     auto minimized_dfa = dfa_ptr->minimize();
     minimized_dfa->draw_trans_table();
-    char * transition_table_file = "transition_table.txt";
     std::shared_ptr<lexical_tokenizer> lex = std::make_shared<lexical_tokenizer>(
-                                lexical_tokenizer (transition_table_file, code_file));
+                                lexical_tokenizer ("transition_table.txt", code_file));
     token t;
     while (lex->get_next_token (t)) {
         token_vec.push_back (token (t));

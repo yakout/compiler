@@ -126,7 +126,7 @@ TEST_CASE("PREDICTIVE PARSER TEST 1")
 }
 
 
-TEST_CASE("PREDICTIVE PARSER TEST 1 (panic mode)")
+TEST_CASE("PREDICTIVE PARSER TEST 2 (panic mode)")
 {
     std::vector<cfg_symbol> eps_vector;
     std::vector<cfg_symbol> empty_vector;
@@ -211,6 +211,250 @@ TEST_CASE("PREDICTIVE PARSER TEST 1 (panic mode)")
                                                     "match: b",
                                                     "S -> \\L ",
                                                     "accept"};
+
+    for (int i = 0; i < derivations.size(); ++i)
+    {
+        REQUIRE(derivations[i] == reference_derivations[i]);
+    }
+}
+
+
+TEST_CASE("PREDICTIVE PARSER TEST 3 (panic mode when first char in input buffer is invalid)")
+{
+    cfg cfg_ob = cfg ("../../tests/syntax_analyzer/unit/ready_ll1_cfg.bnf");
+
+    std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::comparator> grammar;
+    grammar = cfg_ob.get_grammar ();
+
+    cfg_ob.left_factor();
+    cfg_ob.remove_left_recursion();
+
+    std::shared_ptr<parsing_table> p_table = std::make_shared<parsing_table>(cfg_ob);
+
+    std::vector<std::string> input_buffer {"int",
+                                           "id",
+                                           ";",
+                                           "if",
+                                           "(",
+                                           "id",
+                                           "relop",
+                                           "num",
+                                           ")",
+                                           "{",
+                                           "id",
+                                           "=",
+                                           "num",
+                                           ";",
+                                           "}",
+                                           "$"};
+
+    predictive_parser parser(cfg_ob.get_start_symbol(), p_table, input_buffer);
+    parser.parse();
+
+    std::vector<std::string> derivations = parser.get_derivations();
+    std::vector<std::string> reference_derivations
+    {"Error: (illegal E) - discard int",
+            "E -> T E' ",
+            "T -> F T' ",
+            "F -> id ",
+            "match: id",
+            "Error: (illegal T') - discard ;",
+            "Error: (illegal T') - discard if",
+            "Error: (illegal T') - discard (",
+            "Error: (illegal T') - discard id",
+            "Error: (illegal T') - discard relop",
+            "Error: (illegal T') - discard num",
+            "T' -> \\L ",
+            "E' -> \\L ",
+            "Error: (illegal $ - discard )",
+            "Error: (illegal $ - discard {",
+            "Error: (illegal $ - discard id",
+            "Error: (illegal $ - discard =",
+            "Error: (illegal $ - discard num",
+            "Error: (illegal $ - discard ;",
+            "Error: (illegal $ - discard }",
+            "accept"};
+
+    for (int i = 0; i < derivations.size(); ++i)
+    {
+        REQUIRE(derivations[i] == reference_derivations[i]);
+    }
+}
+
+
+
+TEST_CASE("PREDICTIVE PARSER TEST 4 (ready LL1 grammar)")
+{
+    cfg cfg_ob = cfg ("../../tests/syntax_analyzer/unit/cfg_single_line_ll1.bnf");
+
+    std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::comparator> grammar;
+    grammar = cfg_ob.get_grammar ();
+
+    std::shared_ptr<parsing_table> p_table = std::make_shared<parsing_table>(cfg_ob);
+
+    std::vector<std::string> input_buffer {"int",
+                                           "id",
+                                           ";",
+                                           "if",
+                                           "(",
+                                           "id",
+                                           "relop",
+                                           "num",
+                                           ")",
+                                           "{",
+                                           "id",
+                                           "=",
+                                           "num",
+                                           ";",
+                                           "}",
+                                           "$"};
+
+    predictive_parser parser(cfg_ob.get_start_symbol(), p_table, input_buffer);
+    parser.parse();
+
+    std::vector<std::string> derivations = parser.get_derivations();
+    std::vector<std::string> reference_derivations
+            {"METHOD_BODY -> STATEMENT_LIST ",
+             "STATEMENT_LIST -> STATEMENT STATEMENT_LIST1 ",
+             "STATEMENT -> DECLARATION ",
+             "DECLARATION -> PRIMITIVE_TYPE id ; ",
+             "PRIMITIVE_TYPE -> int ",
+             "match: int",
+             "match: id",
+             "match: ;",
+             "STATEMENT_LIST1 -> STATEMENT STATEMENT_LIST1 ",
+             "STATEMENT -> IF ",
+             "IF -> if ( EXPRESSION ) { STATEMENT } else { STATEMENT } ",
+             "match: if",
+             "match: (",
+             "EXPRESSION -> SIMPLE_EXPRESSION EXPRESSION1 ",
+             "SIMPLE_EXPRESSION -> TERM SIMPLE_EXPRESSION1 ",
+             "TERM -> FACTOR TERM1 ",
+             "FACTOR -> id ",
+             "match: id",
+             "TERM1 -> \\L ",
+             "SIMPLE_EXPRESSION1 -> \\L ",
+             "EXPRESSION1 -> relop SIMPLE_EXPRESSION ",
+             "match: relop",
+             "SIMPLE_EXPRESSION -> TERM SIMPLE_EXPRESSION1 ",
+             "TERM -> FACTOR TERM1 ",
+             "FACTOR -> num ",
+             "match: num",
+             "TERM1 -> \\L ",
+             "SIMPLE_EXPRESSION1 -> \\L ",
+             "match: )",
+             "match: {",
+             "STATEMENT -> ASSIGNMENT ",
+             "ASSIGNMENT -> id = EXPRESSION ; ",
+             "match: id",
+             "match: =",
+             "EXPRESSION -> SIMPLE_EXPRESSION EXPRESSION1 ",
+             "SIMPLE_EXPRESSION -> TERM SIMPLE_EXPRESSION1 ",
+             "TERM -> FACTOR TERM1 ",
+             "FACTOR -> num ",
+             "match: num",
+             "TERM1 -> \\L ",
+             "SIMPLE_EXPRESSION1 -> \\L ",
+             "EXPRESSION1 -> \\L ",
+             "match: ;",
+             "match: }",
+             "Error: (missing else) - inserted.",
+             "Error: (missing {) - inserted.",
+             "SYNCH (pop_stack)",
+             "Error: (missing }) - inserted.",
+             "STATEMENT_LIST1 -> \\L ",
+             "accept"};
+
+    for (int i = 0; i < derivations.size(); ++i)
+    {
+        REQUIRE(derivations[i] == reference_derivations[i]);
+    }
+}
+
+
+
+
+TEST_CASE("PREDICTIVE PARSER TEST 5 (ready LL1 grammar) (panic mode with synch)")
+{
+    cfg cfg_ob = cfg ("../../tests/syntax_analyzer/unit/cfg_single_line_ll1.bnf");
+
+    std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::comparator> grammar;
+    grammar = cfg_ob.get_grammar ();
+
+    std::shared_ptr<parsing_table> p_table = std::make_shared<parsing_table>(cfg_ob);
+
+    std::vector<std::string> input_buffer {"int",
+                                           "id",
+                                           ";",
+                                           "if",
+                                           "(",
+                                           "id",
+                                           "relop",
+                                           "num",
+                                           ")",
+                                           "{",
+                                           "id",
+                                           "=",
+                                           "num",
+                                           ";",
+                                           "}", "else", "{","}",
+                                           "$"};
+
+    predictive_parser parser(cfg_ob.get_start_symbol(), p_table, input_buffer);
+    parser.parse();
+
+    std::vector<std::string> derivations = parser.get_derivations();
+    std::vector<std::string> reference_derivations
+            {"METHOD_BODY -> STATEMENT_LIST ",
+             "STATEMENT_LIST -> STATEMENT STATEMENT_LIST1 ",
+             "STATEMENT -> DECLARATION ",
+             "DECLARATION -> PRIMITIVE_TYPE id ; ",
+             "PRIMITIVE_TYPE -> int ",
+             "match: int",
+             "match: id",
+             "match: ;",
+             "STATEMENT_LIST1 -> STATEMENT STATEMENT_LIST1 ",
+             "STATEMENT -> IF ",
+             "IF -> if ( EXPRESSION ) { STATEMENT } else { STATEMENT } ",
+             "match: if",
+             "match: (",
+             "EXPRESSION -> SIMPLE_EXPRESSION EXPRESSION1 ",
+             "SIMPLE_EXPRESSION -> TERM SIMPLE_EXPRESSION1 ",
+             "TERM -> FACTOR TERM1 ",
+             "FACTOR -> id ",
+             "match: id",
+             "TERM1 -> \\L ",
+             "SIMPLE_EXPRESSION1 -> \\L ",
+             "EXPRESSION1 -> relop SIMPLE_EXPRESSION ",
+             "match: relop",
+             "SIMPLE_EXPRESSION -> TERM SIMPLE_EXPRESSION1 ",
+             "TERM -> FACTOR TERM1 ",
+             "FACTOR -> num ",
+             "match: num",
+             "TERM1 -> \\L ",
+             "SIMPLE_EXPRESSION1 -> \\L ",
+             "match: )",
+             "match: {",
+             "STATEMENT -> ASSIGNMENT ",
+             "ASSIGNMENT -> id = EXPRESSION ; ",
+             "match: id",
+             "match: =",
+             "EXPRESSION -> SIMPLE_EXPRESSION EXPRESSION1 ",
+             "SIMPLE_EXPRESSION -> TERM SIMPLE_EXPRESSION1 ",
+             "TERM -> FACTOR TERM1 ",
+             "FACTOR -> num ",
+             "match: num",
+             "TERM1 -> \\L ",
+             "SIMPLE_EXPRESSION1 -> \\L ",
+             "EXPRESSION1 -> \\L ",
+             "match: ;",
+             "match: }",
+             "match: else",
+             "match: {",
+             "SYNCH (pop_stack)",
+             "match: }",
+             "STATEMENT_LIST1 -> \\L ",
+             "accept"};
 
     for (int i = 0; i < derivations.size(); ++i)
     {

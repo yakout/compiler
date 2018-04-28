@@ -31,10 +31,6 @@ private:
      * converts the current stack contents into string.
      */
     std::string dump_stack();
-    /**
-     * // TODO
-     */
-    void handle_error();
 public:
     /**
      * Takes the start_symbol, parsing table, and the input buffer to be parsed.
@@ -50,11 +46,12 @@ public:
     predictive_parser (cfg_symbol start_symbol, std::shared_ptr<parsing_table> p_table,
                        std::vector<std::string> input_buffer);
 
-    predictive_parser (char *cfg_file, std::vector<token> token_vec);
     /**
-     * print the debug stack contents into consol for debugging.
+     * This is called by the compiler main
+     * @param cfg_file
+     * @param token_vec
      */
-    void print_debug_stack ();
+    predictive_parser (char *cfg_file, std::vector<token> token_vec);
     /**
      * returns the debug stack.
      */ 
@@ -67,6 +64,10 @@ public:
      * writes the derivations steps into output file.
      */ 
     void write_derivations (std::string);
+    /**
+     * writes the debug stack steps into output file.
+     */
+    void write_debug_stack (std::string);
     /**
      * 
      */
