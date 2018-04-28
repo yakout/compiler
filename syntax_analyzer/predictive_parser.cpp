@@ -13,6 +13,7 @@ predictive_parser::predictive_parser(char *cfg_file, std::vector<token> token_ve
     {
         input_buffer.push_back(tok.lexeme);
     }
+	input_buffer.push_back("$");
 
     cfg grammar(cfg_file);
     std::shared_ptr<parsing_table> ll1_table = std::make_shared<parsing_table>(grammar);

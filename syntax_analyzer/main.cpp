@@ -62,17 +62,28 @@ int main (int argc, char *argv[]) {
                                            "=",
                                            "num",
                                            ";",
-                                           "}",
+                                           "}", "else", "{","}",
                                            "$"};
 
     predictive_parser parser(cfg_ob.get_start_symbol(), p_table, input_buffer);
     parser.parse();
 
     std::vector<std::string> stack = parser.get_debug_stack();
+    std::vector<std::string> derivation = parser.get_derivations();
 
     for (auto s : stack)
     {
         std::cout << s << std::endl;
+    }
+
+    std::cout << "***********" << std::endl;
+    std::cout << "***********" << std::endl;
+    std::cout << "***********" << std::endl;
+    std::cout << "***********" << std::endl;
+
+    for (auto d : derivation)
+    {
+        std::cout << d << std::endl;
     }
 
 }
