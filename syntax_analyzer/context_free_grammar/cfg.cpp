@@ -245,7 +245,7 @@ cfg::process_first_set(int prod_symbol_index, std::shared_ptr<first_set> first_s
     }
 
     if (curr_prod_symbol.get_type() == TERMINAL) {
-        first_set->add_symbol(curr_prod_symbol.get_name(), curr_prod_symbol, prod);
+        first_set->add_symbol(curr_prod_symbol.get_name(), curr_prod_symbol, nullptr);
         first_set->add_symbol(prod->get_lhs_symbol().get_name(), curr_prod_symbol, prod);
         return;
     }
@@ -253,8 +253,10 @@ cfg::process_first_set(int prod_symbol_index, std::shared_ptr<first_set> first_s
     // If current prod symbol isn't processed yet, process it.
     if (first_set->empty(curr_prod_symbol.get_name())) {
         // Go to curr_prod_symbol rule and iterate over all its prods and calc its first set.
-        for (auto production : cfg::grammar[curr_prod_symbol].get_productions()) {
-            process_first_set(0, first_set, &production);
+        for (auto it = cfg::grammar[curr_prod_symbol].get_productions().begin();
+             it != cfg::grammar[curr_prod_symbol].get_productions().end(); it++)
+        {
+            process_first_set(0, first_set, &(*it));
         }
     }
 
@@ -288,13 +290,8 @@ std::shared_ptr<first_set> cfg::get_first_set() {
         for (auto it = cfg::grammar[non_terminal].get_productions().begin();
              it != cfg::grammar[non_terminal].get_productions().end(); it++)
         {
-            process_first_set(0, first_set_ptr, &*it);
+            process_first_set(0, first_set_ptr, &(*it));
         }
-//        for (auto production : cfg::grammar[non_terminal].get_productions()) { // Iterate over all productions from this non-terminal
-////            //std::cout << "Current production's lhs = " << production.get_lhs_symbol().to_string() << "\n";
-////            cfg_production* copy_prod = new cfg_production(production);
-//            process_first_set(0, first_set_ptr, &production);
-//        }
     }
     for (auto terminal : cfg::terminals) {
         auto set_map = first_set_ptr->get_set_map();

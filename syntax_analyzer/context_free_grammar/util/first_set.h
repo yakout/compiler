@@ -14,19 +14,34 @@
 
 class cfg_symbol;
 
+struct pair_comparator {
+    bool operator () (const std::pair<cfg_symbol, cfg_production *> & p1,
+                      const std::pair<cfg_symbol, cfg_production *> & p2) const {
+        if (!p1.first.get_name ().compare (p2.first.get_name ()) && p1.second == p2.second)
+            return true;
+        return false;
+    }
+};
+
+struct pair_hasher {
+    std::size_t operator () (const std::pair<cfg_symbol, cfg_production *> & p) const {
+        return std::hash <std::string>() (p.first.get_name()) ^ std::hash<cfg_production *>() (p.second);
+    }
+};
+
 class first_set {
 public:
     first_set();
 
     void add_symbol(std::string, cfg_symbol symbol, cfg_production *parent_prod);
     const std::unordered_map<std::string, std::unordered_set<std::pair<cfg_symbol,
-            cfg_production *>, cfg_symbol::pair_hasher, cfg_symbol::pair_comparator>> &get_set_map() const;
+            cfg_production *>, pair_hasher, pair_comparator>> &get_set_map() const;
     bool has_eps(std::string);
     bool empty(std::string);
 
 private:
     std::unordered_map<std::string, std::unordered_set<std::pair<cfg_symbol,
-            cfg_production *>, cfg_symbol::pair_hasher, cfg_symbol::pair_comparator>> my_set;
+            cfg_production *>, pair_hasher, pair_comparator>> my_set;
 };
 
 

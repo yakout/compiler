@@ -24,7 +24,7 @@ int main (int argc, char *argv[]) {
 //    table[std::make_pair("id", "T")] = prod;
 
 
-    cfg cfg_ob = cfg ("../../tests/syntax_analyzer/unit/ready_ll1_cfg.bnf");
+    cfg cfg_ob = cfg ("../tests/syntax_analyzer/unit/ready_ll1_cfg.bnf");
     std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::comparator> grammar;
     /** Grammar Checking. **/
     grammar = cfg_ob.get_grammar ();

@@ -8,7 +8,7 @@
 first_set::first_set() = default;
 
 const std::unordered_map<std::string, std::unordered_set<std::pair<cfg_symbol,
-        cfg_production *>, cfg_symbol::pair_hasher, cfg_symbol::pair_comparator>> &first_set::get_set_map() const {
+        cfg_production *>, pair_hasher, pair_comparator>> &first_set::get_set_map() const {
     return first_set::my_set;
 }
 
