@@ -30,6 +30,14 @@ int main (int argc, char *argv[]) {
     /** Grammar Checking. **/
     grammar = cfg_ob.get_grammar ();
 
+    std::cout << "+++++++++" << std::endl;
+    for (auto g : grammar)
+    {
+        std::cout << g.second.to_string() << std::endl;
+    }
+    std::cout << "+++++++++" << std::endl;
+
+
     std::cout << "********" << cfg_ob.get_start_symbol().get_name() << std::endl;
     for (auto non_t : cfg_ob.get_non_terminals())
     {
@@ -41,23 +49,24 @@ int main (int argc, char *argv[]) {
     p_table->draw ("parsing_table.txt");
 
     std::vector<std::string> input_buffer {"int",
-                                           "x",
+                                           "id",
                                            ";",
                                            "if",
                                            "(",
-                                           "x",
-                                           ">",
-                                           "2",
+                                           "id",
+                                           "relop",
+                                           "num",
                                            ")",
                                            "{",
-                                           "x",
+                                           "id",
                                            "=",
-                                           "0",
+                                           "num",
                                            ";",
-                                           "}"};
+                                           "}",
+                                           "$"};
 
     predictive_parser parser(cfg_ob.get_start_symbol(), p_table, input_buffer);
-//    parser.parse();
+    parser.parse();
 
     std::vector<std::string> stack = parser.get_debug_stack();
 

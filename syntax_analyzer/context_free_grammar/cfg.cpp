@@ -82,6 +82,7 @@ void cfg::parse_rule (std::string & rule_str, bool first_rule) {
     std::vector <cfg_production> productions;
     cfg_production prod;
     cfg_symbol lhs_symbol = cfg_symbol (r_h.lhs_symbol_name, cfg_symbol_type::NON_TERMINAL);
+    non_terminals.insert(lhs_symbol);
     for (std::size_t i = 0 ; i < r_h.productions.size () ; i++) {
         cfg_production prod;
         prod.set_lhs_symbol (lhs_symbol);
