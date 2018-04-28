@@ -65,19 +65,23 @@ int main (int argc, char *argv[]) {
     return 0;
 }
 
-void err_argc () {
-    throw std::runtime_error ("Invalid number of arguments.\n"
-                    "Please enter \"./compiler --help\" "
-                    "to know the supported options in this version.\n");
+ void err_argc () {
+     std::cout << "Invalid number of arguments.\n"
+         << "Please enter \"./compiler --help\" "
+         << "to know the supported options in this version.\n";
+     exit (EXIT_FAILURE);
 }
-
-void err_option () {
-    throw std::runtime_error("Unsupported option. \nPlease enter \"./compiler --help\"" 
-                        "to know the supported options in this version.\n");
+ 
+ void err_option () {
+     std::cout << "Unsupported option.\n"
+         << "Please enter \"./compiler --help\" "
+         << "to know the supported options in this version.\n";
+     exit (EXIT_FAILURE);
 }
-
-void err_no_file_exists (char *file_name) {
-    throw std::runtime_error(std::string (file_name) + ": File doesn't exists.\n");
+ 
+ void err_no_file_exists (char *file_name) {
+     std::cout << file_name << ":  File doesn't exists.\n";
+     exit (EXIT_FAILURE);
 }
 
 void help () {
