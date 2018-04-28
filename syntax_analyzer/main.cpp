@@ -30,7 +30,7 @@ int main (int argc, char *argv[]) {
     /** Grammar Checking. **/
     grammar = cfg_ob.get_grammar ();
 
-    std::cout << "********" << std::endl;
+    std::cout << "********" << cfg_ob.get_start_symbol().get_name() << std::endl;
     for (auto non_t : cfg_ob.get_non_terminals())
     {
         std::cout << non_t.get_name() << std::endl;
