@@ -39,24 +39,48 @@ set (MEMORYCHECK_COMMAND_OPTIONS "${MEMORYCHECK_COMMAND_OPTIONS} --error-exitcod
 
 if (BUILD_REG_TEST)
     enable_testing ()
+
+    #  LEXICAL ANALYZER REGRESION TEST
     add_test (reg_test_0_lexical_analyzer_run compiler --lex -g 
         ${PROJECT_SOURCE_DIR}/tests/lexical_analyzer/regression/test_0/rules.txt 
         ${PROJECT_SOURCE_DIR}/tests/lexical_analyzer/regression/test_0/test_0.txt)
-
     add_test (reg_test_0_lexical_analyzer_compare_token_file ${CMAKE_COMMAND} -E compare_files 
         ${PROJECT_SOURCE_DIR}/build/token-file.txt 
         ${PROJECT_SOURCE_DIR}/tests/lexical_analyzer/regression/test_0/token-file.txt)
-
     add_test (reg_test_0_lexical_analyzer_compare_symbol_table ${CMAKE_COMMAND} -E compare_files 
         ${PROJECT_SOURCE_DIR}/build/symbol-table.txt 
         ${PROJECT_SOURCE_DIR}/tests/lexical_analyzer/regression/test_0/symbol-table.txt)
-
     add_test (reg_test_0_lexical_analyzer_compare_log ${CMAKE_COMMAND} -E compare_files 
         ${PROJECT_SOURCE_DIR}/build/compiler.log 
         ${PROJECT_SOURCE_DIR}/tests/lexical_analyzer/regression/test_0/compiler.log)
 
+
+    #  SYNTAX ANALYZER REGRESION TEST
+    add_test (reg_test_0_syntax_analyzer_run compiler --parse
+            ${PROJECT_SOURCE_DIR}/tests/syntax_analyzer/regression/test_0/transition_table.txt
+            ${PROJECT_SOURCE_DIR}/tests/syntax_analyzer/regression/test_0/code.txt
+            ${PROJECT_SOURCE_DIR}/tests/syntax_analyzer/regression/test_0/cfg.bnf)
+    add_test (reg_test_0_syntax_analyzer_compare_debug_stack ${CMAKE_COMMAND} -E compare_files
+            ${PROJECT_SOURCE_DIR}/build/debug_stack.log
+            ${PROJECT_SOURCE_DIR}/tests/syntax_analyzer/regression/test_0/debug_stack.log)
+    add_test (reg_test_0_syntax_analyzer_compare_actions_output ${CMAKE_COMMAND} -E compare_files
+            ${PROJECT_SOURCE_DIR}/build/actions_output.log
+            ${PROJECT_SOURCE_DIR}/tests/syntax_analyzer/regression/test_0/actions_output.log)
+
+    #  SYNTAX ANALYZER REGRESION TEST
+    add_test (reg_test_1_syntax_analyzer_run compiler --parse -g
+            ${PROJECT_SOURCE_DIR}/tests/syntax_analyzer/regression/test_0/rules.txt
+            ${PROJECT_SOURCE_DIR}/tests/syntax_analyzer/regression/test_0/code.txt
+            ${PROJECT_SOURCE_DIR}/tests/syntax_analyzer/regression/test_0/cfg.bnf)
+    add_test (reg_test_1_syntax_analyzer_compare_debug_stack ${CMAKE_COMMAND} -E compare_files
+            ${PROJECT_SOURCE_DIR}/build/debug_stack.log
+            ${PROJECT_SOURCE_DIR}/tests/syntax_analyzer/regression/test_0/debug_stack.log)
+    add_test (reg_test_1_syntax_analyzer_compare_actions_output ${CMAKE_COMMAND} -E compare_files
+            ${PROJECT_SOURCE_DIR}/build/actions_output.log
+            ${PROJECT_SOURCE_DIR}/tests/syntax_analyzer/regression/test_0/actions_output.log)
+
     macro (do_test test_num)
-        add_test (reg_test_${test_num}_lexical_analyzer_run compiler --lex 
+        add_test (reg_test_${test_num}_lexical_analyzer_run compiler --lex
             ${PROJECT_SOURCE_DIR}/build/transition_table.txt 
             ${PROJECT_SOURCE_DIR}/tests/lexical_analyzer/regression/test_${test_num}/test_${test_num}.txt)
 
@@ -79,5 +103,4 @@ if (BUILD_REG_TEST)
     do_test (4)
     do_test (5)
     do_test (6)
-    do_test (7)
 endif (BUILD_REG_TEST)

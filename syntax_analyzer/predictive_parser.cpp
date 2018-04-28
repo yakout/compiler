@@ -11,10 +11,6 @@ predictive_parser::predictive_parser(char *cfg_file, std::vector<token> token_ve
 {
     for (auto tok : token_vec)
     {
-        if (tok.token_class == "assign")
-        {
-            input_buffer.push_back("=");
-        } else
         input_buffer.push_back(tok.token_class);
     }
 	input_buffer.push_back("$");

@@ -151,6 +151,9 @@ void parse_generate_tokenize (char *rules_file, char *code_file, char *cfg_file
 
     predictive_parser parser(cfg_file, token_vec);
     parser.parse();
+
+    parser.write_debug_stack("debug_stack.log");
+    parser.write_derivations("actions_output.log");
 }
 
 void parse_tokenize (char *transition_table_file, char *code_file, char *cfg_file
