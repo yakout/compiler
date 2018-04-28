@@ -336,9 +336,6 @@ void cfg::process_follow_set(cfg_symbol non_terminal, std::shared_ptr<follow_set
                         has_eps = false;
                         // Put everything in first of the next symbol in the follow of non_terminal
                         auto cfg_first_set_map = cfg::get_first_set()->get_set_map();
-//                        for (auto elem : cfg_first_set_map) {
-//                            std::cout << elem.first << "\n";
-//                        }
                         auto next_first_set = cfg_first_set_map[production.get_symbols()[curr_pos++].get_name()];
                         for (auto symbol : next_first_set) {
                             if (symbol.first.get_name() != EPS) {
@@ -362,7 +359,7 @@ void cfg::process_follow_set(cfg_symbol non_terminal, std::shared_ptr<follow_set
                         }
                     }
                 }
-                break;
+//                break;
             }
         }
     }
@@ -374,7 +371,6 @@ std::shared_ptr<follow_set> cfg::get_follow_set() {
         if (!follow_set_ptr->empty(non_terminal.get_name())) {
             continue;
         }
-//        std::cout << "Calculating follow of non_terminal = " << non_terminal.to_string() << "\n";
         process_follow_set(non_terminal, follow_set_ptr);
     }
     return follow_set_ptr;
