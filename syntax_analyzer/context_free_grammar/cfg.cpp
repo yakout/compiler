@@ -22,7 +22,6 @@ void split_str (std::vector <std::string> &, std::string &, char);
 
 /**
  *  Removes single quotes from string.
- *  TODO: Re-check this.
  */
 bool remove_single_quotes (std::string &);
 
@@ -51,7 +50,7 @@ void cfg::parse (std::string & grammar_file) {
     std::ifstream grammar_in_file (grammar_file.c_str ());
     // Checks if grammar file exists or not.
     if (!grammar_in_file.good ()) {
-        throw std::runtime_error("FILE NOT FOUND!");
+        throw std::runtime_error(grammar_file + ": File doesn't exists.\n");
     }
     std::string current_line, previous_line;
     bool first_line = true, first_rule = true;
@@ -74,6 +73,7 @@ void cfg::parse (std::string & grammar_file) {
         }
     }
     parse_rule (previous_line, first_rule);
+    grammar_in_file.close ();
 }
 
 void cfg::parse_rule (std::string & rule_str, bool first_rule) {
@@ -82,7 +82,7 @@ void cfg::parse_rule (std::string & rule_str, bool first_rule) {
     std::vector <cfg_production> productions;
     cfg_production prod;
     cfg_symbol lhs_symbol = cfg_symbol (r_h.lhs_symbol_name, cfg_symbol_type::NON_TERMINAL);
-    non_terminals.insert(lhs_symbol);
+    non_terminals.insert (lhs_symbol);
     for (std::size_t i = 0 ; i < r_h.productions.size () ; i++) {
         cfg_production prod;
         prod.set_lhs_symbol (lhs_symbol);
