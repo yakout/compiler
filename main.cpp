@@ -160,6 +160,9 @@ void parse_tokenize (char *transition_table_file, char *code_file, char *cfg_fil
 
     predictive_parser parser(cfg_file, token_vec);
     parser.parse();
+
+    parser.write_debug_stack("debug_stack.log");
+    parser.write_derivations("actions_output.log");
 }
 
 void print_output (std::vector<token> &token_vec) {

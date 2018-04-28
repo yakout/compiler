@@ -11,11 +11,19 @@ predictive_parser::predictive_parser(char *cfg_file, std::vector<token> token_ve
 {
     for (auto tok : token_vec)
     {
-        input_buffer.push_back(tok.lexeme);
+        if (tok.token_class == "assign")
+        {
+            input_buffer.push_back("=");
+        } else
+        input_buffer.push_back(tok.token_class);
     }
 	input_buffer.push_back("$");
 
     cfg grammar(cfg_file);
+
+    grammar.left_factor();
+    grammar.remove_left_recursion();
+
     std::shared_ptr<parsing_table> ll1_table = std::make_shared<parsing_table>(grammar);
     p_table = ll1_table;
     init_stack(grammar.get_start_symbol());
