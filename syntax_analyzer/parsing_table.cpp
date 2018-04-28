@@ -252,7 +252,11 @@ void parsing_table::draw(std::string file_name)
         file << '|' << std::setw(max_size) << non_terminals[i];
         for (int j = 0; j < terminals.size(); ++j)
         {
-            file << '|' << std::setw(max_size) << get_production(non_terminals[i], terminals[j]).to_string();
+            if (get_production(non_terminals[i], terminals[j]).get_lhs_symbol().get_type() == SYNCH) {
+                file << '|' << std::setw(max_size) << "SYNCH";
+            } else {
+                file << '|' << std::setw(max_size) << get_production(non_terminals[i], terminals[j]).to_string();
+            }
         }
         file << '|' << std::endl;
         for (int i = 0; i < max_size * (terminals.size() + 2); i++) file << "_";
