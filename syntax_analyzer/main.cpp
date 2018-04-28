@@ -25,13 +25,17 @@ int main (int argc, char *argv[]) {
 
 
 //    cfg cfg_ob = cfg ("../../tests/syntax_analyzer/unit/ready_ll1_cfg.bnf");
-    cfg cfg_ob = cfg ("../../tests/syntax_analyzer/unit/cfg_single_line_ll1.bnf");
+//    cfg cfg_ob = cfg ("../../tests/syntax_analyzer/unit/cfg_single_line_ll1.bnf");
+    cfg cfg_ob = cfg ("../../tests/syntax_analyzer/unit/ps_cfg_single_line.bnf");
     std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::comparator> grammar;
     /** Grammar Checking. **/
     grammar = cfg_ob.get_grammar ();
 
+    cfg_ob.left_factor();
+    cfg_ob.remove_left_recursion();
+
     std::cout << "+++++++++" << std::endl;
-    for (auto g : grammar)
+    for (auto g : cfg_ob.get_grammar())
     {
         std::cout << g.second.to_string() << std::endl;
     }
@@ -62,7 +66,8 @@ int main (int argc, char *argv[]) {
                                            "=",
                                            "num",
                                            ";",
-                                           "}", "else", "{","}",
+//                                           "}", "else", "{","}",
+                                           "}",
                                            "$"};
 
     predictive_parser parser(cfg_ob.get_start_symbol(), p_table, input_buffer);
