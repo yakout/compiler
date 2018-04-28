@@ -2,6 +2,7 @@
 // Created by awalid on 4/25/18.
 //
 
+#include <iostream>
 #include "first_set.h"
 #include "../cfg.h"
 
@@ -27,5 +28,27 @@ bool first_set::has_eps(std::string symbol) {
 
 bool first_set::empty(std::string key) {
     return first_set::my_set[key].empty();
+}
+
+void first_set::print_to_console() {
+    std::cout << "============================PRINTING FIRST SET==================================\n";
+    for (auto elem : first_set::my_set) {
+        std::cout << "FIRST(" << elem.first << ") = {";
+        int cnt = 0;
+        for (auto x : elem.second) {
+            std::cout << "<" << x.first.get_name();
+            if (x.second != nullptr) {
+                std::cout << ", " << x.second->to_string() << ">";
+            } else {
+                std::cout << ">";
+            }
+            if (cnt != elem.second.size() - 1) {
+                std::cout << ", ";
+            }
+            cnt++;
+        }
+        std::cout << "}\n";
+    }
+    std::cout << "=================================================================================\n";
 }
 

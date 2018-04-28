@@ -22,7 +22,7 @@ public:
             cfg_symbol::comparator>> &get_set_map() const;
     bool has_eps(std::string);
     bool empty(std::string);
-
+    void print_to_console();
 private:
     std::unordered_map<std::string, std::unordered_set<cfg_symbol, cfg_symbol::hasher, cfg_symbol::comparator>> my_set;
 };

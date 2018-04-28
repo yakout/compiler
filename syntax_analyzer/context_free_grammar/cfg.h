@@ -46,6 +46,7 @@ public:
     const std::unordered_map<cfg_symbol, std::vector<cfg_production>, cfg_symbol::hasher, cfg_symbol::comparator> &
     get_cfg_symbol_productions() const;
 
+    void print_cfg_symbol_productions_map();
     void set_cfg_symbol_productions(
             const std::unordered_map<cfg_symbol, std::vector<cfg_production>, cfg_symbol::hasher, cfg_symbol::comparator> &cfg_symbol_productions);
     const std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::comparator> &get_grammar() const;

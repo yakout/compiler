@@ -2,6 +2,7 @@
 // Created by awalid on 4/27/18.
 //
 
+#include <iostream>
 #include "follow_set.h"
 #include "../cfg.h"
 
@@ -27,4 +28,21 @@ bool follow_set::has_eps(std::string symbol) {
 
 bool follow_set::empty(std::string key) {
     return follow_set::my_set[key].empty();
+}
+
+void follow_set::print_to_console() {
+    std::cout << "============================PRINTING FOLLOW SET==================================\n";
+    for (auto elem : follow_set::my_set) {
+        std::cout << "FOLLOW(" << elem.first << ") = {";
+        int cnt = 0;
+        for (auto x : elem.second) {
+            std::cout << x.get_name() ;
+            if (cnt != elem.second.size() - 1) {
+                std::cout << ", ";
+            }
+            cnt++;
+        }
+        std::cout << "}\n";
+    }
+    std::cout << "=================================================================================\n";
 }

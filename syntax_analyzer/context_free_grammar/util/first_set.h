@@ -38,6 +38,7 @@ public:
             cfg_production *>, pair_hasher, pair_comparator>> &get_set_map() const;
     bool has_eps(std::string);
     bool empty(std::string);
+    void print_to_console();
 
 private:
     std::unordered_map<std::string, std::unordered_set<std::pair<cfg_symbol,

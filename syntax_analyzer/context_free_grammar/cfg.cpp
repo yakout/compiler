@@ -206,6 +206,9 @@ void cfg::remove_left_recursion ()
 {
     std::unordered_map <cfg_symbol, cfg_rule
             , cfg_symbol::hasher, cfg_symbol::comparator> new_grammar;
+    std::unordered_map <cfg_symbol, std::vector <cfg_production>, cfg_symbol::hasher
+            , cfg_symbol::comparator> cfg_symbol_prods;
+
     for (auto rule : get_rules()) {
         std::vector<cfg_production> target_prods;
         std::vector<cfg_production> rest_prods;
@@ -221,24 +224,30 @@ void cfg::remove_left_recursion ()
         }
 
         if (!is_left_recursion) {
+            for (auto prod : rule.get_productions()) {
+                for (auto sym : prod.get_symbols()) {
+                    cfg_symbol_prods[sym].push_back(prod);
+                }
+            }
             new_grammar[rule.get_lhs_symbol()] = rule;
             continue;
         }
 
+        // Modifying old rule
         cfg_symbol new_symbol(rule.get_lhs_symbol().get_name() + "'", NON_TERMINAL);
         rule.empty_productions();
 
         for (auto it = rest_prods.begin(); it != rest_prods.end(); it++)
         {
             (*it).add_symbol(new_symbol);
+            for (auto sym : (*it).get_symbols()) {
+                cfg_symbol_prods[sym].push_back((*it));
+            }
         }
-        cfg_symbol_productions[new_symbol] = rest_prods;
-
         rule.set_productions(rest_prods);
-
         new_grammar[rule.get_lhs_symbol()] = rule;
 
-        // CONSTRUCTING THE NEW RULE
+        // Constructing new rule
         cfg_symbol eps("\\L", TERMINAL);
         std::vector<cfg_symbol> v;
         v.push_back(eps);
@@ -248,15 +257,20 @@ void cfg::remove_left_recursion ()
         {
             (*it).pop_first_symbol();
             (*it).add_symbol(new_symbol);
+            (*it).set_lhs_symbol(new_symbol);
+            for (auto sym : (*it).get_symbols()) {
+                cfg_symbol_prods[sym].push_back((*it));
+            }
         }
 
         target_prods.push_back(eps_prod);
-        non_terminals.insert(new_symbol);
+
+        cfg::non_terminals.insert(new_symbol);
         cfg_rule new_rule(new_symbol, target_prods);
         new_grammar[new_symbol] = new_rule;
     }
-
-    grammar = new_grammar;
+    cfg::cfg_symbol_productions = cfg_symbol_prods;
+    cfg::grammar = new_grammar;
 }
 
 std::unordered_set <cfg_symbol, cfg_symbol::hasher
@@ -463,6 +477,19 @@ void cfg::set_cfg_symbol_productions(
 void cfg::set_terminals(const std::unordered_set <cfg_symbol, cfg_symbol::hasher
         , cfg_symbol::comparator> &terminals) {
     cfg::terminals = terminals;
+}
+
+void cfg::print_cfg_symbol_productions_map() {
+    std::cout << "============================PRINTING CFG SYMBOLS PRODUCTIONS MAP==================================\n";
+    for (auto non_term : cfg::non_terminals) {
+        std::cout << "PRODUCTIONS(" << non_term.get_name() << ") = {";
+        auto temp_map = cfg::cfg_symbol_productions;
+        for (auto prod : temp_map[non_term]){
+            std::cout << prod.to_string() << "  ";
+        }
+        std::cout << "}\n";
+    }
+    std::cout << "==================================================================================================\n";
 }
 
 void split_str (std::vector <std::string> & vec
