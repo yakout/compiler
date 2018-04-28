@@ -389,7 +389,8 @@ void cfg::process_follow_set(cfg_symbol non_terminal, std::shared_ptr<follow_set
             if (symbol.get_name() == non_terminal.get_name()) {
                 if (i + 1 == production.get_symbols().size()) {
                     // This non_terminal is the last symbol in the production.
-                    if (follow_set_ptr->empty(production.get_lhs_symbol().get_name())) {
+                    if (follow_set_ptr->empty(production.get_lhs_symbol().get_name())
+                        && production.get_lhs_symbol().get_name() != non_terminal.get_name()) {
                         // Calc Follow(lhs) if not calculated
                         process_follow_set(production.get_lhs_symbol(), follow_set_ptr);
                     }
