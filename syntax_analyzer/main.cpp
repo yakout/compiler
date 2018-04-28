@@ -36,27 +36,27 @@ int main (int argc, char *argv[]) {
 //    cfg_ob.left_factor();
 //    cfg_ob.remove_left_recursion();
 
-//    std::cout << "+++++++++" << std::endl;
-//    for (auto g : cfg_ob.get_grammar())
-//    {
-//        std::cout << g.second.to_string() << std::endl;
-//    }
-//    std::cout << "+++++++++" << std::endl;
-//
-//
-//    std::cout << "********\n" << cfg_ob.get_start_symbol().get_name() << "\n\n";
-//    for (auto non_t : cfg_ob.get_non_terminals())
-//    {
-//        std::cout << non_t.get_name() << std::endl;
-//    }
-//    std::cout << "********" << std::endl;
-//
-//    cfg_ob.print_cfg_symbol_productions_map();
-//    std::shared_ptr<parsing_table> p_table = std::make_shared<parsing_table>(cfg_ob);
-//    cfg_ob.get_first_set()->print_to_console();
-//    cfg_ob.get_follow_set()->print_to_console();
-//
-//    p_table->draw ("parsing_table.txt");
+    std::cout << "+++++++++" << std::endl;
+    for (auto g : cfg_ob.get_grammar())
+    {
+        std::cout << g.second.to_string() << std::endl;
+    }
+    std::cout << "+++++++++" << std::endl;
+
+
+    std::cout << "********\n" << cfg_ob.get_start_symbol().get_name() << "\n\n";
+    for (auto non_t : cfg_ob.get_non_terminals())
+    {
+        std::cout << non_t.get_name() << std::endl;
+    }
+    std::cout << "********" << std::endl;
+
+    cfg_ob.print_cfg_symbol_productions_map();
+    std::shared_ptr<parsing_table> p_table = std::make_shared<parsing_table>(cfg_ob);
+    cfg_ob.get_first_set()->print_to_console();
+    cfg_ob.get_follow_set()->print_to_console();
+
+    p_table->draw ("parsing_table.txt");
 
 //    std::vector<std::string> input_buffer {"int",
 //                                           "id",
