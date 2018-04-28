@@ -43,12 +43,16 @@ private:
             parsing_table_hasher, parsing_table_comparator> table;
 
     /**
-        This function builds the parsing table for the previously defined grammar.
-        It fills the table map defined above by productions using the first and.
-        follow sets supplied before.
-    */
+     *  This function builds the parsing table for the previously defined grammar.
+     *   It fills the table map defined above by productions using the first and.
+     *   follow sets supplied before.
+     */
     void build(first_set, follow_set);
-//    void build();
+
+    /**
+     * This function builds the parsing table for the previously defined grammar.
+     */
+    void build();
 public:
     /**
      *  Constructor for parsing table.
