@@ -239,7 +239,11 @@ void cfg::remove_left_recursion ()
 
         for (auto it = rest_prods.begin(); it != rest_prods.end(); it++)
         {
-            (*it).add_symbol(new_symbol);
+            if ((*it).get_symbols().front().get_name() != EPS)
+            {
+                // if it's not eps production append the new_symbol to it.
+                (*it).add_symbol(new_symbol);
+            }
             for (auto sym : (*it).get_symbols()) {
                 cfg_symbol_prods[sym].push_back((*it));
             }
