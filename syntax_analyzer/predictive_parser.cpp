@@ -91,6 +91,10 @@ void predictive_parser::parse()
             else if (prod.get_symbols().empty())
             {
                 // ERROR! discard curr_tok
+                if (cur_token == "$") {
+                    output.push_back("END! Error: (illegal " + stack_top.get_name() + ") - discard " + cur_token);
+                    break;
+                }
                 output.push_back("Error: (illegal " + stack_top.get_name() + ") - discard " + cur_token);
                 i++;
             }
