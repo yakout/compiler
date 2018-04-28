@@ -20,9 +20,9 @@ int longest_common_prefix(std::vector<cfg_production> prods);
 class cfg {
 private:
     std::unordered_set <cfg_symbol, cfg_symbol::hasher
-                                , cfg_symbol::comparator> non_terminals;
+            , cfg_symbol::comparator> non_terminals;
     std::unordered_set <cfg_symbol, cfg_symbol::hasher
-                                , cfg_symbol::comparator> terminals;
+            , cfg_symbol::comparator> terminals;
     cfg_symbol start_symbol;
     std::unordered_map <cfg_symbol, cfg_rule
             , cfg_symbol::hasher, cfg_symbol::comparator> grammar;
@@ -51,7 +51,7 @@ public:
             const std::unordered_map<cfg_symbol, std::vector<cfg_production>, cfg_symbol::hasher, cfg_symbol::comparator> &cfg_symbol_productions);
     const std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::comparator> &get_grammar() const;
     void set_non_terminals(const std::unordered_set<cfg_symbol
-                                , cfg_symbol::hasher, cfg_symbol::comparator> &);
+            , cfg_symbol::hasher, cfg_symbol::comparator> &);
     void
     set_grammar(const std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::comparator> &);
     std::shared_ptr <first_set> get_first_set ();
@@ -69,9 +69,9 @@ public:
 
     /** Getters **/
     std::unordered_set <cfg_symbol, cfg_symbol::hasher
-                                , cfg_symbol::comparator> get_non_terminals ();
+            , cfg_symbol::comparator> get_non_terminals ();
     std::unordered_set <cfg_symbol, cfg_symbol::hasher
-                                , cfg_symbol::comparator> get_terminals ();
+            , cfg_symbol::comparator> get_terminals ();
     cfg_symbol get_start_symbol ();
     std::vector <cfg_rule> get_rules ();
 };

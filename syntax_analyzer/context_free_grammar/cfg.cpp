@@ -37,7 +37,7 @@ rule_holder tokenize_rule (std::string &);
 
 
 cfg::cfg ()
-    : non_terminals (), terminals () {
+        : non_terminals (), terminals () {
 
 }
 
@@ -106,15 +106,15 @@ void cfg::parse_rule (std::string & rule_str, bool first_rule) {
     }
     if (first_rule)
         start_symbol = lhs_symbol;
-    
+
     if (grammar.find (lhs_symbol) != grammar.end ())
         grammar[lhs_symbol].add_productions (productions);
-    else 
+    else
         add_rule (lhs_symbol, productions);
 }
 
 void cfg::add_rule (cfg_symbol & lhs_symbol
-                        , std::vector <cfg_production> & vec) {
+        , std::vector <cfg_production> & vec) {
     cfg_rule rule = cfg_rule (lhs_symbol, vec);
     grammar[lhs_symbol] = rule;
 }
@@ -127,79 +127,79 @@ void cfg::left_factor ()
 {
     std::unordered_map <cfg_symbol, cfg_rule
             , cfg_symbol::hasher, cfg_symbol::comparator> new_grammar;
-     for (auto grammar_entry : grammar)
-     {
-         std::map <std::string, std::vector <cfg_production>> common_factors;
-         for (auto prod : grammar_entry.second.get_productions())
-         {
-             common_factors[prod.get_symbols()[0].get_name()].push_back (prod);
-         }
+    for (auto grammar_entry : grammar)
+    {
+        std::map <std::string, std::vector <cfg_production>> common_factors;
+        for (auto prod : grammar_entry.second.get_productions())
+        {
+            common_factors[prod.get_symbols()[0].get_name()].push_back (prod);
+        }
 
-         grammar_entry.second.empty_productions ();
-         size_t counter = 1;
-         std::vector <cfg_production> new_productions;
-         for (auto entry : common_factors)
-         {
-             if (entry.second.size() == 1)
-             {
-                 new_productions.push_back (entry.second.front());
-             }
-             else
-             {
-                 int common_prefix_size = longest_common_prefix(entry.second);
-                 std::vector<cfg_symbol> v;
-                 for (int i = 0; i < common_prefix_size; i++)
-                 {
+        grammar_entry.second.empty_productions ();
+        size_t counter = 1;
+        std::vector <cfg_production> new_productions;
+        for (auto entry : common_factors)
+        {
+            if (entry.second.size() == 1)
+            {
+                new_productions.push_back (entry.second.front());
+            }
+            else
+            {
+                int common_prefix_size = longest_common_prefix(entry.second);
+                std::vector<cfg_symbol> v;
+                for (int i = 0; i < common_prefix_size; i++)
+                {
                     v.push_back(entry.second.front().get_symbols()[i]);
-                 }
+                }
 
-                 cfg_symbol new_sym(grammar_entry.second.get_lhs_symbol().get_name()
-                     + std::to_string(counter), grammar_entry.second.get_lhs_symbol().get_type());
-                 counter++;
+                cfg_symbol new_sym(grammar_entry.second.get_lhs_symbol().get_name()
+                                   + std::to_string(counter), grammar_entry.second.get_lhs_symbol().get_type());
+                counter++;
 
-                 v.push_back(new_sym);
-                 cfg_symbol original_symbol(cfg_symbol(grammar_entry.second.get_lhs_symbol()));
-                 cfg_production new_prod(original_symbol, v);
-                 new_productions.push_back (new_prod);
+                v.push_back(new_sym);
+                cfg_symbol original_symbol(cfg_symbol(grammar_entry.second.get_lhs_symbol()));
+                cfg_production new_prod(original_symbol, v);
+                new_productions.push_back (new_prod);
 
-                 // construct the new rules
-                 std::vector<cfg_production> productions_vec;
+                // construct the new rules
+                std::vector<cfg_production> productions_vec;
 
-                 for (auto prod : entry.second)
-                 {
-                     std::vector<cfg_symbol> rest_symbols;
-                     for (int i = common_prefix_size; i < prod.get_symbols().size(); i++)
-                     {
-                         rest_symbols.push_back(prod.get_symbols()[i]);
-                     }
-                     if (rest_symbols.empty()) {
-                         cfg_symbol eps("\\L", TERMINAL);
-                         rest_symbols.push_back(eps);
-                     }
-                     cfg_production rest_symbols_as_production(new_sym, rest_symbols);
-                     productions_vec.push_back(rest_symbols_as_production);
-                 }
-                 cfg_rule new_rule(new_sym, productions_vec);
-                 non_terminals.insert(new_sym);
+                for (auto prod : entry.second)
+                {
+                    std::vector<cfg_symbol> rest_symbols;
+                    for (int i = common_prefix_size; i < prod.get_symbols().size(); i++)
+                    {
+                        rest_symbols.push_back(prod.get_symbols()[i]);
+                    }
+                    if (rest_symbols.empty()) {
+                        cfg_symbol eps("\\L", TERMINAL);
+                        rest_symbols.push_back(eps);
+                    }
+                    cfg_production rest_symbols_as_production(new_sym, rest_symbols);
+                    productions_vec.push_back(rest_symbols_as_production);
+                }
+                cfg_rule new_rule(new_sym, productions_vec);
+                non_terminals.insert(new_sym);
 
-                 cfg temp_cfg;
-                 std::unordered_map <cfg_symbol, cfg_rule
-                         , cfg_symbol::hasher, cfg_symbol::comparator> temp_grammar;
+                cfg temp_cfg;
+                std::unordered_map <cfg_symbol, cfg_rule
+                        , cfg_symbol::hasher, cfg_symbol::comparator> temp_grammar;
 
-                 temp_grammar[new_sym] = new_rule;
-                 temp_cfg.set_grammar(temp_grammar);
-                 temp_cfg.left_factor();
+                temp_grammar[new_sym] = new_rule;
+                temp_cfg.set_grammar(temp_grammar);
+                temp_cfg.left_factor();
 
-                 for (auto temp_cfg_entry : temp_cfg.get_grammar())
-                 {
-                     new_grammar[temp_cfg_entry.first] = temp_cfg_entry.second;
-                 }
-             }
-         }
-         cfg_symbol sym(grammar_entry.first);
-         cfg_rule new_rule(sym, new_productions);
-         new_grammar[sym] = new_rule;
-     }
+                for (auto temp_cfg_entry : temp_cfg.get_grammar())
+                {
+                    new_grammar[temp_cfg_entry.first] = temp_cfg_entry.second;
+                }
+            }
+        }
+        cfg_symbol sym(grammar_entry.first);
+        cfg_rule new_rule(sym, new_productions);
+        new_grammar[sym] = new_rule;
+    }
     grammar = new_grammar;
 }
 
@@ -283,12 +283,12 @@ void cfg::remove_left_recursion ()
 }
 
 std::unordered_set <cfg_symbol, cfg_symbol::hasher
-                    , cfg_symbol::comparator> cfg::get_non_terminals () {
+        , cfg_symbol::comparator> cfg::get_non_terminals () {
     return non_terminals;
 }
 
 std::unordered_set <cfg_symbol, cfg_symbol::hasher
-                    , cfg_symbol::comparator> cfg::get_terminals () {
+        , cfg_symbol::comparator> cfg::get_terminals () {
     return terminals;
 }
 
@@ -390,7 +390,8 @@ void cfg::process_follow_set(cfg_symbol non_terminal, std::shared_ptr<follow_set
             if (symbol.get_name() == non_terminal.get_name()) {
                 if (i + 1 == production.get_symbols().size()) {
                     // This non_terminal is the last symbol in the production.
-                    if (follow_set_ptr->empty(production.get_lhs_symbol().get_name())) {
+                    if (follow_set_ptr->empty(production.get_lhs_symbol().get_name())
+                        && production.get_lhs_symbol().get_name() != non_terminal.get_name()) {
                         // Calc Follow(lhs) if not calculated
                         process_follow_set(production.get_lhs_symbol(), follow_set_ptr);
                     }
@@ -454,18 +455,18 @@ std::shared_ptr<follow_set> cfg::get_follow_set() {
 }
 
 void cfg::set_non_terminals(const std::unordered_set<cfg_symbol
-                    , cfg_symbol::hasher, cfg_symbol::comparator> & non_terminals) {
+        , cfg_symbol::hasher, cfg_symbol::comparator> & non_terminals) {
     cfg::non_terminals = non_terminals;
 }
 
 const std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher
-                    , cfg_symbol::comparator> &cfg::get_grammar() const {
+        , cfg_symbol::comparator> &cfg::get_grammar() const {
     return grammar;
 }
 
 void
 cfg::set_grammar(const std::unordered_map<cfg_symbol, cfg_rule
-                    , cfg_symbol::hasher, cfg_symbol::comparator> &grammar) {
+        , cfg_symbol::hasher, cfg_symbol::comparator> &grammar) {
     cfg::grammar = grammar;
 }
 
@@ -502,7 +503,7 @@ void cfg::print_cfg_symbol_productions_map() {
 }
 
 void split_str (std::vector <std::string> & vec
-                        , std::string & str, char delimiter) {
+        , std::string & str, char delimiter) {
     std::stringstream ss_str (str);
     std::string token;
     while (getline (ss_str, token, delimiter))
