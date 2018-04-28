@@ -50,7 +50,7 @@ void cfg::parse (std::string & grammar_file) {
     std::ifstream grammar_in_file (grammar_file.c_str ());
     // Checks if grammar file exists or not.
     if (!grammar_in_file.good ()) {
-        std::cout << grammar_in_file << ": File doesn't exist.\n";
+        std::cout << grammar_file << ": File doesn't exist.\n";
         exit (EXIT_FAILURE);
     }
     std::string current_line, previous_line;

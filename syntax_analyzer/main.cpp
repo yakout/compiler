@@ -25,15 +25,15 @@ int main (int argc, char *argv[]) {
 
 
 //    cfg cfg_ob = cfg ("../../tests/syntax_analyzer/unit/ready_ll1_cfg.bnf");
-//    cfg cfg_ob = cfg ("../../tests/syntax_analyzer/unit/cfg_single_line_ll1.bnf");
+    cfg cfg_ob = cfg ("../../tests/syntax_analyzer/unit/cfg_single_line_ll1.bnf");
 //    cfg cfg_ob = cfg ("../../tests/syntax_analyzer/unit/ps_cfg_single_line.bnf");
-    cfg cfg_ob = cfg ("../../tests/syntax_analyzer/unit/left_rec_left_fact.bnf");
+//    cfg cfg_ob = cfg ("../../tests/syntax_analyzer/unit/left_rec_left_fact.bnf");
     std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::comparator> grammar;
     /** Grammar Checking. **/
     grammar = cfg_ob.get_grammar ();
 
-    cfg_ob.left_factor();
-    cfg_ob.remove_left_recursion();
+//    cfg_ob.left_factor();
+//    cfg_ob.remove_left_recursion();
 
     std::cout << "+++++++++" << std::endl;
     for (auto g : cfg_ob.get_grammar())
@@ -72,7 +72,7 @@ int main (int argc, char *argv[]) {
                                            "=",
                                            "num",
                                            ";",
-                                           "}", "else", "{","}",
+//                                           "}", "else", "{","}",
                                            "}",
                                            "$"};
 
@@ -81,6 +81,9 @@ int main (int argc, char *argv[]) {
 
     std::vector<std::string> stack = parser.get_debug_stack();
     std::vector<std::string> derivation = parser.get_derivations();
+
+    parser.write_debug_stack("debug_stack.log");
+    parser.write_derivations("actions_output.log");
 
     for (auto s : stack)
     {
