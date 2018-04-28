@@ -306,4 +306,3 @@ TEST_CASE("INVALID LL(1) Test 1")
 
     REQUIRE_THROWS(parsing_table (cfg_ob, first, follow));
 }
-
