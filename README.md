@@ -8,10 +8,19 @@ Yet Another Dummy Java Compiler (YADJC)
 
 #### Build
 ```bash
+# to build the whole project
 $ mkdir build
 $ cd build
 $ cmake ..
 $ make
+# or just run the script:
+$ ./compiler_runner.sh
+
+# to build lexical analyzer module and run it's tests.
+$ ./lexical_analyzer/lexical_analyzer_runner.sh
+
+# to build syntax analyzer module and run it's tests.
+$ ./syntax_analyzer/syntax_analyzer_runner.sh
 ```
 #### Run the tests locally
 ```bash
@@ -25,8 +34,14 @@ $ ctest
 # and use it in tokenizing the input source code file.
 $ ./compiler --lex -g <rules-file> <source-code-file>
 
-# Performs lexical analysis only on the given source code using the given rules file.
+# Performs lexical analysis on the given source code file using the given transition table file.
 $ ./compiler --lex <transition-table-file> <source-code-file> 
+
+# Performs syntax analysis on the given source code file using the given transition table file and the grammar file.
+$ ./compiler --parse <transition_table-file> <source-code-file> <grammar-file>
+
+# Performs syntax analysis on the given source code file using the given rules file (to generate transition table) and the grammar file.
+$ ./compiler --parse -g <rules-file> <source-code-file> <grammar-file>
 
 # For help
 $ ./compiler --help
