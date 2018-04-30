@@ -1,9 +1,5 @@
 #include "parsing_table.h"
 
-#include "context_free_grammar/synch_production.h"
-
-#include <stdexcept>
-
 #define INVALID_LL1_GRAMMAR "This is NOT LL1 Grammar"
 
 parsing_table::parsing_table(cfg g)

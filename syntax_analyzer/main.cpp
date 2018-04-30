@@ -1,7 +1,6 @@
 #include <iostream>
 #include "parsing_table.h"
 #include "predictive_parser.h"
-#include "context_free_grammar/synch_production.h"
 
 struct my_comparator {
     bool operator()(const std::pair<std::string, std::string> &p1,
