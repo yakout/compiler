@@ -80,8 +80,7 @@ void parsing_table::build()
            }
            else
            {
-              throw std::runtime_error(INVALID_LL1_GRAMMAR);
-
+                throw std::runtime_error(INVALID_LL1_GRAMMAR);
            }
 
        }
@@ -95,7 +94,7 @@ void parsing_table::build()
                    table[make_pair(non_terminal.get_name(), follow_terminal.get_name())]
                            = *eps_prod;
                } else {
-                   throw std::runtime_error(INVALID_LL1_GRAMMAR);
+                    throw std::runtime_error(INVALID_LL1_GRAMMAR);
                }
            }
        }

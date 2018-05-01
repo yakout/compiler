@@ -43,7 +43,7 @@ std::string cfg_production::to_string()
         else name += s.get_name() + " ";
     }
 
-    return name;
+    return name.substr(0, name.size() - 1); // remove last space
 }
 
 std::string cfg_production::get_rhs_as_string()
@@ -58,9 +58,23 @@ std::string cfg_production::get_rhs_as_string()
         else name += s.get_name() + " ";
     }
 
-    return name;
+    return name.substr(0, name.size() - 1); // remove last space
 }
 
-void cfg_production::pop_first_symbol() {
+void cfg_production::pop_first_symbol() 
+{
     production_symbols.erase(production_symbols.begin());
+}
+
+int cfg_production::find(cfg_symbol symbol)
+{
+    for (int i = 0; i < production_symbols.size(); i++)
+    {
+        if (production_symbols[i] == symbol) 
+        {
+            return i;
+        }
+    }
+    
+    return -1;
 }

@@ -25,7 +25,11 @@ public:
      * convert the rule to readable string
      */
     std::string to_string();
+    /**
+     * removes all productions.
+     */
     void empty_productions ();
+
     void set_productions (std::vector <cfg_production> &);
     void add_productions (std::vector <cfg_production> &);
 };

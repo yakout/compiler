@@ -304,5 +304,5 @@ TEST_CASE("INVALID LL(1) Test 1")
     follow.add_symbol("C", t);
 
 
-    REQUIRE_THROWS(parsing_table (cfg_ob, first, follow));
+    REQUIRE_THROWS( parsing_table (cfg_ob, first, follow) );
 }

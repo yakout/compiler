@@ -209,6 +209,7 @@ TEST_CASE("left factoring test 4")
 
     // LHS NON_TERMINALS SYMBOLS
     cfg_symbol S("S", NON_TERMINAL);
+    cfg_symbol E("E", NON_TERMINAL);
 
     // TERMINALS SYMBOLS
     cfg_symbol plus("+", TERMINAL);
@@ -363,4 +364,157 @@ TEST_CASE("left factoring test 5")
      * S1 -> term2 term3 | term2 E | id
      *
      */
+}
+
+
+TEST_CASE ("substitution test 1")
+{
+    // E -> T E E + T | T E | T id | E id
+    // T -> T E T * F | E F | \L
+
+    // same as:
+
+    // E -> T E E + T 
+    // E -> T E 
+    // E -> T id 
+    // E -> E id 
+    // T -> T E T * F 
+    // T -> E F 
+    // T -> ε 
+
+    std::vector<cfg_symbol> eps_vector;
+
+    std::vector<cfg_symbol> E_prod1_vector;
+    std::vector<cfg_symbol> E_prod2_vector;
+    std::vector<cfg_symbol> E_prod3_vector;
+    std::vector<cfg_symbol> E_prod4_vector;
+
+    std::vector<cfg_symbol> T_prod1_vector;
+    std::vector<cfg_symbol> T_prod2_vector;
+    std::vector<cfg_symbol> T_prod3_vector;
+
+    // SPECIAL SYMBOLS
+    cfg_symbol eps(EPS, TERMINAL);
+
+    // LHS NON_TERMINALS SYMBOLS
+    cfg_symbol E("E", NON_TERMINAL);
+    cfg_symbol T("T", NON_TERMINAL);
+    cfg_symbol F("F", NON_TERMINAL);
+
+    // TERMINALS SYMBOLS
+    cfg_symbol plus("+", TERMINAL);
+    cfg_symbol multiplication("*", TERMINAL);
+    cfg_symbol left_paren("(", TERMINAL);
+    cfg_symbol right_paren(")", TERMINAL);
+    cfg_symbol id("id", TERMINAL);
+
+    // FILL THE PRODUCTIONS VECTORS **********************************
+    eps_vector.push_back(eps);
+
+    // E -> T E E + T 
+    E_prod1_vector.push_back(T);
+    E_prod1_vector.push_back(E);
+    E_prod1_vector.push_back(E);
+    E_prod1_vector.push_back(plus);
+    E_prod1_vector.push_back(T);
+
+    // E -> T E 
+    E_prod2_vector.push_back(T);
+    E_prod2_vector.push_back(E);
+
+    // E -> T id 
+    E_prod3_vector.push_back(T);
+    E_prod3_vector.push_back(id);
+
+    // E -> E id 
+    E_prod4_vector.push_back(E);
+    E_prod4_vector.push_back(id);
+
+    // T -> T E T * F 
+    T_prod1_vector.push_back(T);
+    T_prod1_vector.push_back(E);
+    T_prod1_vector.push_back(T);
+    T_prod1_vector.push_back(multiplication);
+    T_prod1_vector.push_back(F);
+
+    // T -> E F
+    T_prod2_vector.push_back(E);
+    T_prod2_vector.push_back(F);
+    // ****************************************************************
+
+    // CONSTRUCT PRODUCTION
+    cfg_production prod1_E(E, E_prod1_vector);
+    cfg_production prod2_E(E, E_prod2_vector);
+    cfg_production prod3_E(E, E_prod3_vector);
+    cfg_production prod4_E(E, E_prod4_vector);
+
+    cfg_production prod1_T(T, T_prod1_vector);
+    cfg_production prod2_T(T, T_prod2_vector);
+    cfg_production prod3_T(T, eps_vector);
+
+    std::vector<cfg_production> ruleE_productions;
+    std::vector<cfg_production> ruleT_productions;
+
+    ruleE_productions.push_back(prod1_E);
+    ruleE_productions.push_back(prod2_E);
+    ruleE_productions.push_back(prod3_E);
+    ruleE_productions.push_back(prod4_E);
+
+    ruleT_productions.push_back(prod1_T);
+    ruleT_productions.push_back(prod2_T);
+    ruleT_productions.push_back(prod3_T);
+
+    cfg_rule ruleE(E, ruleE_productions);
+    cfg_rule ruleT(T, ruleT_productions);
+
+    cfg_rule rule = substitue(ruleE, ruleT);
+
+    std::string ref_string = 
+    "T -> T E T * F | T E E + T F | T E F | T id F | E id F | \\L";
+
+    REQUIRE(rule.to_string() == ref_string);
+}
+
+
+bool in_ref(std::string s, std::vector<std::string> ref) 
+{
+    return (std::find(ref.begin(), ref.end(), s) != ref.end());
+}
+
+TEST_CASE ("complex left recursion test 1") 
+{
+
+// Before LL1: 
+// E -> T E E + T 
+// E -> T E 
+// E -> T id 
+// E -> E id 
+// T -> T E T * F 
+// T -> E F 
+// T -> ε 
+// F -> ( E ) 
+// F -> id 
+    
+// This grammar will be converted by cfg parser to this:
+// E -> T E E + T | T E | T id | E id
+// T -> T E T * F | E F | \L
+// F -> ( E ) | id
+
+    cfg cfg_ob = cfg ("../../tests/syntax_analyzer/unit/complex_left_rec.bnf");
+    cfg_ob.left_factor();
+    cfg_ob.remove_left_recursion();
+
+    std::vector<std::string> reference_answer = {
+        "F -> ( E ) | id",
+        "E''' -> id E''' | F T' E' E''' | \\L",
+        "T' -> E T * F T' | \\L",
+        "T -> E F T' | T'",
+        "E'' -> E + T | \\L",
+        "E' -> T' E' E''' E'' | id",
+        "E -> T' E' E'''"};
+
+    for (auto g : cfg_ob.get_rules())
+    {
+        REQUIRE(in_ref(g.to_string(), reference_answer));
+    }
 }

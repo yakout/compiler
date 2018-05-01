@@ -62,7 +62,7 @@ void cfg::parse (std::string & grammar_file) {
             first_line = false;
         } else {
             if (current_line[0] == '#') {
-                std::cout << previous_line << std::endl;
+                // std::cout << previous_line << std::endl;
                 parse_rule (previous_line, first_rule);
                 if (first_rule)
                     first_rule = false;
@@ -127,6 +127,7 @@ void cfg::left_factor ()
 {
     std::unordered_map <cfg_symbol, cfg_rule
             , cfg_symbol::hasher, cfg_symbol::comparator> new_grammar;
+
     for (auto grammar_entry : grammar)
     {
         std::map <std::string, std::vector <cfg_production>> common_factors;
@@ -136,7 +137,6 @@ void cfg::left_factor ()
         }
 
         grammar_entry.second.empty_productions ();
-        size_t counter = 1;
         std::vector <cfg_production> new_productions;
         for (auto entry : common_factors)
         {
@@ -153,9 +153,14 @@ void cfg::left_factor ()
                     v.push_back(entry.second.front().get_symbols()[i]);
                 }
 
-                cfg_symbol new_sym(grammar_entry.second.get_lhs_symbol().get_name()
-                                   + std::to_string(counter), grammar_entry.second.get_lhs_symbol().get_type());
-                counter++;
+                std::string unique_new_symbol_name = grammar_entry.second.get_lhs_symbol().get_name() + "'";
+                cfg_symbol temp(unique_new_symbol_name, TERMINAL);
+                while (new_grammar.find(temp) != new_grammar.end() || grammar.find(temp) != grammar.end()) {
+                    unique_new_symbol_name += "'";
+                    temp = cfg_symbol(unique_new_symbol_name, TERMINAL);
+                }
+
+                cfg_symbol new_sym(unique_new_symbol_name, grammar_entry.second.get_lhs_symbol().get_type());
 
                 v.push_back(new_sym);
                 cfg_symbol original_symbol(cfg_symbol(grammar_entry.second.get_lhs_symbol()));
@@ -210,7 +215,16 @@ void cfg::remove_left_recursion ()
     std::unordered_map <cfg_symbol, std::vector <cfg_production>, cfg_symbol::hasher
             , cfg_symbol::comparator> cfg_symbol_prods;
 
-    for (auto rule : get_rules()) {
+    for (int i = 0; i < get_rules().size(); i++) {
+        cfg_rule old_rule = get_rules()[i];
+        cfg_rule rule = old_rule;
+
+        // try to substitue
+        for (int j = 0; j <= i - 1; j++)
+        {
+            rule = substitue(new_grammar[get_rules()[j].get_lhs_symbol()], old_rule);
+        }
+
         std::vector<cfg_production> target_prods;
         std::vector<cfg_production> rest_prods;
         bool is_left_recursion = false;
@@ -235,7 +249,15 @@ void cfg::remove_left_recursion ()
         }
 
         // Modifying old rule
-        cfg_symbol new_symbol(rule.get_lhs_symbol().get_name() + "'", NON_TERMINAL);
+        std::string unique_new_symbol_name = rule.get_lhs_symbol().get_name() + "'";
+        cfg_symbol temp(unique_new_symbol_name, TERMINAL);
+
+        while (new_grammar.find(temp) != new_grammar.end() || grammar.find(temp) != grammar.end()) {
+            unique_new_symbol_name += "'";
+            temp = cfg_symbol(unique_new_symbol_name, TERMINAL);
+        }
+
+        cfg_symbol new_symbol(unique_new_symbol_name, NON_TERMINAL);
         rule.empty_productions();
 
         for (auto it = rest_prods.begin(); it != rest_prods.end(); it++)
@@ -278,6 +300,7 @@ void cfg::remove_left_recursion ()
         cfg_rule new_rule(new_symbol, target_prods);
         new_grammar[new_symbol] = new_rule;
     }
+
     cfg::cfg_symbol_productions = cfg_symbol_prods;
     cfg::grammar = new_grammar;
 }
@@ -579,4 +602,61 @@ int longest_common_prefix(std::vector<cfg_production> prods)
         }
     }
     return i;
+}
+
+cfg_rule substitue(cfg_rule rule1, cfg_rule rule2)
+{
+    // goal: sub rule1 in rule2
+    cfg_symbol rule1_symbol = rule1.get_lhs_symbol();
+    std::vector<cfg_production> new_productions;
+
+    for (auto prod : rule2.get_productions()) 
+    {
+        int symbol_index = prod.find(rule1_symbol);
+
+        if (symbol_index != -1) {
+            if (symbol_index != 0) {
+                // if it's not in the left of production then it's not potential for left recursion
+                // and no need to substitue.
+                new_productions.push_back(prod);
+                continue;
+            }
+
+            std::vector<cfg_symbol> old_rhs_symbols;
+
+            for (int i = symbol_index + 1; i < prod.get_symbols().size(); i++)
+            {
+                old_rhs_symbols.push_back(prod.get_symbols()[i]);
+            }
+
+            // make the new productions
+            for (auto rule1_prod : rule1.get_productions())
+            {
+                std::vector<cfg_symbol> new_symbols;
+
+                for (auto symbol : rule1_prod.get_symbols())
+                {
+                    if (symbol.get_name() != EPS)
+                    new_symbols.push_back(symbol);
+                }
+
+                for (auto symbol : old_rhs_symbols)
+                {
+                    new_symbols.push_back(symbol);
+                }
+
+                cfg_symbol temp_symbol(prod.get_lhs_symbol());
+                cfg_production new_prod(temp_symbol, new_symbols);
+                new_productions.push_back(new_prod);
+            }
+
+        } else {
+            new_productions.push_back(prod);
+        }
+    }
+
+    cfg_symbol temp_symbol(rule2.get_lhs_symbol());
+    cfg_rule new_rule(temp_symbol, new_productions);
+
+    return new_rule;
 }

@@ -66,6 +66,7 @@ if (BUILD_UNIT_TEST)
     endmacro (do_test)
 
     do_test (cfg_parser_tests)
+    do_test (cfg_tests)
     do_test (ll_1_tests)
     do_test (first_set_tests)
     do_test (follow_set_tests)

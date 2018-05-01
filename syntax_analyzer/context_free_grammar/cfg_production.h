@@ -20,7 +20,16 @@ public:
     void set_lhs_symbol (cfg_symbol &);
     void add_symbol (cfg_symbol &);
 
+    /**
+     * removes the first symbol in the production.
+     */
     void pop_first_symbol();
+    /**
+     * checks if the production has the given symbol.
+     * @returns index of the symbol if found, otherwise returns -1.
+     */
+    int find(cfg_symbol);
+
     /** Getters **/
     virtual cfg_symbol get_lhs_symbol () const;
     virtual std::string to_string();

@@ -16,6 +16,12 @@
  * utility function used in left factoring
  */
 int longest_common_prefix(std::vector<cfg_production> prods);
+/**
+ * substitues rule1 in rule2
+ * 
+ * @return the new resulting rule
+ */
+cfg_rule substitue(cfg_rule rule1, cfg_rule rule2);
 
 class cfg {
 private:

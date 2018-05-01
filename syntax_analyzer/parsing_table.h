@@ -10,7 +10,6 @@
 #include <iomanip>
 #include <iostream>
 #include <fstream>
-#include <stdexcept>
 
 /**
     Parsing table that contains state machine to parse input program.
