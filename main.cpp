@@ -154,7 +154,16 @@ void parse_generate_tokenize (char *rules_file, char *code_file, char *cfg_file
     lex_generate_tokenize(rules_file, code_file, token_vec);
 
     predictive_parser parser(cfg_file, token_vec);
-    parser.parse();
+
+    int err_cnt;
+    if ((err_cnt = parser.parse()) == 0) {
+        std::cout << "\033[32m" << "PARSING SUCCESS! NO ERRORS OCCURED." << std::endl;
+    } else {
+        std::cout << "\033[31m" << "PARSING ERRORS COUNT: " << err_cnt << std::endl;
+    }
+
+    // to restore the default color
+    // std::cout << "\033[0m";
 
     parser.write_debug_stack("debug_stack.log");
     parser.write_derivations("actions_output.log");
@@ -166,7 +175,13 @@ void parse_tokenize (char *transition_table_file, char *code_file, char *cfg_fil
     lex_tokenize(transition_table_file, code_file, token_vec);
 
     predictive_parser parser(cfg_file, token_vec);
-    parser.parse();
+
+    int err_cnt;
+    if ((err_cnt = parser.parse()) == 0) {
+        std::cout << "\033[32m" << "PARSING SUCCESS! NO ERRORS OCCURED." << std::endl;
+    } else {
+        std::cout << "\033[31m" << "PARSING ERRORS COUNT: " << err_cnt << std::endl;
+    }
 
     parser.write_debug_stack("debug_stack.log");
     parser.write_derivations("actions_output.log");

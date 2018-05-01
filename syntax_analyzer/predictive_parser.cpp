@@ -4,11 +4,13 @@ predictive_parser::predictive_parser (cfg_symbol start_symbol, std::shared_ptr<p
 									  std::vector<std::string> lex_tokens)
 	: input_buffer(lex_tokens), p_table(ll1_table), debug_stack(), output(), parser_stack()
 {
+	errors_count = 0;
 	init_stack(start_symbol);
 }
 
 predictive_parser::predictive_parser(char *cfg_file, std::vector<token> token_vec)
 {
+	errors_count = 0;
     for (auto tok : token_vec)
     {
         input_buffer.push_back(tok.token_class);
@@ -70,7 +72,7 @@ std::vector<std::string> predictive_parser::get_derivations ()
 	return output;
 }
 
-void predictive_parser::parse() 
+int predictive_parser::parse() 
 {
 	int i = 0;
 	while (!parser_stack.empty())
@@ -93,9 +95,11 @@ void predictive_parser::parse()
                 // ERROR! discard curr_tok
                 if (cur_token == "$") {
                     output.push_back("END! Error: (illegal " + stack_top.get_name() + ") - discard " + cur_token);
+                    errors_count++;
                     break;
                 }
                 output.push_back("Error: (illegal " + stack_top.get_name() + ") - discard " + cur_token);
+                errors_count++;
                 i++;
             }
             else
@@ -128,6 +132,7 @@ void predictive_parser::parse()
 			{
                 // ERROR! insert curr_tok
                 output.push_back("Error: (missing " + stack_top.get_name() + ") - inserted.");
+                errors_count++;
                 parser_stack.pop();
 			}
 		}
@@ -140,6 +145,7 @@ void predictive_parser::parse()
 				break;
 			} else {
                 output.push_back("Error: (illegal " + stack_top.get_name() + " - discard " + cur_token);
+                errors_count++;
                 i++;
             }
 		}
@@ -151,6 +157,7 @@ void predictive_parser::parse()
 			}
 		}
 	}
+	return errors_count;
 }
 
 void predictive_parser::write_debug_stack(std::string file_name)

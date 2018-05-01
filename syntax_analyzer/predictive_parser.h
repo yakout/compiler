@@ -20,6 +20,10 @@ private:
     std::vector<std::string> output;
     std::shared_ptr<parsing_table> p_table;
     /**
+     * parsing errors counter
+     */
+    int errors_count;
+    /**
      * Writes the action taken in each step (derivation steps) into the output vector.
      */
     void write_prod (cfg_production prod);
@@ -69,9 +73,10 @@ public:
      */
     void write_debug_stack (std::string);
     /**
-     * 
+     * Start parsing
+     * @returns number of errors occured while parsing.
      */
-    void parse();
+    int parse();
 };
 
 #endif //COMPILER_PREDICTIVE_PARSER_H
