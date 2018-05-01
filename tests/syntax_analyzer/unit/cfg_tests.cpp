@@ -1,6 +1,16 @@
 #include "../../lib/catch.hpp"
 #include "../../../syntax_analyzer/context_free_grammar/cfg.h"
 
+
+/**
+ * utility function.
+ */
+bool in_ref(std::string s, std::vector<std::string> ref) 
+{
+    return (std::find(ref.begin(), ref.end(), s) != ref.end());
+}
+
+
 TEST_CASE ("longest common prefix test 1") {
 
     std::vector<cfg_symbol> prod1_vec;
@@ -161,16 +171,6 @@ TEST_CASE ("left factoring test 1") {
 
 TEST_CASE ("left factoring test 2") {
     // grammar:
-//    A -> aX | aY
-
-    // result:
-//    A -> aZ
-//    Z -> X | Y
-}
-
-
-TEST_CASE ("left factoring test 3") {
-    // grammar:
 
 //    X -> aE | IXE | (X)E
 //    E -> IE | BXE | ϵ
@@ -193,8 +193,9 @@ TEST_CASE ("left factoring test 3") {
 
 }
 
+#include <iostream>
 
-TEST_CASE("left factoring test 4")
+TEST_CASE("left factoring test 3")
 {
     std::vector<cfg_symbol> eps_vector;
     std::vector<cfg_symbol> prod1_vec;
@@ -223,7 +224,12 @@ TEST_CASE("left factoring test 4")
     eps_vector.push_back(eps);
 
     // S -> term1 term2 term3 | term1 term2 E | id | id + | E | eps
-    // E -> abc
+    // what if E -> term1 ?? // TODO
+    // 
+    // answer:
+    // S -> term1 term2 S' | id S'' | E | \L
+    // S' -> term3 | E
+    // S'' -> \L | +
 
     prod1_vec.push_back(term1);
     prod1_vec.push_back(term2);
@@ -264,10 +270,20 @@ TEST_CASE("left factoring test 4")
     grammar.add_rule(rule);
 
     grammar.left_factor();
+
+    std::vector<std::string> reference_answer = {
+        "S -> E | \\L | id S' | term1 term2 S''",
+        "S'' -> E | term3",
+        "S' -> + | \\L"};
+
+    for (auto g : grammar.get_rules())
+    {
+        REQUIRE(in_ref(g.to_string(), reference_answer));
+    }
 }
 
 
-TEST_CASE("left factoring test 5")
+TEST_CASE("left factoring test 4 (multi level) ")
 {
     std::vector<cfg_symbol> eps_vector;
     std::vector<cfg_symbol> prod1_vec;
@@ -304,21 +320,13 @@ TEST_CASE("left factoring test 5")
     // FILL THE PRODUCTIONS VECTORS **********************************
     eps_vector.push_back(eps);
 
-    // S -> term1 term2 term3 | term1 term2 E | id | id + | E | eps
-    // E -> abc
-
     prod1_vec.push_back(b);
     prod1_vec.push_back(c);
-//    prod1_vec.push_back(term3);
 
     prod2_vec.push_back(b);
     prod2_vec.push_back(b);
     prod2_vec.push_back(x);
-//    prod2_vec.push_back(term3);
-//    prod2_vec.push_back(E);
 
-//    prod3_vec.push_back(term1);
-//    prod3_vec.push_back(term2);
     prod3_vec.push_back(b);
     prod3_vec.push_back(b);
     prod3_vec.push_back(x);
@@ -329,9 +337,6 @@ TEST_CASE("left factoring test 5")
     prod4_vec.push_back(x);
     prod4_vec.push_back(y);
     prod4_vec.push_back(z);
-
-//    prod5_vec.push_back(E);
-
     // ****************************************************************
 
     // CONSTRUCT PRODUCTION
@@ -339,31 +344,29 @@ TEST_CASE("left factoring test 5")
     cfg_production prod2(S, prod2_vec);
     cfg_production prod3(S, prod3_vec);
     cfg_production prod4(S, prod4_vec);
-//    cfg_production prod5(S, prod5_vec);
-//    cfg_production prod6(S, eps_vector);
-
 
     std::vector<cfg_production> prods;
     prods.push_back(prod1);
     prods.push_back(prod2);
     prods.push_back(prod3);
     prods.push_back(prod4);
-//    prods.push_back(prod5);
-//    prods.push_back(prod6);
 
     cfg_rule rule(S, prods);
     cfg grammar;
     grammar.add_rule(rule);
 
     grammar.left_factor();
-//    S -> term1 term2 term3 | term1 term2 E | term1 id | id + | E | \L
 
-    /**
-     *
-     * S -> term S1 | id + | E | \L
-     * S1 -> term2 term3 | term2 E | id
-     *
-     */
+    std::vector<std::string> reference_answer = {
+        "A'' -> \\L | y A'''",
+        "A''' -> \\L | z",
+        "A' -> b x A'' | c",
+        "A -> b A'"};
+
+    for (auto g : grammar.get_rules())
+    {
+        REQUIRE(in_ref(g.to_string(), reference_answer));
+    }
 }
 
 
@@ -473,12 +476,6 @@ TEST_CASE ("substitution test 1")
     "T -> T E T * F | T E E + T F | T E F | T id F | E id F | \\L";
 
     REQUIRE(rule.to_string() == ref_string);
-}
-
-
-bool in_ref(std::string s, std::vector<std::string> ref) 
-{
-    return (std::find(ref.begin(), ref.end(), s) != ref.end());
 }
 
 TEST_CASE ("complex left recursion test 1") 
