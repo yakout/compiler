@@ -15,9 +15,12 @@ $ make
 ```
 #### Run the tests locally
 ```bash
-$ make test
-# or 
-$ ctest
+# run all tests
+$ make test # or ctest
+
+# run specific tests 
+$ ctest -R test_name 
+$ ctest -R module_name
 ```
 #### Run
 ```bash
