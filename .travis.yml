@@ -49,6 +49,10 @@ matrix:
       - cmake -DCMAKE_CXX_COMPILER="g++-5" -DBUILD_REG_TEST=ON -DBUILD_UNIT_TEST=ON ..
       - make
       - make test
+    after_failure:
+      - cat /home/travis/build/yakout/compiler/build/Testing/Temporary/LastTest.log
+      - cat /home/travis/build/yakout/compiler/build/actions_output.log
+
 
   # #
   # # G++ 6

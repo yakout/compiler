@@ -498,6 +498,7 @@ TEST_CASE ("complex left recursion test 1")
 // F -> ( E ) | id
 
     cfg cfg_ob = cfg ("../../tests/syntax_analyzer/unit/complex_left_rec.bnf");
+
     cfg_ob.left_factor();
     cfg_ob.remove_left_recursion();
 
