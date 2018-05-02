@@ -93,12 +93,12 @@ if (BUILD_REG_TEST)
             ${PROJECT_SOURCE_DIR}/tests/syntax_analyzer/regression/test_0/transition_table.txt
             ${PROJECT_SOURCE_DIR}/tests/syntax_analyzer/regression/test_0/code.txt
             ${PROJECT_SOURCE_DIR}/tests/syntax_analyzer/regression/test_0/cfg.bnf)
-    add_test (reg_test_0_syntax_analyzer_compare_debug_stack ${CMAKE_COMMAND} -E compare_files
-            ${PROJECT_SOURCE_DIR}/build/debug_stack.log
-            ${PROJECT_SOURCE_DIR}/tests/syntax_analyzer/regression/test_0/debug_stack.log)
-    add_test (reg_test_0_syntax_analyzer_compare_actions_output ${CMAKE_COMMAND} -E compare_files
-            ${PROJECT_SOURCE_DIR}/build/actions_output.log
-            ${PROJECT_SOURCE_DIR}/tests/syntax_analyzer/regression/test_0/actions_output.log)
+    # add_test (reg_test_0_syntax_analyzer_compare_debug_stack ${CMAKE_COMMAND} -E compare_files
+    #         ${PROJECT_SOURCE_DIR}/build/debug_stack.log
+    #         ${PROJECT_SOURCE_DIR}/tests/syntax_analyzer/regression/test_0/debug_stack.log)
+    # add_test (reg_test_0_syntax_analyzer_compare_actions_output ${CMAKE_COMMAND} -E compare_files
+    #         ${PROJECT_SOURCE_DIR}/build/actions_output.log
+    #         ${PROJECT_SOURCE_DIR}/tests/syntax_analyzer/regression/test_0/actions_output.log)
 
     #  SYNTAX ANALYZER REGRESION TEST (ll1 grammar)
     add_test (reg_test_1_syntax_analyzer_run compiler --parse
