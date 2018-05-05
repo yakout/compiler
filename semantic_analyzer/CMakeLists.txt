@@ -22,12 +22,13 @@ set (HEADER_FILES
         )
 
 set (SOURCE_FILES
-        main.cpp)
+        intermediate_code_generation/semantic_rules_builder.cpp)
 
 add_library (libsemantic SHARED ${SOURCE_FILES} ${HEADER_FILES})
 
 add_executable(semantic_main main.cpp)
 target_link_libraries(semantic_main libsyntax)
+target_link_libraries(semantic_main libsemantic)
 
 # ------------------------------------------------------------------------------
 # Tests
@@ -41,7 +42,7 @@ if (BUILD_UNIT_TEST)
     target_include_directories (catch_semantic INTERFACE ../tests/lib/)
     add_library (unit_test_catch_semantic STATIC ../tests/catch_main.cpp)
     target_link_libraries (unit_test_catch_semantic catch_semantic)
-#    target_link_libraries (unit_test_catch_semantic libsemantic)
+    target_link_libraries (unit_test_catch_semantic libsemantic)
     target_link_libraries (unit_test_catch_semantic libsyntax)
 
     macro (do_test test_name)

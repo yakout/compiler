@@ -7,6 +7,8 @@ set (CMAKE_CXX_STANDARD 11)
 # Compiler flags
 # ------------------------------------------------------------------------------
 
+# set (CMAKE_CXX_COMPILER g++-7)
+
 set (GCC_COMPILE_FLAGS "-Wall -Wextra -g")
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_COMPILE_FLAGS}")
