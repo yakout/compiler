@@ -24,3 +24,11 @@ std::string cfg_symbol::get_name() const {
 cfg_symbol_type cfg_symbol::get_type() const {
     return type;
 }
+
+void cfg_symbol::set_action(const std::function<void()> &action) {
+    cfg_symbol::action = action;
+}
+
+const std::function<void()> &cfg_symbol::get_action() const {
+    return action;
+}

@@ -3,12 +3,16 @@
 
 #include <string>
 #include <memory>
+#include <functional>
+#include <map>
 
 enum cfg_symbol_type {
     TERMINAL,
     NON_TERMINAL,
     END_MARKER,
-    SYNCH
+    SYNCH,
+    ACTION,
+    SYNTHESISED
 };
 
 class cfg_production;
@@ -21,6 +25,8 @@ private:
      */
     std::string name;
     cfg_symbol_type type;
+    std::function<void()> action;
+    std::map<std::string, std::string> inhereted_attrs;
 
 public:
     cfg_symbol ();
@@ -46,7 +52,11 @@ public:
         }
     };
 
+
+    void set_action(const std::function<void()> &action);
+
     /** Getters **/
+    const std::function<void()> &get_action() const;
     std::string get_name () const;
     cfg_symbol_type get_type () const;
 };

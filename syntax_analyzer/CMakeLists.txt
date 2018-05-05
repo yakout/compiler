@@ -41,8 +41,8 @@ set (SOURCE_FILES
 
 add_library (libsyntax SHARED ${SOURCE_FILES} ${HEADER_FILES})
 
-add_executable(main main.cpp)
-target_link_libraries(main libsyntax)
+add_executable(syntax_main main.cpp)
+target_link_libraries(syntax_main libsyntax)
 
 # ------------------------------------------------------------------------------
 # Tests
