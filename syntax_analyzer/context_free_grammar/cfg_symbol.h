@@ -6,6 +6,7 @@
 #include <functional>
 #include <map>
 #include <stack>
+#include <vector>
 
 enum cfg_symbol_type {
     TERMINAL,
@@ -26,7 +27,7 @@ private:
      */
     std::string name;
     cfg_symbol_type type;
-    std::function<void(std::vector<cfg_symbol> &stack)> action;
+    std::function<void(std::vector<cfg_symbol> &)> action;
     std::map<std::string, std::string> attributes;
 
 public:
