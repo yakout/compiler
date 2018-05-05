@@ -30,8 +30,8 @@ predictive_parser::predictive_parser(char *cfg_file, std::vector<token> token_ve
 void predictive_parser::init_stack (cfg_symbol start_sym) 
 {
     cfg_symbol end_marker("$", END_MARKER);
-    parser_stack.push(end_marker);
-    parser_stack.push(start_sym);
+    parser_stack.push_back(end_marker);
+    parser_stack.push_back(start_sym);
 }
 
 std::string predictive_parser::dump_stack () 
@@ -40,16 +40,16 @@ std::string predictive_parser::dump_stack ()
 	std::string stack_str = "";
 	while (!parser_stack.empty())
 	{
-        if (parser_stack.top().get_name() != "$") {
-            stack_str += parser_stack.top().get_name() + " ";
+        if (parser_stack.back().get_name() != "$") {
+            stack_str += parser_stack.back().get_name() + " ";
         }
-        temp_stack.push(parser_stack.top());
-        parser_stack.pop();
+        temp_stack.push(parser_stack.back());
+        parser_stack.pop_back();
 	}
 
 	while (!temp_stack.empty())
 	{
-        parser_stack.push(temp_stack.top());
+        parser_stack.push_back(temp_stack.top());
 		temp_stack.pop();
 	}
 
@@ -78,7 +78,7 @@ int predictive_parser::parse()
 	while (!parser_stack.empty())
 	{
 		std::string cur_token = input_buffer[i];
-		cfg_symbol stack_top = parser_stack.top();
+		cfg_symbol stack_top = parser_stack.back();
 		debug_stack.push_back(dump_stack());
 
 		if (stack_top.get_type() == NON_TERMINAL)
@@ -87,7 +87,7 @@ int predictive_parser::parse()
             if (prod.get_lhs_symbol().get_type() == SYNCH)
             {
                 // TODO::SYNCH production
-                parser_stack.pop();
+                parser_stack.pop_back();
                 output.push_back("SYNCH (pop_stack)");
             }
             else if (prod.get_symbols().empty())
@@ -110,23 +110,23 @@ int predictive_parser::parse()
 
                 if (prod.get_symbols().front().get_name() != EPS)
                 {
-                    parser_stack.pop();
+                    parser_stack.pop_back();
                     for (cfg_symbol sym : symbols) {
-                        parser_stack.push(sym);
+                        parser_stack.push_back(sym);
                     }
                 }
                 else if (prod.get_symbols().front().get_name() == EPS && prod.get_symbols().size() > 1)
                 {
                     // ACTIONS AND SYNTHESISED ATTRIBUTES.
-                    parser_stack.pop();
+                    parser_stack.pop_back();
                     for (int j = 0; j < symbols.size() - 1; ++j) {
-                        parser_stack.push(symbols[j]);
+                        parser_stack.push_back(symbols[j]);
                     }
                 }
                 else
                 {
                     // EPSILON PRODUCTION
-                    parser_stack.pop();
+                    parser_stack.pop_back();
                 }
             }
 		}
@@ -134,7 +134,7 @@ int predictive_parser::parse()
 		{
 			if (cur_token == stack_top.get_name())
 			{
-                parser_stack.pop();
+                parser_stack.pop_back();
                 output.push_back("match: " + cur_token);
 				i++;
 			}
@@ -143,14 +143,14 @@ int predictive_parser::parse()
                 // ERROR! insert curr_tok
                 output.push_back("Error: (missing " + stack_top.get_name() + ") - inserted.");
                 errors_count++;
-                parser_stack.pop();
+                parser_stack.pop_back();
 			}
 		}
 		else if (stack_top.get_type() == END_MARKER)
 		{
 			if (cur_token == stack_top.get_name())
 			{
-                parser_stack.pop();
+                parser_stack.pop_back();
 				output.push_back("accept");
 				break;
 			} else {
@@ -163,18 +163,18 @@ int predictive_parser::parse()
 		{
 			if (cur_token == stack_top.get_name())
 			{
-                parser_stack.pop();
+                parser_stack.pop_back();
 			}
 		}
 		else if (stack_top.get_type() == ACTION)
 		{
-			stack_top.get_action()();
-            parser_stack.pop();
+			stack_top.get_action()(parser_stack);
+            parser_stack.pop_back();
 		}
 		else if (stack_top.get_type() == SYNTHESISED)
 		{
-			stack_top.get_action()();
-            parser_stack.pop();
+			stack_top.get_action()(parser_stack);
+            parser_stack.pop_back();
 		}
 	}
 	return errors_count;

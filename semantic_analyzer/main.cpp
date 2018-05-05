@@ -6,21 +6,21 @@
 
 
 int main (int argc, char *argv[]) {
+// S -> .code s, .next in
+// B -> .code s, .false in, .true in
 
-//    A -> B { print B.n1, print B.n0,
-//              A.n0 = B.n0,
-//              A.n1 = B.n1}
+// S[S.next] -> if ( @action B[.true, .false] {B.code}) then S1 {S1.code} {S.code}
 
-//    B -> 0 B1 { B.n0 = B1.n0 + 1,
-//                  B.n1 = B1.n1 }
 
-//    B -> 1 B1 { B.n1 = B1.n1 + 1,
-//                  B.n0 = B1.n0 }
 
-//    B -> \L { B.n0 = 0,
-//                  B.n1 = 0 }
+//    initial stack:
+//    A S{print A.n1, print A.n0} $
 
-    std::map<std::string, int> shared_data;
+//    A -> B S{stack[top - 1].n0 = n0, stack[top - 1].n1 = n1} S{print A.n1, print A.n0}
+//    B -> 0 B1 S{[top - 1].n0 = B1.n0 + 1, [top - 1].n1 = B1.n1}
+//    B -> 1 B1 S{[top - 1].n1 = B1.n1 + 1, [top - 1].n0 = B1.n0}
+//    B -> '\L' @{[top - 1].n0 = 0, [top - 1].n1 = 0}
+
 
     cfg_symbol A("A", NON_TERMINAL);
     cfg_symbol B("B", NON_TERMINAL);
@@ -30,126 +30,58 @@ int main (int argc, char *argv[]) {
     cfg_symbol s_1("1", TERMINAL);
     cfg_symbol eps(EPS, TERMINAL);
 
+    int ones;
+    int zeros;
 
-    // ACTIONS
-    cfg_symbol action_1("@action1", ACTION);
-    action_1.set_action(
-            [&shared_data] {
-                std::cout << "number of one's = " << shared_data["B.n1"] << std::endl;
-                std::cout << "number of zero's = " << shared_data["B.n0"] << std::endl;
-
-                std::cout << std::endl << "**** dumping shared data: **** " << std::endl;
-                for (auto entry : shared_data) {
-                    std::cout << entry.first << ":" << entry.second << std::endl;
-                }
+    // SYNTHESISE RECORDS
+    cfg_symbol synthesize_record1("record_B", SYNTHESISED);
+    synthesize_record1.set_action(
+            [] (std::vector<cfg_symbol>& stack) {
+//                stack[top - 1].n0 = n0, stack[top - 1].n1 = n1
+                stack[stack.size() - 2].add_attribute("n0", stack.back().get_attribute("n0"));
+                stack[stack.size() - 2].add_attribute("n1", stack.back().get_attribute("n1"));
             }
     );
 
-    // SYNTHESISED ATTRIBUTES
-    cfg_symbol syn_A0("A.n0", SYNTHESISED);
-    syn_A0.set_action(
-            [&syn_A0, &shared_data] {
-                shared_data[syn_A0.get_name()] = shared_data["B.n0"];
-
-                std::cout << std::endl << "**** dumping shared data: **** for A0 " << std::endl;
-                for (auto entry : shared_data) {
-                    std::cout << entry.first << ":" << entry.second << std::endl;
-                }
-            }
-    );
-    //
-    cfg_symbol syn_A1("A.n1", SYNTHESISED);
-    syn_A1.set_action(
-            [&syn_A1, &shared_data] {
-                shared_data[syn_A1.get_name()] = shared_data["B.n1"];
-
-                std::cout << std::endl << "**** dumping shared data: **** for A1" << std::endl;
-                for (auto entry : shared_data) {
-                    std::cout << entry.first << ":" << entry.second << std::endl;
-                }
-            }
-    );
-    // ************************************
-
-    cfg_symbol syn_B_n1("B.n1", SYNTHESISED);
-    syn_B_n1.set_action(
-            [&syn_B_n1, &shared_data] {
-                shared_data[syn_B_n1.get_name()] = shared_data["B.n1"];
-
-                std::cout << std::endl << "**** dumping shared data: for: " << "syn_B_n1" << "**** " << std::endl;
-                for (auto entry : shared_data) {
-                    std::cout << entry.first << ":" << entry.second << std::endl;
-                }
-            }
-    );
-    //
-    cfg_symbol syn_B_n0("B.n0", SYNTHESISED);
-    syn_B_n0.set_action(
-            [&syn_B_n0, &shared_data] {
-                shared_data[syn_B_n0.get_name()] = shared_data["B.n0"];
-
-                std::cout << std::endl << "**** dumping shared data: for: " << "syn_B_n0" << "**** " << std::endl;
-                for (auto entry : shared_data) {
-                    std::cout << entry.first << ":" << entry.second << std::endl;
-                }
+    cfg_symbol synthesize_record2("record_A", SYNTHESISED);
+    synthesize_record2.set_action(
+            [&ones, &zeros] (std::vector<cfg_symbol>& stack) {
+//                S{print A.n1, print A.n0}
+//                std::cout << stack.back().get_attribute("n1") << std::endl;
+//                std::cout << stack.back().get_attribute("n0") << std::endl;
+                zeros = std::atoi(stack.back().get_attribute("n0").c_str());
+                ones = std::atoi(stack.back().get_attribute("n1").c_str());
             }
     );
 
-    // ************************************
-    cfg_symbol syn_B1_n1_1("B.n1", SYNTHESISED);
-    syn_B1_n1_1.set_action(
-            [&syn_B1_n1_1, &shared_data] {
-                shared_data[syn_B1_n1_1.get_name()] = shared_data["B.n1"] + 1;
-
-                std::cout << std::endl << "**** dumping shared data: for: " << "syn_B1_n1_1" << "**** " << std::endl;
-                for (auto entry : shared_data) {
-                    std::cout << entry.first << ":" << entry.second << std::endl;
-                }
-            }
-    );
-    //
-    cfg_symbol syn_B1_n0_0("B.n0", SYNTHESISED);
-    syn_B1_n0_0.set_action(
-            [&syn_B1_n0_0, &shared_data] {
-                shared_data[syn_B1_n0_0.get_name()] = shared_data["B.n0"] + 1;
-
-                std::cout << std::endl << "**** dumping shared data: for: " << "syn_B1_n0_0" << "**** " << std::endl;
-                for (auto entry : shared_data) {
-                    std::cout << entry.first << ":" << entry.second << std::endl;
-                }
+    cfg_symbol synthesize_record3("record_B1_0", SYNTHESISED);
+    synthesize_record3.set_action(
+            [] (std::vector<cfg_symbol>& stack) {
+//                S{[top - 1].n0 = B1.n0 + 1, [top - 1].n1 = B1.n1}
+                stack[stack.size() - 2].
+                        add_attribute("n0", std::to_string(std::atoi(stack.back().get_attribute("n0").c_str()) + 1));
+                stack[stack.size() - 2].add_attribute("n1", stack.back().get_attribute("n1"));
             }
     );
 
-    // ************************************
-    cfg_symbol syn_B_n1_init("B.n1", SYNTHESISED);
-    syn_B_n1_init.set_action(
-            [&syn_B_n1_init, &shared_data] {
-                shared_data[syn_B_n1_init.get_name()] = 0;
-
-                std::cout << std::endl << "**** dumping shared data: for: " << "syn_B_n1_init" << "**** " << std::endl;
-                for (auto entry : shared_data) {
-                    std::cout << entry.first << ":" << entry.second << std::endl;
-                }
-            }
-    );
-    //
-    cfg_symbol syn_B_n0_init("B.n0", SYNTHESISED);
-    syn_B_n0_init.set_action(
-            [&syn_B_n0_init, &shared_data] {
-                shared_data[syn_B_n0_init.get_name()] = 0;
-
-                std::cout << std::endl << "**** dumping shared data: for: " << "syn_B_n0_init" << "**** " << std::endl;
-                for (auto entry : shared_data) {
-                    std::cout << entry.first << ":" << entry.second << std::endl;
-                }
+    cfg_symbol synthesize_record4("record_B1_1", SYNTHESISED);
+    synthesize_record4.set_action(
+            [] (std::vector<cfg_symbol>& stack) {
+                stack[stack.size() - 2].
+                        add_attribute("n1", std::to_string(std::atoi(stack.back().get_attribute("n1").c_str()) + 1));
+                stack[stack.size() - 2].add_attribute("n0", stack.back().get_attribute("n0"));
             }
     );
 
+    cfg_symbol action1("@action1", ACTION);
+    action1.set_action(
+            [] (std::vector<cfg_symbol>& stack) {
+//                @{[top - 1].n0 = 0, [top - 1].n1 = 0}
+                stack[stack.size() - 2].add_attribute("n0", "0");
+                stack[stack.size() - 2].add_attribute("n1", "0");
+            }
+    );
 
-//    A -> B [syn_A0, syn_A1] @action1
-//    B -> 0 B1 [syn_B1_n0_0] [syn_B_n1, syn_B_n0]
-//    B -> 1 B1 [syn_B1_n1_1], [syn_B_n1, syn_B_n0]
-//    B -> \L [syn_B_n1_init, syn_B_n0_init]
 
     std::vector<cfg_symbol> A_prod_vector;
 
@@ -158,26 +90,20 @@ int main (int argc, char *argv[]) {
     std::vector<cfg_symbol> B_prod3_vector;
 
     A_prod_vector.push_back(B);
-    A_prod_vector.push_back(syn_A0);
-    A_prod_vector.push_back(syn_A1);
-    A_prod_vector.push_back(action_1);
+    A_prod_vector.push_back(synthesize_record1);
+    A_prod_vector.push_back(synthesize_record2);
 
     B_prod1_vector.push_back(s_0);
     B_prod1_vector.push_back(B1);
-    B_prod1_vector.push_back(syn_B1_n0_0);
-    B_prod1_vector.push_back(syn_B_n1);
-    B_prod1_vector.push_back(syn_B_n0);
+    B_prod1_vector.push_back(synthesize_record3);
 
 
     B_prod2_vector.push_back(s_1);
     B_prod2_vector.push_back(B1);
-    B_prod2_vector.push_back(syn_B1_n1_1);
-    B_prod2_vector.push_back(syn_B_n1);
-    B_prod2_vector.push_back(syn_B_n0);
+    B_prod2_vector.push_back(synthesize_record4);
 
     B_prod3_vector.push_back(eps);
-    B_prod3_vector.push_back(syn_B_n0_init);
-    B_prod3_vector.push_back(syn_B_n1_init);
+    B_prod3_vector.push_back(action1);
 
     cfg_production prod_A(A, A_prod_vector);
 
@@ -207,10 +133,6 @@ int main (int argc, char *argv[]) {
             "1",
             "1",
             "1",
-            "0",
-            "0",
-            "0",
-            "0",
             "$"};
 
     predictive_parser parser(A, p_table, input_buffer);
@@ -220,6 +142,6 @@ int main (int argc, char *argv[]) {
     parser.write_debug_stack("debug_stack.log");
 
 
-//    symbol.set_action(func1);
-//    symbol.get_action()();
+    std::cout << "number of zeros = " << zeros << std::endl;
+    std::cout << "number of ones = " << ones << std::endl;
 }

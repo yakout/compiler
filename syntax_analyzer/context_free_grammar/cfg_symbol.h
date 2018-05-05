@@ -5,6 +5,7 @@
 #include <memory>
 #include <functional>
 #include <map>
+#include <stack>
 
 enum cfg_symbol_type {
     TERMINAL,
@@ -25,8 +26,8 @@ private:
      */
     std::string name;
     cfg_symbol_type type;
-    std::function<void()> action;
-    std::map<std::string, std::string> inhereted_attrs;
+    std::function<void(std::vector<cfg_symbol> &stack)> action;
+    std::map<std::string, std::string> attributes;
 
 public:
     cfg_symbol ();
@@ -53,10 +54,13 @@ public:
     };
 
 
-    void set_action(const std::function<void()> &action);
+    void set_action(const std::function<void(std::vector<cfg_symbol> &)> &action);
+    void add_attribute(std::string name, std::string value);
 
     /** Getters **/
-    const std::function<void()> &get_action() const;
+    const std::function<void(std::vector<cfg_symbol> &)> &get_action() const;
+    std::string get_attribute(std::string name);
+
     std::string get_name () const;
     cfg_symbol_type get_type () const;
 };

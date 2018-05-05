@@ -14,7 +14,7 @@
 class predictive_parser
 {
 private:
-    std::stack<cfg_symbol> parser_stack;
+    std::vector<cfg_symbol> parser_stack;
     std::vector<std::string> debug_stack; // used for debugging
     std::vector<std::string> input_buffer;
     std::vector<std::string> output;
@@ -77,6 +77,7 @@ public:
      * @returns number of errors occured while parsing.
      */
     int parse();
+
 };
 
 #endif //COMPILER_PREDICTIVE_PARSER_H
