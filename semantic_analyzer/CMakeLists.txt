@@ -22,12 +22,12 @@ set (HEADER_FILES
         )
 
 set (SOURCE_FILES
-        )
+        main.cpp)
 
 add_library (libsemantic SHARED ${SOURCE_FILES} ${HEADER_FILES})
 
 add_executable(semantic_main main.cpp)
-target_link_libraries(semantic_main libsemantic)
+target_link_libraries(semantic_main libsyntax)
 
 # ------------------------------------------------------------------------------
 # Tests
