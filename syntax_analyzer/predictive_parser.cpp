@@ -114,7 +114,17 @@ int predictive_parser::parse()
                     for (cfg_symbol sym : symbols) {
                         parser_stack.push(sym);
                     }
-                } else {
+                }
+                else if (prod.get_symbols().front().get_name() == EPS && prod.get_symbols().size() > 1)
+                {
+                    // ACTIONS AND SYNTHESISED ATTRIBUTES.
+                    parser_stack.pop();
+                    for (int j = 0; j < symbols.size() - 1; ++j) {
+                        parser_stack.push(symbols[j]);
+                    }
+                }
+                else
+                {
                     // EPSILON PRODUCTION
                     parser_stack.pop();
                 }
@@ -155,6 +165,16 @@ int predictive_parser::parse()
 			{
                 parser_stack.pop();
 			}
+		}
+		else if (stack_top.get_type() == ACTION)
+		{
+			stack_top.get_action()();
+            parser_stack.pop();
+		}
+		else if (stack_top.get_type() == SYNTHESISED)
+		{
+			stack_top.get_action()();
+            parser_stack.pop();
 		}
 	}
 	return errors_count;

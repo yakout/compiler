@@ -1,25 +1,9 @@
-#include <iostream>
-#include <vector>
-#include "intermediate_code_generation/semantic_rules.h"
-#include "../syntax_analyzer/predictive_parser.h"
+#include "../../lib/catch.hpp"
+#include "../../../syntax_analyzer/predictive_parser.h"
 
+#include <unordered_map>
 
-
-int main (int argc, char *argv[]) {
-
-//    A -> B { print B.n1, print B.n0,
-//              A.n0 = B.n0,
-//              A.n1 = B.n1}
-
-//    B -> 0 B1 { B.n0 = B1.n0 + 1,
-//                  B.n1 = B1.n1 }
-
-//    B -> 1 B1 { B.n1 = B1.n1 + 1,
-//                  B.n0 = B1.n0 }
-
-//    B -> \L { B.n0 = 0,
-//                  B.n1 = 0 }
-
+TEST_CASE ("TEST 1") {
     std::map<std::string, int> shared_data;
 
     cfg_symbol A("A", NON_TERMINAL);
@@ -35,13 +19,13 @@ int main (int argc, char *argv[]) {
     cfg_symbol action_1("@action1", ACTION);
     action_1.set_action(
             [&shared_data] {
-                std::cout << "number of one's = " << shared_data["B.n1"] << std::endl;
-                std::cout << "number of zero's = " << shared_data["B.n0"] << std::endl;
-
-                std::cout << std::endl << "**** dumping shared data: **** " << std::endl;
-                for (auto entry : shared_data) {
-                    std::cout << entry.first << ":" << entry.second << std::endl;
-                }
+//                std::cout << "number of one's = " << shared_data["B.n1"] << std::endl;
+//                std::cout << "number of zero's = " << shared_data["B.n0"] << std::endl;
+//
+//                std::cout << std::endl << "**** dumping shared data: **** " << std::endl;
+//                for (auto entry : shared_data) {
+//                    std::cout << entry.first << ":" << entry.second << std::endl;
+//                }
             }
     );
 
@@ -51,10 +35,10 @@ int main (int argc, char *argv[]) {
             [&syn_A0, &shared_data] {
                 shared_data[syn_A0.get_name()] = shared_data["B.n0"];
 
-                std::cout << std::endl << "**** dumping shared data: **** for A0 " << std::endl;
-                for (auto entry : shared_data) {
-                    std::cout << entry.first << ":" << entry.second << std::endl;
-                }
+//                std::cout << std::endl << "**** dumping shared data: **** for A0 " << std::endl;
+//                for (auto entry : shared_data) {
+//                    std::cout << entry.first << ":" << entry.second << std::endl;
+//                }
             }
     );
     //
@@ -63,10 +47,10 @@ int main (int argc, char *argv[]) {
             [&syn_A1, &shared_data] {
                 shared_data[syn_A1.get_name()] = shared_data["B.n1"];
 
-                std::cout << std::endl << "**** dumping shared data: **** for A1" << std::endl;
-                for (auto entry : shared_data) {
-                    std::cout << entry.first << ":" << entry.second << std::endl;
-                }
+//                std::cout << std::endl << "**** dumping shared data: **** for A1" << std::endl;
+//                for (auto entry : shared_data) {
+//                    std::cout << entry.first << ":" << entry.second << std::endl;
+//                }
             }
     );
     // ************************************
@@ -76,10 +60,10 @@ int main (int argc, char *argv[]) {
             [&syn_B_n1, &shared_data] {
                 shared_data[syn_B_n1.get_name()] = shared_data["B.n1"];
 
-                std::cout << std::endl << "**** dumping shared data: for: " << "syn_B_n1" << "**** " << std::endl;
-                for (auto entry : shared_data) {
-                    std::cout << entry.first << ":" << entry.second << std::endl;
-                }
+//                std::cout << std::endl << "**** dumping shared data: for: " << "syn_B_n1" << "**** " << std::endl;
+//                for (auto entry : shared_data) {
+//                    std::cout << entry.first << ":" << entry.second << std::endl;
+//                }
             }
     );
     //
@@ -88,10 +72,10 @@ int main (int argc, char *argv[]) {
             [&syn_B_n0, &shared_data] {
                 shared_data[syn_B_n0.get_name()] = shared_data["B.n0"];
 
-                std::cout << std::endl << "**** dumping shared data: for: " << "syn_B_n0" << "**** " << std::endl;
-                for (auto entry : shared_data) {
-                    std::cout << entry.first << ":" << entry.second << std::endl;
-                }
+//                std::cout << std::endl << "**** dumping shared data: for: " << "syn_B_n0" << "**** " << std::endl;
+//                for (auto entry : shared_data) {
+//                    std::cout << entry.first << ":" << entry.second << std::endl;
+//                }
             }
     );
 
@@ -101,10 +85,10 @@ int main (int argc, char *argv[]) {
             [&syn_B1_n1_1, &shared_data] {
                 shared_data[syn_B1_n1_1.get_name()] = shared_data["B.n1"] + 1;
 
-                std::cout << std::endl << "**** dumping shared data: for: " << "syn_B1_n1_1" << "**** " << std::endl;
-                for (auto entry : shared_data) {
-                    std::cout << entry.first << ":" << entry.second << std::endl;
-                }
+//                std::cout << std::endl << "**** dumping shared data: for: " << "syn_B1_n1_1" << "**** " << std::endl;
+//                for (auto entry : shared_data) {
+//                    std::cout << entry.first << ":" << entry.second << std::endl;
+//                }
             }
     );
     //
@@ -113,10 +97,10 @@ int main (int argc, char *argv[]) {
             [&syn_B1_n0_0, &shared_data] {
                 shared_data[syn_B1_n0_0.get_name()] = shared_data["B.n0"] + 1;
 
-                std::cout << std::endl << "**** dumping shared data: for: " << "syn_B1_n0_0" << "**** " << std::endl;
-                for (auto entry : shared_data) {
-                    std::cout << entry.first << ":" << entry.second << std::endl;
-                }
+//                std::cout << std::endl << "**** dumping shared data: for: " << "syn_B1_n0_0" << "**** " << std::endl;
+//                for (auto entry : shared_data) {
+//                    std::cout << entry.first << ":" << entry.second << std::endl;
+//                }
             }
     );
 
@@ -126,10 +110,10 @@ int main (int argc, char *argv[]) {
             [&syn_B_n1_init, &shared_data] {
                 shared_data[syn_B_n1_init.get_name()] = 0;
 
-                std::cout << std::endl << "**** dumping shared data: for: " << "syn_B_n1_init" << "**** " << std::endl;
-                for (auto entry : shared_data) {
-                    std::cout << entry.first << ":" << entry.second << std::endl;
-                }
+//                std::cout << std::endl << "**** dumping shared data: for: " << "syn_B_n1_init" << "**** " << std::endl;
+//                for (auto entry : shared_data) {
+//                    std::cout << entry.first << ":" << entry.second << std::endl;
+//                }
             }
     );
     //
@@ -138,10 +122,10 @@ int main (int argc, char *argv[]) {
             [&syn_B_n0_init, &shared_data] {
                 shared_data[syn_B_n0_init.get_name()] = 0;
 
-                std::cout << std::endl << "**** dumping shared data: for: " << "syn_B_n0_init" << "**** " << std::endl;
-                for (auto entry : shared_data) {
-                    std::cout << entry.first << ":" << entry.second << std::endl;
-                }
+//                std::cout << std::endl << "**** dumping shared data: for: " << "syn_B_n0_init" << "**** " << std::endl;
+//                for (auto entry : shared_data) {
+//                    std::cout << entry.first << ":" << entry.second << std::endl;
+//                }
             }
     );
 
@@ -216,10 +200,6 @@ int main (int argc, char *argv[]) {
     predictive_parser parser(A, p_table, input_buffer);
     parser.parse();
 
-    parser.write_derivations("actions.log");
-    parser.write_debug_stack("debug_stack.log");
-
-
-//    symbol.set_action(func1);
-//    symbol.get_action()();
+    REQUIRE(shared_data["B.n1"] == 5);
+    REQUIRE(shared_data["B.n0"] == 5);
 }

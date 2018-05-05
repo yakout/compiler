@@ -41,7 +41,8 @@ if (BUILD_UNIT_TEST)
     target_include_directories (catch_semantic INTERFACE ../tests/lib/)
     add_library (unit_test_catch_semantic STATIC ../tests/catch_main.cpp)
     target_link_libraries (unit_test_catch_semantic catch_semantic)
-    target_link_libraries (unit_test_catch_semantic libsemantic)
+#    target_link_libraries (unit_test_catch_semantic libsemantic)
+    target_link_libraries (unit_test_catch_semantic libsyntax)
 
     macro (do_test test_name)
         add_executable (unit_${test_name}_semantic
@@ -51,6 +52,6 @@ if (BUILD_UNIT_TEST)
     endmacro (do_test)
 
 
-    # do_test()
+     do_test(test_1)
  
 endif (BUILD_UNIT_TEST)
