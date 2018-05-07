@@ -86,7 +86,6 @@ int predictive_parser::parse()
 			cfg_production prod = p_table->get_production(stack_top.get_name(), cur_token);
             if (prod.get_lhs_symbol().get_type() == SYNCH)
             {
-                // TODO::SYNCH production
                 parser_stack.pop_back();
                 output.push_back("SYNCH (pop_stack)");
             }

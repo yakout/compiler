@@ -55,7 +55,7 @@ public:
     };
 
 
-    void set_action(const std::function<void(std::vector<cfg_symbol> &)> &action);
+    void set_action(std::function<void(std::vector<cfg_symbol> &)> &action);
     void add_attribute(std::string name, std::string value);
 
     /** Getters **/

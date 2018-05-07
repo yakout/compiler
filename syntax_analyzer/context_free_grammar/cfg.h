@@ -9,6 +9,7 @@
 #include <unordered_set>
 #include <memory>
 #include <unordered_map>
+#include <functional>
 
 #define EPS "\\L"
 
@@ -35,6 +36,8 @@ private:
     std::unordered_map <cfg_symbol, std::vector <cfg_production>, cfg_symbol::hasher
             , cfg_symbol::comparator> cfg_symbol_productions;
 
+    std::unordered_map<std::string, std::function<void(std::vector<cfg_symbol> &)>&> functions;
+
     void process_first_set(int prod_symbol_index, std::shared_ptr<first_set> first_set,
                            cfg_production *prod);
     void process_follow_set(cfg_symbol non_terminal, std::shared_ptr<follow_set> follow_set);
@@ -43,12 +46,11 @@ private:
 
     void update_rule (std::vector<cfg_production> &);
 
-    void parse (std::string &);
-
 public:
     cfg ();
     explicit cfg (std::string);
 
+    void parse (std::string &);
     const std::unordered_map<cfg_symbol, std::vector<cfg_production>, cfg_symbol::hasher, cfg_symbol::comparator> &
     get_cfg_symbol_productions() const;
 
@@ -68,6 +70,7 @@ public:
     void set_terminals(const std::unordered_set <cfg_symbol, cfg_symbol::hasher
             , cfg_symbol::comparator> &terminals);
     void set_start_symbol(const cfg_symbol &start_symbol);
+    void add_function(std::string name, std::function<void(std::vector<cfg_symbol> &)> &func);
 
     /** Grammar Correction **/
     void left_factor ();

@@ -6,7 +6,7 @@ set (CMAKE_CXX_STANDARD 11)
 # Compiler flags
 # ------------------------------------------------------------------------------
 
-set (GCC_COMPILE_FLAGS "-Wall -Wextra -g")
+#set (GCC_COMPILE_FLAGS "-Wall -Wextra -g")
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_COMPILE_FLAGS}")
 
@@ -16,13 +16,11 @@ option (BUILD_UNIT_TEST "Determines whether to build unit tests or not" OFF)
 # Build
 # ------------------------------------------------------------------------------
 
-
 set (HEADER_FILES
-        intermediate_code_generation/semantic_rules.h
-        )
+        intermediate_code_generation/semantic_rules/zeros_ones_counter.h
+        intermediate_code_generation/semantic_rules/three_address_code.h)
 
-set (SOURCE_FILES
-        intermediate_code_generation/semantic_rules_builder.cpp)
+set (SOURCE_FILES intermediate_code_generation/test.cpp)
 
 add_library (libsemantic SHARED ${SOURCE_FILES} ${HEADER_FILES})
 

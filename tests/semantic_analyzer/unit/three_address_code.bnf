@@ -1,0 +1,8 @@
+# P = S
+# S = 'assign'
+# S = 'if' '(' B ')' S 'else' S
+# S = 'while' '(' B ')' S
+# B = B '&&' T | T
+# T = '(' B ')'
+# B = 'true'
+# B = 'false'

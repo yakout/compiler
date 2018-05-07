@@ -1,0 +1,4 @@
+# A = B #record_B #record_A
+# B = '0' B #record_B1_0
+# B = '1' B #record_B1_1
+# B = '\L' @action_1

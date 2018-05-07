@@ -93,7 +93,18 @@ void cfg::parse_rule (std::string & rule_str, bool first_rule) {
             if (r_h.productions[i][j] == "\\L" || remove_single_quotes (r_h.productions[i][j])) {
                 symbol = cfg_symbol (r_h.productions[i][j], cfg_symbol_type::TERMINAL);
                 terminals.insert (symbol);
-            } else {
+            } 
+            else if (r_h.productions[i][j][0] == '@') {
+                symbol = cfg_symbol (r_h.productions[i][j], cfg_symbol_type::ACTION);
+                std::function<void(std::vector<cfg_symbol>&)> func
+                        = functions.find(r_h.productions[i][j].substr(1))->second;
+                 symbol.set_action(functions.find(r_h.productions[i][j].substr(1))->second);
+            }
+            else if (r_h.productions[i][j][0] == '#') {
+                symbol = cfg_symbol (r_h.productions[i][j], cfg_symbol_type::SYNTHESISED);
+                symbol.set_action(functions.find(r_h.productions[i][j].substr(1))->second);
+            }
+            else {
                 symbol = cfg_symbol (r_h.productions[i][j], cfg_symbol_type::NON_TERMINAL);
                 non_terminals.insert (symbol);
             }
@@ -523,6 +534,11 @@ void cfg::print_cfg_symbol_productions_map() {
         std::cout << "}\n";
     }
     std::cout << "==================================================================================================\n";
+}
+
+void cfg::add_function(std::string name, std::function<void(std::vector<cfg_symbol> &)> &func)
+{
+    functions.insert({name, func});
 }
 
 void split_str (std::vector <std::string> & vec
