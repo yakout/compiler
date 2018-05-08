@@ -64,7 +64,6 @@ public:
     set_grammar(const std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::comparator> &);
     std::shared_ptr <first_set> get_first_set ();
     std::shared_ptr <follow_set> get_follow_set ();
-    bool is_ll_1 ();
     void add_rule (cfg_symbol &, std::vector<cfg_production> &);
     void add_rule (cfg_rule &);
     void set_terminals(const std::unordered_set <cfg_symbol, cfg_symbol::hasher
@@ -83,6 +82,10 @@ public:
             , cfg_symbol::comparator> get_terminals ();
     cfg_symbol get_start_symbol ();
     std::vector <cfg_rule> get_rules ();
+
+    bool is_last_symbol(int pos, cfg_production production);
+
+    int get_next_sym_pos(int pos, cfg_production production);
 };
 
 #endif //COMPILER_CFG_H

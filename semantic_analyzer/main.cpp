@@ -38,8 +38,8 @@ int main (int argc, char *argv[]) {
     cfg_ob.add_function("record_B1_0", f4);
     cfg_ob.add_function("record_B1_1", f5);
 
-//    std::string grammar_file ("../../tests/semantic_analyzer/unit/zeros_ones_counter.bnf");
-    std::string grammar_file ("../../tests/semantic_analyzer/unit/three_address_code.bnf");
+    std::string grammar_file ("../tests/semantic_analyzer/unit/zeros_ones_counter.bnf");
+//    std::string grammar_file ("../tests/semantic_analyzer/unit/three_address_code.bnf");
 
     cfg_ob.parse(grammar_file);
 
@@ -59,6 +59,8 @@ int main (int argc, char *argv[]) {
     std::shared_ptr<parsing_table> p_table = std::make_shared<parsing_table>(cfg_ob);
     p_table->draw("parsing_table.txt");
 
+    cfg_ob.get_first_set()->print_to_console();
+    cfg_ob.get_follow_set()->print_to_console();
 
     std::vector<std::string> input_buffer{
             "if",

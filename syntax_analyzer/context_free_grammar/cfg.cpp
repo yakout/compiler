@@ -338,10 +338,6 @@ std::vector <cfg_rule> cfg::get_rules () {
     return rules;
 }
 
-bool cfg::is_ll_1 () {
-    return true;
-}
-
 void
 cfg::process_first_set(int prod_symbol_index, std::shared_ptr<first_set> first_set,
                        cfg_production *prod) {
@@ -350,6 +346,9 @@ cfg::process_first_set(int prod_symbol_index, std::shared_ptr<first_set> first_s
     }
     auto curr_prod_symbol = prod->get_symbols()[prod_symbol_index];
 
+    if (!curr_prod_symbol.is_term_or_non_term()) {
+        process_first_set(prod_symbol_index + 1, first_set, prod);
+    }
     // Cycle case
     if (curr_prod_symbol.get_name() == prod->get_lhs_symbol().get_name()) {
         return;
@@ -413,6 +412,26 @@ std::shared_ptr<first_set> cfg::get_first_set() {
     return first_set_ptr;
 }
 
+bool cfg::is_last_symbol(int pos, cfg_production production) {
+    pos++;
+    while (pos != production.get_symbols().size()) {
+        if (!production.get_symbols()[pos].is_term_or_non_term()) {
+            pos++;
+            continue;
+        }
+        return false;
+    }
+    return true;
+}
+
+int cfg::get_next_sym_pos(int pos, cfg_production production) {
+    pos++;
+    while (pos < production.get_symbols().size() && !production.get_symbols()[pos].is_term_or_non_term()) {
+        pos++;
+    }
+    return pos;
+}
+
 void cfg::process_follow_set(cfg_symbol non_terminal, std::shared_ptr<follow_set> follow_set_ptr) {
     if (non_terminal.get_name() == cfg::start_symbol.get_name()) {
         cfg_symbol s_$("$", END_MARKER);
@@ -421,8 +440,11 @@ void cfg::process_follow_set(cfg_symbol non_terminal, std::shared_ptr<follow_set
     for (auto production : cfg::cfg_symbol_productions[non_terminal]) {
         for (int i = 0; i < production.get_symbols().size(); i++) {
             auto symbol = production.get_symbols()[i];
+            if (!symbol.is_term_or_non_term())
+                continue;
             if (symbol.get_name() == non_terminal.get_name()) {
-                if (i + 1 == production.get_symbols().size()) {
+                bool last_sym = is_last_symbol(i, production);
+                if (last_sym) {
                     // This non_terminal is the last symbol in the production.
                     if (follow_set_ptr->empty(production.get_lhs_symbol().get_name())
                         && production.get_lhs_symbol().get_name() != non_terminal.get_name()) {
@@ -440,15 +462,16 @@ void cfg::process_follow_set(cfg_symbol non_terminal, std::shared_ptr<follow_set
                     // There is a symbol after this non_terminal in the production.
 
                     bool has_eps = true;
-                    int curr_pos = i + 1;
+                    int curr_pos = get_next_sym_pos(i, production);
                     while (has_eps) {
-                        if (curr_pos == production.get_symbols().size()) {
+                        if (is_last_symbol(curr_pos, production)) {
                             break;
                         }
                         has_eps = false;
                         // Put everything in first of the next symbol in the follow of non_terminal
                         auto cfg_first_set_map = cfg::get_first_set()->get_set_map();
-                        auto next_first_set = cfg_first_set_map[production.get_symbols()[curr_pos++].get_name()];
+                        auto next_first_set = cfg_first_set_map[production.get_symbols()[curr_pos].get_name()];
+                        curr_pos = get_next_sym_pos(curr_pos, production);
                         for (auto symbol : next_first_set) {
                             if (symbol.first.get_name() != EPS) {
                                 follow_set_ptr->add_symbol(non_terminal.get_name(), symbol.first);

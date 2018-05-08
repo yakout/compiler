@@ -47,3 +47,7 @@ const std::function<void(std::vector<cfg_symbol> &)> &cfg_symbol::get_action() c
 {
     return action;
 }
+
+bool cfg_symbol::is_term_or_non_term() {
+    return cfg_symbol::type == TERMINAL || cfg_symbol::type == NON_TERMINAL;
+}
