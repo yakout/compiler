@@ -69,7 +69,7 @@ public:
     void set_terminals(const std::unordered_set <cfg_symbol, cfg_symbol::hasher
             , cfg_symbol::comparator> &terminals);
     void set_start_symbol(const cfg_symbol &start_symbol);
-    void add_function(std::string name, std::function<void(std::vector<cfg_symbol> &)> &func);
+    void add_function(std::string name, std::function<void(std::vector<cfg_symbol> &)> func);
 
     /** Grammar Correction **/
     void left_factor ();
