@@ -6,10 +6,11 @@ int main (int argc, char *argv[]) {
 
     // cfg cfg_ob = cfg ("../../tests/syntax_analyzer/unit/general_test.bnf");
     // cfg cfg_ob = cfg ("../../tests/syntax_analyzer/unit/complex_left_rec.bnf");
-    cfg cfg_ob = cfg ("../../tests/syntax_analyzer/regression/test_1/ll1_cfg.bnf");
+//    cfg cfg_ob = cfg ("../../tests/syntax_analyzer/regression/test_1/ll1_cfg.bnf");
     // cfg cfg_ob = cfg ("../../tests/syntax_analyzer/unit/cfg_single_line_ll1.bnf");
     // cfg cfg_ob = cfg ("../../tests/syntax_analyzer/unit/ps_cfg_single_line.bnf");
-    // cfg cfg_ob = cfg ("../../tests/syntax_analyzer/unit/first_follow_test.bnf");
+//     cfg cfg_ob = cfg ("../tests/syntax_analyzer/unit/first_follow_test.bnf");
+     cfg cfg_ob = cfg ("../tests/syntax_analyzer/unit/ready_ll1_cfg.bnf");
 
     std::unordered_map<cfg_symbol, cfg_rule, cfg_symbol::hasher, cfg_symbol::comparator> grammar;
     /** Grammar Checking. **/
