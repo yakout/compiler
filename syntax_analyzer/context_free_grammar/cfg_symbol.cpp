@@ -28,7 +28,7 @@ cfg_symbol_type cfg_symbol::get_type() const
     return type;
 }
 
-void cfg_symbol::set_action(std::function<void(std::vector<cfg_symbol> &)> &action)
+void cfg_symbol::set_action(std::function<void(std::vector<cfg_symbol> &)> action)
 {
     cfg_symbol::action = action;
 }

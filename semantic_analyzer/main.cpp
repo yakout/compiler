@@ -26,20 +26,20 @@ int main (int argc, char *argv[]) {
 
 
     cfg cfg_ob = cfg ();
-    std::function<void(std::vector<cfg_symbol> &)> f1(&zeros_ones_counter::action_1);
-    std::function<void(std::vector<cfg_symbol> &)> f2(&zeros_ones_counter::record_A);
-    std::function<void(std::vector<cfg_symbol> &)> f3(&zeros_ones_counter::record_B);
-    std::function<void(std::vector<cfg_symbol> &)> f4(&zeros_ones_counter::record_B1_0);
-    std::function<void(std::vector<cfg_symbol> &)> f5(&zeros_ones_counter::record_B1_1);
+//    std::function<void(std::vector<cfg_symbol> &)> f1(&zeros_ones_counter::action_1);
+//    std::function<void(std::vector<cfg_symbol> &)> f2(&zeros_ones_counter::record_A);
+//    std::function<void(std::vector<cfg_symbol> &)> f3(&zeros_ones_counter::record_B);
+//    std::function<void(std::vector<cfg_symbol> &)> f4(&zeros_ones_counter::record_B1_0);
+//    std::function<void(std::vector<cfg_symbol> &)> f5(&zeros_ones_counter::record_B1_1);
 
-    cfg_ob.add_function("action_1", f1);
-    cfg_ob.add_function("record_A", f2);
-    cfg_ob.add_function("record_B", f3);
-    cfg_ob.add_function("record_B1_0", f4);
-    cfg_ob.add_function("record_B1_1", f5);
+    cfg_ob.add_function ("action_1", zeros_ones_counter::action_1);
+    cfg_ob.add_function ("record_A", zeros_ones_counter::record_A);
+    cfg_ob.add_function ("record_B", zeros_ones_counter::record_B);
+    cfg_ob.add_function ("record_B1_0", zeros_ones_counter::record_B1_0);
+    cfg_ob.add_function ("record_B1_1", zeros_ones_counter::record_B1_1);
 
-//    std::string grammar_file ("../../tests/semantic_analyzer/unit/zeros_ones_counter.bnf");
-    std::string grammar_file ("../../tests/semantic_analyzer/unit/three_address_code.bnf");
+    std::string grammar_file ("../../tests/semantic_analyzer/unit/zeros_ones_counter.bnf");
+//    std::string grammar_file ("../../tests/semantic_analyzer/unit/three_address_code.bnf");
 
     cfg_ob.parse(grammar_file);
 
@@ -61,13 +61,11 @@ int main (int argc, char *argv[]) {
 
 
     std::vector<std::string> input_buffer{
-            "if",
-            "(",
-            "true",
-            ")",
-            "assign",
-            "else",
-            "assign",
+            "0",
+            "0",
+            "0",
+            "0",
+            "1",
             "$"};
 
     predictive_parser parser(cfg_ob.get_start_symbol(), p_table, input_buffer);

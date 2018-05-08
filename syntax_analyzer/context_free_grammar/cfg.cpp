@@ -536,7 +536,7 @@ void cfg::print_cfg_symbol_productions_map() {
     std::cout << "==================================================================================================\n";
 }
 
-void cfg::add_function(std::string name, std::function<void(std::vector<cfg_symbol> &)> &func)
+void cfg::add_function(std::string name, std::function<void(std::vector<cfg_symbol> &)> func)
 {
     functions.insert({name, func});
 }
