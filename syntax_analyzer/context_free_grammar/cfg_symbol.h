@@ -28,7 +28,11 @@ private:
     std::string name;
     cfg_symbol_type type;
     std::function<void(std::vector<cfg_symbol> &)> action;
-    std::map<std::string, std::string> attributes;
+    /**
+     * the values of the key is vector since the attribute can have multi value
+     * e.g falselist, truelist, nextlist ...
+     */
+    std::map<std::string, std::vector<std::string>> attributes;
 
 public:
     cfg_symbol ();
@@ -61,7 +65,7 @@ public:
 
     /** Getters **/
     const std::function<void(std::vector<cfg_symbol> &)> &get_action() const;
-    std::string get_attribute(std::string name);
+    std::vector<std::string> get_attribute(std::string name);
 
     std::string get_name () const;
     cfg_symbol_type get_type () const;

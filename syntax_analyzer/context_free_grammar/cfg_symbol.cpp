@@ -35,10 +35,10 @@ void cfg_symbol::set_action(std::function<void(std::vector<cfg_symbol> &)> actio
 
 void cfg_symbol::add_attribute(std::string name, std::string value) 
 {
-	attributes[name] = value;
+	attributes[name].push_back(value);
 }
 
-std::string cfg_symbol::get_attribute(std::string name)
+std::vector<std::string> cfg_symbol::get_attribute(std::string name)
 {
 	return attributes[name];
 }

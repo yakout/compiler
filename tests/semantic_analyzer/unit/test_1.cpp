@@ -29,8 +29,8 @@ TEST_CASE ("TEST 1") {
     synthesize_record1.set_action(
             [] (std::vector<cfg_symbol>& stack) {
 //                stack[top - 1].n0 = n0, stack[top - 1].n1 = n1
-                stack[stack.size() - 2].add_attribute("n0", stack.back().get_attribute("n0"));
-                stack[stack.size() - 2].add_attribute("n1", stack.back().get_attribute("n1"));
+                stack[stack.size() - 2].add_attribute("n0", stack.back().get_attribute("n0").front());
+                stack[stack.size() - 2].add_attribute("n1", stack.back().get_attribute("n1").front());
             }
     );
 
@@ -38,8 +38,8 @@ TEST_CASE ("TEST 1") {
     synthesize_record2.set_action(
             [&ones, &zeros] (std::vector<cfg_symbol>& stack) {
 //                S{print A.n1, print A.n0}
-                zeros = std::atoi(stack.back().get_attribute("n0").c_str());
-                ones = std::atoi(stack.back().get_attribute("n1").c_str());
+                zeros = std::atoi(stack.back().get_attribute("n0").front().c_str());
+                ones = std::atoi(stack.back().get_attribute("n1").front().c_str());
             }
     );
 
@@ -48,8 +48,8 @@ TEST_CASE ("TEST 1") {
             [] (std::vector<cfg_symbol>& stack) {
 //                S{[top - 1].n0 = B1.n0 + 1, [top - 1].n1 = B1.n1}
                 stack[stack.size() - 2].
-                        add_attribute("n0", std::to_string(std::atoi(stack.back().get_attribute("n0").c_str()) + 1));
-                stack[stack.size() - 2].add_attribute("n1", stack.back().get_attribute("n1"));
+                        add_attribute("n0", std::to_string(std::atoi(stack.back().get_attribute("n0").front().c_str()) + 1));
+                stack[stack.size() - 2].add_attribute("n1", stack.back().get_attribute("n1").front());
             }
     );
 
@@ -57,8 +57,8 @@ TEST_CASE ("TEST 1") {
     synthesize_record4.set_action(
             [] (std::vector<cfg_symbol>& stack) {
                 stack[stack.size() - 2].
-                        add_attribute("n1", std::to_string(std::atoi(stack.back().get_attribute("n1").c_str()) + 1));
-                stack[stack.size() - 2].add_attribute("n0", stack.back().get_attribute("n0"));
+                        add_attribute("n1", std::to_string(std::atoi(stack.back().get_attribute("n1").front().c_str()) + 1));
+                stack[stack.size() - 2].add_attribute("n0", stack.back().get_attribute("n0").front());
             }
     );
 
