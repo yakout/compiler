@@ -1,8 +1,9 @@
-# P = S
-# S = 'assign'
-# S = 'if' '(' B ')' S 'else' S
-# S = 'while' '(' B ')' S
-# B = B '&&' T | T
-# T = '(' B ')'
-# B = 'true'
-# B = 'false'
+# P = S @finalize_action
+# E = 'id' @E_action_num
+# S = 'if' '(' B #B_record_if ')' M #M_record_if S #S1_record_if @S_action_if
+# S = 'assign' @S_action_assign
+# B = B1 #B1_record_or '&&' M #M_record_or B1 #B2_record_or @B_action_or
+# B1 = 'true' @B_action_true
+# B1 = 'false' @B_action_false
+# B1 = E #E1_record_relop 'relop' E #E2_record_relop @B_action_relop
+# M = '\L' @M_action_eps

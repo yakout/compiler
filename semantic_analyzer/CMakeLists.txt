@@ -18,7 +18,8 @@ option (BUILD_UNIT_TEST "Determines whether to build unit tests or not" OFF)
 
 set (HEADER_FILES
         intermediate_code_generation/semantic_rules/zeros_ones_counter.h
-        intermediate_code_generation/semantic_rules/three_address_code.h)
+        intermediate_code_generation/semantic_rules/three_address_code.h
+        intermediate_code_generation/semantic_rules/java_bytecode.h)
 
 set (SOURCE_FILES intermediate_code_generation/test.cpp)
 

@@ -61,6 +61,7 @@ public:
 
     void set_action(std::function<void(std::vector<cfg_symbol> &)> action);
     void add_attribute(std::string name, std::string value);
+    void add_attribute(std::string name, std::vector<std::string> values);
     bool is_term_or_non_term();
 
     /** Getters **/

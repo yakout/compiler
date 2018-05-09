@@ -94,6 +94,14 @@ void parsing_table::build()
                    table[make_pair(non_terminal.get_name(), follow_terminal.get_name())]
                            = *eps_prod;
                } else {
+//                   std::cout << "\n\nnonterminal: " << non_terminal.get_name() << std::endl;
+//                   std::cout << "old: " << table[make_pair(non_terminal.get_name(), follow_terminal.get_name())].to_string()
+//                             << std::endl;
+//                   table[make_pair(non_terminal.get_name(), follow_terminal.get_name())]
+//                           = *eps_prod;
+//
+//                   std::cout << "new: " << table[make_pair(non_terminal.get_name(), follow_terminal.get_name())].to_string()
+//                             << std::endl;
                     throw std::runtime_error(INVALID_LL1_GRAMMAR);
                }
            }

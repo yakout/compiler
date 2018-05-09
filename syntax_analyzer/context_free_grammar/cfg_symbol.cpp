@@ -38,6 +38,14 @@ void cfg_symbol::add_attribute(std::string name, std::string value)
 	attributes[name].push_back(value);
 }
 
+void cfg_symbol::add_attribute(std::string name, std::vector<std::string> values)
+{
+    for (auto value : values) 
+    {
+        attributes[name].push_back(value);
+    }
+}
+
 std::vector<std::string> cfg_symbol::get_attribute(std::string name)
 {
 	return attributes[name];

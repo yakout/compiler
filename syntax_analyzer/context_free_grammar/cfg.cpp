@@ -98,10 +98,12 @@ void cfg::parse_rule (std::string & rule_str, bool first_rule) {
                 symbol = cfg_symbol (r_h.productions[i][j], cfg_symbol_type::ACTION);
                 std::function<void(std::vector<cfg_symbol>&)> func
                         = functions.find(r_h.productions[i][j].substr(1))->second;
+                // TODO handle if the action doesn't exist
                  symbol.set_action(functions.find(r_h.productions[i][j].substr(1))->second);
             }
             else if (r_h.productions[i][j][0] == '#') {
                 symbol = cfg_symbol (r_h.productions[i][j], cfg_symbol_type::SYNTHESISED);
+                // TODO handle if the record doesn't exist
                 symbol.set_action(functions.find(r_h.productions[i][j].substr(1))->second);
             }
             else {
