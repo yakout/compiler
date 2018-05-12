@@ -1,5 +1,6 @@
 #include "../../lib/catch.hpp"
 #include "../../../syntax_analyzer/predictive_parser.h"
+#include "../../../semantic_analyzer/intermediate_code_generation/semantic_rules/three_address_code.h"
 
 #include <unordered_map>
 
