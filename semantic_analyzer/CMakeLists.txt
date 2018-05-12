@@ -21,13 +21,16 @@ set (HEADER_FILES
         intermediate_code_generation/semantic_rules/three_address_code.h
         intermediate_code_generation/semantic_rules/java_bytecode.h)
 
-set (SOURCE_FILES intermediate_code_generation/test.cpp)
+set (SOURCE_FILES)
 
 add_library (libsemantic SHARED ${SOURCE_FILES} ${HEADER_FILES})
+set_target_properties(libsemantic PROPERTIES LINKER_LANGUAGE CXX)
 
 add_executable(semantic_main main.cpp)
 target_link_libraries(semantic_main libsyntax)
 target_link_libraries(semantic_main libsemantic)
+
+
 
 # ------------------------------------------------------------------------------
 # Tests
