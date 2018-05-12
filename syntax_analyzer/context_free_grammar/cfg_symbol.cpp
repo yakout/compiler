@@ -71,3 +71,11 @@ std::vector<std::string> cfg_symbol::get_inherited_attribute(std::string name) {
 bool cfg_symbol::has_inherited_attribute() {
     return !inherited_attributes.empty();
 }
+
+std::map<std::string, std::vector<std::string>> cfg_symbol::get_inherited_attributes() {
+    return inherited_attributes;
+}
+
+void cfg_symbol::set_inherited_attributes(std::map<std::string, std::vector<std::string>> inh_attr) {
+    inherited_attributes = inh_attr;
+}

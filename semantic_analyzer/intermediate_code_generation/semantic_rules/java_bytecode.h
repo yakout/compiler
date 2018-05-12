@@ -29,6 +29,7 @@ namespace java_bytecode {
 
 	std::string gen_label();
 	void gen_code(std::string code);
+    void write_code();
 
 	void backpatch(std::vector<std::string> lists, std::string jump_target);
 	std::vector<std::string> merge(std::vector<std::string> list1, std::vector<std::string> list2);
@@ -110,6 +111,15 @@ namespace java_bytecode {
 		code_base.push_back(code);
 	}
 
+    void write_code()
+    {
+        for (auto c : code_base)
+        {
+            code_file << c << std::endl;
+        }
+        code_file.close();
+    }
+
 
 
 	// *********************************************************
@@ -143,7 +153,7 @@ namespace java_bytecode {
 
     void FINALIZE_CODE(std::vector<cfg_symbol> &stack)
     {
-
+        write_code();
     }
 
 
@@ -291,7 +301,7 @@ namespace java_bytecode {
         stack[top-12].add_attribute("STATEMENT1.nextlist", stack.back().get_attribute("nextlist"));
     }
 
-    void GOTO_ACTION_IF_1(std::vector<cfg_symbol> &stack)
+    void GOTO_ACTION_IF(std::vector<cfg_symbol> &stack)
     {
         int top = static_cast<int>(stack.size() - 1);
         gen_code("goto ");

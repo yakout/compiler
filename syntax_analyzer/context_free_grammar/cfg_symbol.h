@@ -64,12 +64,14 @@ public:
     void add_attribute(std::string name, std::string value);
     void add_attribute(std::string name, std::vector<std::string> values);
     void add_inherited_attribute(std::string name, std::string value);
+    void set_inherited_attributes(std::map<std::string, std::vector<std::string>>);
     bool is_term_or_non_term();
 
     /** Getters **/
     const std::function<void(std::vector<cfg_symbol> &)> &get_action() const;
     std::vector<std::string> get_attribute(std::string name);
     std::vector<std::string> get_inherited_attribute(std::string name);
+    std::map<std::string, std::vector<std::string>> get_inherited_attributes();
     bool has_inherited_attribute();
 
     std::string get_name () const;

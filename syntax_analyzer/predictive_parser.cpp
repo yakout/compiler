@@ -8,6 +8,21 @@ predictive_parser::predictive_parser (cfg_symbol start_symbol, std::shared_ptr<p
 	init_stack(start_symbol);
 }
 
+predictive_parser::predictive_parser (cfg_symbol start_symbol, std::shared_ptr<parsing_table> ll1_table,
+									  std::vector<token> token_vec)
+		: p_table(ll1_table), debug_stack(), output(), parser_stack()
+{
+	errors_count = 0;
+	init_stack(start_symbol);
+
+	for (auto tok : token_vec)
+	{
+		input_buffer.push_back(tok.token_class);
+		lex_values.push_back(tok.lexeme);
+	}
+
+}
+
 predictive_parser::predictive_parser(char *cfg_file, std::vector<token> token_vec)
 {
 	errors_count = 0;
@@ -109,9 +124,19 @@ int predictive_parser::parse()
 
                 if (prod.get_symbols().front().get_name() != EPS)
                 {
+                    bool flag = parser_stack.back().has_inherited_attribute();
+                    std::map<std::string, std::vector<std::string>> inh_attr;
+                    if (flag) {
+                        inh_attr = parser_stack.back().get_inherited_attributes();
+                    }
+
                     parser_stack.pop_back();
                     for (cfg_symbol sym : symbols) {
                         parser_stack.push_back(sym);
+                    }
+
+                    if (flag) {
+                        parser_stack.back().set_inherited_attributes(inh_attr);
                     }
                 }
                 else if (prod.get_symbols().front().get_name() == EPS && prod.get_symbols().size() > 1)
@@ -135,6 +160,7 @@ int predictive_parser::parse()
 			{
                 parser_stack.pop_back();
                 output.push_back("match: " + cur_token);
+				parser_stack.back().add_attribute("lexval", lex_values[i]);
 				i++;
 			}
 			else

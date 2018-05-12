@@ -17,6 +17,7 @@ private:
     std::vector<cfg_symbol> parser_stack;
     std::vector<std::string> debug_stack; // used for debugging
     std::vector<std::string> input_buffer;
+    std::vector<std::string> lex_values;
     std::vector<std::string> output;
     std::shared_ptr<parsing_table> p_table;
     /**
@@ -50,6 +51,14 @@ public:
     predictive_parser (cfg_symbol start_symbol, std::shared_ptr<parsing_table> p_table,
                        std::vector<std::string> input_buffer);
 
+    /**
+     * for testing.
+     * @param start_symbol
+     * @param ll1_table
+     * @param token_vec
+     */
+    predictive_parser (cfg_symbol start_symbol, std::shared_ptr<parsing_table> ll1_table,
+                                          std::vector<token> token_vec);
     /**
      * This is called by the compiler main
      * @param cfg_file
