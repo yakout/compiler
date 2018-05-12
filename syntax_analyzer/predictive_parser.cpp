@@ -160,7 +160,9 @@ int predictive_parser::parse()
 			{
                 parser_stack.pop_back();
                 output.push_back("match: " + cur_token);
-				parser_stack.back().add_attribute("lexval", lex_values[i]);
+				if (!parser_stack.empty() && i < lex_values.size()) {
+					parser_stack.back().add_attribute("lexval", lex_values[i]);
+				}
 				i++;
 			}
 			else
