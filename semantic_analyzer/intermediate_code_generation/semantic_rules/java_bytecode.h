@@ -295,7 +295,7 @@ namespace java_bytecode {
     {
         int top = static_cast<int>(stack.size() - 1);
         gen_code("goto ");
-        std::vector v;
+        std::vector<std::string> v;
         v.push_back(std::to_string(code_base.size()));
         stack[top-9].add_attribute("goto.nextlist", v);
     }
@@ -355,7 +355,7 @@ namespace java_bytecode {
     void WHILE_ACTION_WHILE(std::vector<cfg_symbol> &stack)
     {
         int top = static_cast<int>(stack.size() - 1);
-        gen_code("goto " + stack.back().get_attribute("M1.instr"));
+        gen_code("goto " + stack.back().get_attribute("M1.instr").front());
 
         backpatch(stack.back().get_attribute("EXPRESSION.truelist"), stack.back().get_attribute("M2.instr").front());
         backpatch(stack.back().get_attribute("STATEMENT.nextlist"), stack.back().get_attribute("M1.instr").front());
@@ -625,6 +625,20 @@ namespace java_bytecode {
     }
     
 
+    /**
+     * EXPRESSION
+     */
+    void SIMPLE_EXPRESSION_RECORD_EXPRESSION(std::vector<cfg_symbol> &stack)
+    {
+        int top = static_cast<int>(stack.size() - 1);
+        stack[top-1].add_inherited_attribute("EXPRESSION.in", stack.back().get_attribute("SIMPLE_EXPRESSION.val").front());
+    }
+
+    void EXPRESSION1_RECORD_EXPRESSION(std::vector<cfg_symbol> &stack)
+    {
+        int top = static_cast<int>(stack.size() - 1);
+        stack[top-1].add_attribute("EXPRESSION.val", stack.back().get_attribute("EXPRESSION1.val"));
+    }
 
 }
 
