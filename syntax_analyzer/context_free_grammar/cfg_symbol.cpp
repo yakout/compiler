@@ -33,17 +33,21 @@ void cfg_symbol::set_action(std::function<void(std::vector<cfg_symbol> &)> actio
     cfg_symbol::action = action;
 }
 
-void cfg_symbol::add_attribute(std::string name, std::string value) 
+void cfg_symbol::add_attribute(std::string name, std::string value)
 {
 	attributes[name].push_back(value);
 }
 
 void cfg_symbol::add_attribute(std::string name, std::vector<std::string> values)
 {
-    for (auto value : values) 
+    for (auto value : values)
     {
         attributes[name].push_back(value);
     }
+}
+
+void cfg_symbol::add_inherited_attribute(std::string name, std::string value) {
+    inherited_attributes[name].push_back(value);
 }
 
 std::vector<std::string> cfg_symbol::get_attribute(std::string name)
@@ -58,4 +62,12 @@ const std::function<void(std::vector<cfg_symbol> &)> &cfg_symbol::get_action() c
 
 bool cfg_symbol::is_term_or_non_term() {
     return cfg_symbol::type == TERMINAL || cfg_symbol::type == NON_TERMINAL;
+}
+
+std::vector<std::string> cfg_symbol::get_inherited_attribute(std::string name) {
+    return inherited_attributes[name];
+}
+
+bool cfg_symbol::has_inherited_attribute() {
+    return !inherited_attributes.empty();
 }

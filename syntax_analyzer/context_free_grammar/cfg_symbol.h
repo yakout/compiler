@@ -33,6 +33,7 @@ private:
      * e.g falselist, truelist, nextlist ...
      */
     std::map<std::string, std::vector<std::string>> attributes;
+    std::map<std::string, std::vector<std::string>> inherited_attributes;
 
 public:
     cfg_symbol ();
@@ -62,11 +63,14 @@ public:
     void set_action(std::function<void(std::vector<cfg_symbol> &)> action);
     void add_attribute(std::string name, std::string value);
     void add_attribute(std::string name, std::vector<std::string> values);
+    void add_inherited_attribute(std::string name, std::string value);
     bool is_term_or_non_term();
 
     /** Getters **/
     const std::function<void(std::vector<cfg_symbol> &)> &get_action() const;
     std::vector<std::string> get_attribute(std::string name);
+    std::vector<std::string> get_inherited_attribute(std::string name);
+    bool has_inherited_attribute();
 
     std::string get_name () const;
     cfg_symbol_type get_type () const;

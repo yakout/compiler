@@ -23,8 +23,7 @@ namespace three_address_code
 	 */
 	int next_instr = 0;
 
-
-	std::string gen_label();
+	std::string gen_label ();
 	void gen_code(std::string code);
 
 	void backpatch(std::vector<std::string> lists, std::string jump_target);
@@ -33,7 +32,6 @@ namespace three_address_code
 	// *********************************************************
 	// ********************** UTILITIES ************************
 	// *********************************************************
-
 
 	void backpatch(std::vector<std::string> lists, std::string jump_target)
 	{
