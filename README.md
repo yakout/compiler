@@ -3,8 +3,33 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/a896f3db6bde4fdfaa30ed9e4d20cd1c)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=yakout/compiler&amp;utm_campaign=Badge_Grade)
 
 Yet Another Dummy Java Compiler (YADJC)
+> The intermediate code generation to bytecode was implemented without using tools like yacc/bison (still buggy) but you can find the bison version in this repo [jcompiler](http://github.com/AhmedWalidKamal/jcompiler/)
 
-![image](images/JavaArchitecture1.jpg)
+```
+ +---------------+   
+ | source code   |   
+ +---------------+  
+        |               
+        V                        
++------------------+
+| lexical_analyzer |
++------------------+
+        |                        
+        V        
++------------------+
+| parser_analyzer  |
++------------------+
+        |                        
+        V        
++------------------+
+| semantic_analyzer|
++------------------+
+        |                        
+        V        
+  +------------+
+  | byte code  |
+  +------------+
+```
 
 #### Build
 ```bash
